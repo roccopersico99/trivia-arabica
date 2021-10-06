@@ -24,10 +24,16 @@ export const COLUMNS = [
         accessor: "phone"
     },
     {
-        id: 'button',
+        id: 'edit',
         Header: "Edit",
-        accessor: "phone",
-        Cell: ({value}) => (<button onClick={()=>{console.log('clicked value', value)}}>Button</button>)
+        Cell: ({row}) => (<button type="button" className="btn btn-success" onClick={()=>{console.log('edit row', row.id)}}>Edit</button>)
+    },
+    {
+        id: 'delete',
+        Header: "Delete",
+        Cell: ({row}) => (<button type="button" className="btn btn-danger" onClick={()=>{
+            console.log('delete row', row.id);
+        }}>Delete</button>)
     },
 
 ]
