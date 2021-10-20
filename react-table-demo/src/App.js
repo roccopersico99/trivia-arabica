@@ -6,12 +6,12 @@ import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBPTDrpr_7tfNr18Q5G_7kLGtZhPZ72zb8",
-  authDomain: "reacttabledemo.firebaseapp.com",
-  projectId: "reacttabledemo",
-  storageBucket: "reacttabledemo.appspot.com",
-  messagingSenderId: "506759418171",
-  appId: "1:506759418171:web:1d1dc26c4b509eb0e3a71e"
+  apiKey: "AIzaSyBv4itSAtnCyRSbobSEsuk3LnOBs6V0-8g",
+  authDomain: "mystical-factor-327614.firebaseapp.com",
+  projectId: "mystical-factor-327614",
+  storageBucket: "mystical-factor-327614.appspot.com",
+  messagingSenderId: "232679417776",
+  appId: "1:232679417776:web:7413832550f5b9782d5875"
 };
 
 const app = firebase.initializeApp(firebaseConfig);

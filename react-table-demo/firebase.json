@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "trivia-arabica",
     "public": "build",
     "ignore": [
       "firebase.json",
