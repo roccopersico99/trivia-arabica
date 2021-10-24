@@ -1,3 +1,7 @@
+html, body, #app, #app>div {
+  height: 100%
+}
+
 .App {
   text-align: center;
 }
@@ -39,4 +43,23 @@
 
 .toolbar {
   display: inline;
+}
+
+
+.background-gradient{
+  background: rgb(0,167,225);
+background: linear-gradient(90deg, rgba(0,167,225,1) 0%, rgba(0,126,167,1) 5%, rgba(0,126,167,1) 95%, rgba(0,167,225,1) 100%);
+}
+
+.background-div{
+  width: 75%;
+  height: 100%;
+  margin: auto;
+}
+
+.background-inner-div {
+  background: #FFFFFF;
+  width: 90%;
+  height: 100vh;
+  margin: auto;
 }
