@@ -1,6 +1,6 @@
 import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
-import { collection, query, where, getDocs, limit } from "firebase/firestore";
+import { collection, query, where, getDocs, limit, updateDoc} from "firebase/firestore";
 
 
 
@@ -19,6 +19,10 @@ const app = firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const userRef = collection(db, 'users')
 
+export const updateData = (docRef, updatedData) => {
+    updateDoc(docRef, updatedData);
+}
+
 export const createUser = (userName, userId) => {
     return db.collection('users')
         .add({
@@ -36,3 +40,4 @@ export const getUser = (userId, observer) => {
     const q = query(userRef, where("user_id", "==", userId), limit(1));
     return getDocs(q)
 };
+
