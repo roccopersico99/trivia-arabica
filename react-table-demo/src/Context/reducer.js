@@ -1,15 +1,17 @@
-import React, { useState, useReducer } from 'react';
-
 let user = localStorage.getItem('currentUser') ?
   JSON.parse(localStorage.getItem('currentUser')).user :
   '';
 let token = localStorage.getItem('currentUser') ?
   JSON.parse(localStorage.getItem('currentUser')).auth_token :
   '';
+let id = localStorage.getItem('currentID') ?
+  JSON.parse(localStorage.getItem('currentID')).current_id :
+  '';
 
 export const initialState = {
   user: '' || user,
   token: '' || token,
+  id: '' || id,
   errorMessage: null,
 };
 
@@ -24,12 +26,14 @@ export const AuthReducer = (initialState, action) => {
         ...initialState,
         user: action.payload.name,
           token: action.payload.auth_token,
+          id: action.payload.googleId,
       };
     case 'LOGOUT':
       return {
         ...initialState,
         user: '',
           token: '',
+          id: '',
       };
 
     case 'LOGIN_ERROR':

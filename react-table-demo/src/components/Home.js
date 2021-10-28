@@ -3,23 +3,19 @@ import React from 'react'
 import Background from './Background.js'
 import * as FirestoreBackend from '../services/Firestore.js'
 
-import { useAuthState } from '../Context/index'
-
 function Home() {
 
+  const test = () => {
 
-  const userDetails = useAuthState()
-
+  }
 
   return (
     <Background>
       <p>Home</p>
       <button onClick={()=>{
         const usr_query = FirestoreBackend.getUser('1');
-        console.log(usr_query);
         usr_query.then((query_snapshot)=>{
           query_snapshot.forEach((user) => {
-            console.log(user.data());
             console.log(user.data().display_name);
             console.log(user.data().user_bio);
             console.log(user.data().medals);
@@ -45,14 +41,6 @@ function Home() {
         });
       }}>
         Test update user data (add +1 medal count to bobbert)
-      </button>
-
-
-      <br/>
-      <button onClick={()=>{
-        console.log(userDetails)
-      }}>
-        test
       </button>
 
     </Background>
