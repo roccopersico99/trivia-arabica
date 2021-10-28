@@ -64,7 +64,7 @@ function Profile() {
   ];
   let user = {
     id: "1",
-    display_name: userDetails.user,
+    display_name: userDetails.user === "" ? "John Cena" : userDetails.user,
     profile_picture: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
     banner_image: "https://image.freepik.com/free-vector/abstract-dotted-banner-background_1035-18160.jpg",
     about: {
