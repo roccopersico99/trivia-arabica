@@ -5,19 +5,21 @@ import Home from './components/Home'
 import Profile from './components/Profile'
 import Navigation from './components/Navigation.js'
 
-import { AuthProvider } from './Context/index'
+import { useAuthState } from './Context/index'
 
 export default function App() {
 
+  const userDetails = useAuthState()
+
   return (
     <div className="App">
-      <AuthProvider>
         <Navigation />
         <Switch>
-          <Route path="/profile"  render={()=><Profile/>}/>
+          { userDetails.user!=="" &&
+            <Route path="/profile"  render={()=><Profile/>}/>
+          }
           <Route path="/"         render={()=><Home/>}/>
         </Switch>
-      </AuthProvider>
     </div>
   );
 }

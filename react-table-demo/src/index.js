@@ -5,10 +5,14 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+import { AuthProvider } from './Context/index'
+
 ReactDOM.render(
   <Router>
+    <AuthProvider>
       <App />
-    </Router>,
+    </AuthProvider>
+  </Router>,
   document.getElementById('root')
 );
 

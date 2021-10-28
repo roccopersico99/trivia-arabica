@@ -1,10 +1,13 @@
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import { default as logo } from "../logo.svg";
 import { default as userIcon } from "../person-circle.svg";
-import Login from './Login';
-import Logout from './Logout';
+import LoginLogout from './LoginLogout';
+
+import { useAuthState } from '../Context/index'
 
 function Navigation() {
+  const userDetails = useAuthState()
+
   return (
     <div>
     <Navbar collapseOnSelect  expand='sm' bg='dark' variant='dark'>
@@ -21,11 +24,10 @@ function Navigation() {
         <Navbar.Collapse id='responsive-navbar-nav'>
           <Nav>
             <Nav.Link href='/'>Home</Nav.Link>
-            <Nav.Link href='/profile'>Profile</Nav.Link>
+            <Nav.Link href={userDetails.user==="" ? '/' : '/profile'}>Profile</Nav.Link>
           </Nav>
           <Nav className="ml-auto">
-            <Login />
-            <Logout />
+            <LoginLogout />
             <Navbar.Brand href='/profile'>
               <img
                 src={userIcon}
