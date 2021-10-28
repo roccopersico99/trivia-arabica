@@ -1,6 +1,8 @@
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import { default as logo } from "../logo.svg";
 import { default as userIcon } from "../person-circle.svg";
+import Login from './Login';
+import Logout from './Logout';
 
 function Navigation() {
   return (
@@ -22,6 +24,8 @@ function Navigation() {
             <Nav.Link href='/profile'>Profile</Nav.Link>
           </Nav>
           <Nav className="ml-auto">
+            <Login />
+            <Logout />
             <Navbar.Brand href='/profile'>
               <img
                 src={userIcon}
