@@ -5,16 +5,19 @@ import Home from './components/Home'
 import Profile from './components/Profile'
 import Navigation from './components/Navigation.js'
 
+import { AuthProvider } from './Context/index'
 
 export default function App() {
 
   return (
     <div className="App">
-      <Navigation />
-      <Switch>
-        <Route path="/profile"  render={()=><Profile/>}/>
-        <Route path="/"         render={()=><Home/>}/>
-      </Switch>
+      <AuthProvider>
+        <Navigation />
+        <Switch>
+          <Route path="/profile"  render={()=><Profile/>}/>
+          <Route path="/"         render={()=><Home/>}/>
+        </Switch>
+      </AuthProvider>
     </div>
   );
 }

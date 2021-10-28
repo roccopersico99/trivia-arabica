@@ -1,9 +1,16 @@
 import '../App.css';
+import React from 'react'
 import Background from './Background.js'
 import * as FirestoreBackend from '../services/Firestore.js'
 
+import { useAuthState } from '../Context/index'
 
 function Home() {
+
+
+  const userDetails = useAuthState()
+
+
   return (
     <Background>
       <p>Home</p>
@@ -38,6 +45,14 @@ function Home() {
         });
       }}>
         Test update user data (add +1 medal count to bobbert)
+      </button>
+
+
+      <br/>
+      <button onClick={()=>{
+        console.log(userDetails)
+      }}>
+        test
       </button>
 
     </Background>

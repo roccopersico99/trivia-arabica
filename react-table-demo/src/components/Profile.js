@@ -1,5 +1,7 @@
 import "../App.css";
 import Background from "./Background.js";
+import { useAuthState } from '../Context/index'
+
 import {
   Image,
   Container,
@@ -16,13 +18,13 @@ import Posts from "./profile-components/Posts";
 import About from "./profile-components/About";
 
 function Profile() {
-  let quizzes = [
-    {
+  const userDetails = useAuthState()
+
+  let quizzes = [{
       id: "1",
       title: "Baseball Quiz!!!",
       description: "This quiz is about MLB history.",
-      image:
-        "https://upload.wikimedia.org/wikipedia/commons/4/40/Heyward_lines_into_double_play_%2828356212176%29.jpg",
+      image: "https://upload.wikimedia.org/wikipedia/commons/4/40/Heyward_lines_into_double_play_%2828356212176%29.jpg",
       creator: "1",
       platform: "1",
       questions: [{ title: "First Question", choices: [1, 2, 3, 4] }],
@@ -32,8 +34,7 @@ function Profile() {
       id: "2",
       title: "Football Quiz!!!",
       description: "This quiz is about NFL history.",
-      image:
-        "https://wallpaperbat.com/img/157590-troy-polamalus-hall-of-fame-career-was-pure-chaos.jpg",
+      image: "https://wallpaperbat.com/img/157590-troy-polamalus-hall-of-fame-career-was-pure-chaos.jpg",
       creator: "1",
       platform: "1",
       questions: [{ title: "First Question", choices: [1, 2, 3, 4] }],
@@ -43,16 +44,14 @@ function Profile() {
       id: "3",
       title: "Basketball Quiz!!!",
       description: "This quiz is about NBA history.",
-      image:
-        "https://theundefeated.com/wp-content/uploads/2018/03/gettyimages-587625016.jpg",
+      image: "https://theundefeated.com/wp-content/uploads/2018/03/gettyimages-587625016.jpg",
       creator: "1",
       platform: "1",
       questions: [{ title: "First Question", choices: [1, 2, 3, 4] }],
       ratings: [],
     },
   ];
-  let posts = [
-    {
+  let posts = [{
       title: "First Post",
       content: "This is my first post",
       date: "10/28/2021",
@@ -65,11 +64,9 @@ function Profile() {
   ];
   let user = {
     id: "1",
-    display_name: "QuizTaker1",
-    profile_picture:
-      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-    banner_image:
-      "https://image.freepik.com/free-vector/abstract-dotted-banner-background_1035-18160.jpg",
+    display_name: userDetails.user,
+    profile_picture: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
+    banner_image: "https://image.freepik.com/free-vector/abstract-dotted-banner-background_1035-18160.jpg",
     about: {
       content: "About Me",
       links: [
@@ -89,6 +86,10 @@ function Profile() {
     following: [],
     followers: [],
   };
+
+
+
+
   return (
     <Background>
       <Image
