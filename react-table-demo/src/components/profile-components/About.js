@@ -1,25 +1,23 @@
-
 function About(props) {
-
-    return (
-        <div>
-            <p>This is were the user will enter information about themselves.</p>
-            <ul>
-                <li>
-                    <a href="https://github.com/">Github</a>
-                </li>
-                <li>
-                    <a href="https://facebook.com/">Facebook</a>
-                </li>
-                <li>
-                    <a href="https://twitter.com/">Twitter</a>
-                </li>
-                <li>
-                    <a href="https://stonybrook.edu/">Stony Brook</a>
-                </li>
-            </ul>
-        </div>
-    );
+  return (
+    <div>
+      <p>{props.about.content}</p>
+      <ul>
+        <li>
+          <a href={props.about.links[0].url}>{props.about.links[0].title}</a>
+        </li>
+        <li>
+          <a href={props.about.links[1].url}>{props.about.links[1].title}</a>
+        </li>
+        <li>
+          <a href={props.about.links[2].url}>{props.about.links[2].title}</a>
+        </li>
+        <li>
+          <a href={props.about.links[3].url}>{props.about.links[3].title}</a>
+        </li>
+      </ul>
+    </div>
+  );
 }
 
 export default About;
