@@ -33,6 +33,19 @@ function Profile() {
     });
   }
 
+  const setAboutText = (val) => {
+    const usr_query = FirestoreBackend.getUser(userDetails.id);
+    usr_query.then((query_snapshot) => {
+      query_snapshot.forEach((user) => {
+        const userRef = user.ref;
+        const medalCount = user.data().medals;
+        const data = { user_bio: val };
+        FirestoreBackend.updateData(userRef, data);
+      });
+    });
+    setAbout(val)
+  }
+
   getAbout()
 
   let quizzes = [{
@@ -147,7 +160,7 @@ function Profile() {
                 <Posts posts={user.posts}></Posts>
               </Tab>
               <Tab eventKey="about" title="About">
-                <About about={user.about}></About>
+                <About helper={setAboutText} about={user.about}></About>
               </Tab>
             </Tabs>
           </Col>
