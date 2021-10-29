@@ -1,6 +1,7 @@
 import "../App.css";
 import Background from "./Background.js";
 import { useAuthState } from '../Context/index'
+import 'bootstrap/dist/css/bootstrap.css';
 import * as FirestoreBackend from '../services/Firestore.js'
 import { useState } from 'react'
 
@@ -114,7 +115,7 @@ function Profile() {
   if (user.display_name === "") {
     return (
       <Background>
-        <Spinner animation="border" role="status">
+        <Spinner style={{marginTop:"100px"}} animation="border" role="status">
           <span className="visually-hidden">Loading...</span>
         </Spinner>
       </Background>
