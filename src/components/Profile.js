@@ -40,7 +40,7 @@ function Profile() {
     usr_query.then((query_snapshot) => {
       query_snapshot.forEach((user) => {
         const userRef = user.ref;
-        const medalCount = user.data().medals;
+        //const medalCount = user.data().medals;
         const data = { user_bio: val };
         FirestoreBackend.updateData(userRef, data);
       });
@@ -124,7 +124,7 @@ function Profile() {
   return (
     <Background>
       <Image
-        style={{ width: "100%", height: "200px", "object-fit": "cover" }}
+        style={{ width: "100%", height: "200px", "objectFit": "cover" }}
         src={user.banner_image}
         alt="Banner"
       ></Image>

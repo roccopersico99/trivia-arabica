@@ -1,5 +1,5 @@
 import { Button, Form } from "react-bootstrap"
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useState } from 'react'
 
 function About(props) {
 

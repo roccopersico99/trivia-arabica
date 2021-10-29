@@ -5,10 +5,6 @@ import * as FirestoreBackend from '../services/Firestore.js'
 
 function Home() {
 
-  const test = () => {
-
-  }
-
   return (
     <Background>
       <p>Home</p>
