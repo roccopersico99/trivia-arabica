@@ -29,7 +29,7 @@ function Navigation() {
           </Nav>
           <Nav className="ml-auto">
             <LoginLogout />
-            <Navbar.Brand href={userDetails.user==="" ? '/' : '/profile'}>
+            <Navbar.Brand href={userDetails.user==="" ? '/' : '/profile/'+userDetails.id}>
               <img
                 src={userIcon}
                 width = "50"
