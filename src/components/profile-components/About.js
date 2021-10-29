@@ -28,7 +28,7 @@ function About(props) {
       <Form style={{display: editing ? 'block' : 'none'}}>
         <Form.Control as ="textarea" ref={textAreaRef} id="aboutText" rows={3}></Form.Control>
       </Form>
-      {!editing && <Button variant="info" onClick={editingClicked}>Edit</Button>}
+      {(!editing && props.about.allowed) && <Button variant="info" onClick={editingClicked}>Edit</Button>}
       {editing && <Button variant="success" onClick={savePressed}>Save</Button>}
       {editing && <Button variant="danger" onClick={cancelClicked}>Cancel</Button>}
     </div>

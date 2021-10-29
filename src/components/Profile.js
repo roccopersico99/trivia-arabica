@@ -4,6 +4,7 @@ import { useAuthState } from '../Context/index'
 import 'bootstrap/dist/css/bootstrap.css';
 import * as FirestoreBackend from '../services/Firestore.js'
 import { useState } from 'react'
+import { useParams } from 'react-router-dom'
 
 import {
   Image,
@@ -22,17 +23,34 @@ import Posts from "./profile-components/Posts";
 import About from "./profile-components/About";
 
 function Profile() {
-  const userDetails = useAuthState()
+  const userDetails = useAuthState();
+
   const [about, setAbout] = useState("");
+  const [name, setName] = useState("");
+  const [profileImage, setProfileImage] = useState("")
+
   const [refreshKey, setRefreshKey] = useState(0)
 
+
+  const params = useParams();
+  let currentUser = "";
+
+
+
   const getAbout = async () => {
-    const usr_query = FirestoreBackend.getUser(userDetails.id);
+    const usr_query = FirestoreBackend.getUser(currentUser);
     usr_query.then((query_snapshot) => {
       query_snapshot.forEach((user) => {
         setAbout(user.data().user_bio)
+        setName(user.data().display_name)
+        setProfileImage(user.data().profile_image)
       });
     });
+  }
+
+  const setupProfile = async () => {
+    currentUser = params.id
+    getAbout()
   }
 
   const setAboutText = (val) => {
@@ -48,7 +66,7 @@ function Profile() {
     setRefreshKey(refreshKey + 1)
   }
 
-  getAbout()
+  setupProfile()
 
   let quizzes = [{
       id: "1",
@@ -94,12 +112,13 @@ function Profile() {
   ];
   let user = {
     id: "1",
-    display_name: userDetails.user,
-    profile_picture: userDetails.imageUrl === "" ? "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" : userDetails.imageUrl,
+    display_name: name,
+    profile_picture: profileImage === "" ? "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" : profileImage,
     banner_image: "https://image.freepik.com/free-vector/abstract-dotted-banner-background_1035-18160.jpg",
     about: {
       content: "About Me",
       description: about,
+      allowed: userDetails.id === currentUser,
     },
     posts: posts,
     quizzes_created: quizzes,
@@ -112,7 +131,7 @@ function Profile() {
     followers: [],
   };
 
-  if (user.display_name === "") {
+  if (name === "") {
     return (
       <Background>
         <Spinner style={{marginTop:"100px"}} animation="border" role="status">

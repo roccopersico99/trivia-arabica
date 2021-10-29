@@ -9,14 +9,16 @@ import QuizPreview from "./components/QuizPreview";
 
 export default function App() {
 
+
   return (
     <div className="App">
         <Navigation />
         <Switch>
-          <Route path="/creator"  render={()=><QuizCreator/>}/>
-          <Route path="/preview"  render={()=><QuizPreview/>}/>
-          <Route path="/profile"  render={()=><Profile/>}/>
-          <Route path="/"         render={()=><Home/>}/>
+          <Route path="/creator"      exact component={QuizCreator}/>
+          <Route path="/preview"      exact component={QuizPreview}/>
+          <Route path="/profile"      exact component={Profile}/>
+          <Route path="/profile/:id"  exact component={Profile}/>
+          <Route path="/"             exact component={Home}/>
         </Switch>
     </div>
   );

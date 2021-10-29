@@ -24,13 +24,13 @@ export const updateData = (docRef, updatedData) => {
   updateDoc(docRef, updatedData);
 }
 
-export const createUser = (userName, userId) => {
+export const createUser = (userName, userId, imageURL) => {
   return db.collection('users')
     .add({
       display_name: userName,
       user_id: userId,
       medals: 0,
-      profile_image: "",
+      profile_image: imageURL,
       user_bio: "",
       featured_quiz: ""
     });

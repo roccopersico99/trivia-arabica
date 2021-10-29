@@ -24,7 +24,18 @@ export default function LoginLogout() {
     usr_query.then((query_snapshot) => {
       if (query_snapshot.empty) {
         //create account
-        FirestoreBackend.createUser(res.profileObj.name, '' + res.profileObj.googleId)
+        FirestoreBackend.createUser(res.profileObj.name, '' + res.profileObj.googleId, res.profileObj.imageUrl)
+      } else {
+        query_snapshot.forEach((user) => {
+          //double check profile image is up to date'
+          const userRef = user.ref;
+          const profileImg = user.data().profile_image;
+          if (profileImg !== res.profileObj.imageUrl) {
+            console.log("updating profile image on our end!")
+            const data = { profile_image: res.profileObj.imageUrl };
+            FirestoreBackend.updateData(userRef, data);
+          }
+        });
       }
     });
   };
