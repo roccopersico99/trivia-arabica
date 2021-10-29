@@ -8,8 +8,8 @@ function Posts(props) {
           <Card.Body>
             <Card.Title>{props.posts[0].title}</Card.Title>
             <Card.Text>{props.posts[0].content}</Card.Text>
-            <Button variant="primary">Like</Button>
-            <Button variant="secondar">Dislike</Button>
+            <Button variant="success">Like</Button>
+            <Button variant="danger">Dislike</Button>
           </Card.Body>
         </Card>
 
@@ -19,8 +19,8 @@ function Posts(props) {
           <Card.Body>
             <Card.Title>{props.posts[1].title}</Card.Title>
             <Card.Text>{props.posts[1].content}</Card.Text>
-            <Button variant="primary">Like</Button>
-            <Button variant="secondar">Dislike</Button>
+            <Button variant="success">Like</Button>
+            <Button variant="danger">Dislike</Button>
           </Card.Body>
         </Card>
       </ListGroup>

@@ -32,8 +32,8 @@ function ProfileHome(props) {
           <Card.Body>
             <Card.Title>{props.featured_post.title}</Card.Title>
             <Card.Text>{props.featured_post.content}</Card.Text>
-            <Button variant="primary">Like</Button>
-            <Button variant="secondar">Dislike</Button>
+            <Button variant="success">Like</Button>
+            <Button variant="danger">Dislike</Button>
           </Card.Body>
         </Card>
       </Row>
