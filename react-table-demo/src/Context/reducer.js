@@ -4,8 +4,8 @@ let user = localStorage.getItem('currentUser') ?
 let token = localStorage.getItem('currentUser') ?
   JSON.parse(localStorage.getItem('currentUser')).auth_token :
   '';
-let id = localStorage.getItem('currentID') ?
-  JSON.parse(localStorage.getItem('currentID')).current_id :
+let id = localStorage.getItem('currentUser') ?
+  JSON.parse(localStorage.getItem('currentUser')).id :
   '';
 
 export const initialState = {
@@ -17,17 +17,21 @@ export const initialState = {
 
 export const AuthReducer = (initialState, action) => {
   switch (action.type) {
+
     case 'REQUEST_LOGIN':
       return {
         ...initialState,
       };
+
     case 'LOGIN_SUCCESS':
+      console.log(action.payload.googleId)
       return {
         ...initialState,
         user: action.payload.name,
           token: action.payload.auth_token,
           id: action.payload.googleId,
       };
+
     case 'LOGOUT':
       return {
         ...initialState,

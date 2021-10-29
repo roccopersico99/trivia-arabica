@@ -9,6 +9,7 @@ const clientId = '232679417776-urc47i20q2haqg0on3cdvbb8k7g3chtl.apps.googleuserc
 export default function LoginLogout() {
 
   const dispatch = useAuthDispatch()
+
   const userDetails = useAuthState()
 
   const onLoginSuccess = (res) => {
@@ -17,6 +18,13 @@ export default function LoginLogout() {
 
     refreshTokenSetup(res);
 
+    const usr_query = FirestoreBackend.getUser('' + res.profileObj.googleId);
+    usr_query.then((query_snapshot) => {
+      if (query_snapshot.empty) {
+        //create account
+        FirestoreBackend.createUser(res.profileObj.name, '' + res.profileObj.googleId)
+      }
+    });
   };
 
   const onLoginFailure = (res) => {
