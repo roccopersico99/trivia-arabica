@@ -1,6 +1,8 @@
 import "../App.css";
 import Background from "./Background.js";
 import { useAuthState } from '../Context/index'
+import * as FirestoreBackend from '../services/Firestore.js'
+import { useState } from 'react'
 
 import {
   Image,
@@ -19,6 +21,19 @@ import About from "./profile-components/About";
 
 function Profile() {
   const userDetails = useAuthState()
+  const [about, setAbout] = useState("");
+
+
+  const getAbout = async () => {
+    const usr_query = FirestoreBackend.getUser(userDetails.id);
+    usr_query.then((query_snapshot) => {
+      query_snapshot.forEach((user) => {
+        setAbout(user.data().user_bio)
+      });
+    });
+  }
+
+  getAbout()
 
   let quizzes = [{
       id: "1",
@@ -69,12 +84,7 @@ function Profile() {
     banner_image: "https://image.freepik.com/free-vector/abstract-dotted-banner-background_1035-18160.jpg",
     about: {
       content: "About Me",
-      links: [
-        { title: "Github", url: "http://github.com" },
-        { title: "Facebook", url: "http://facebook.com" },
-        { title: "Twitter", url: "http://twitter.com" },
-        { title: "Stony Brook", url: "http://stonybrook.edu" },
-      ],
+      description: about,
     },
     posts: posts,
     quizzes_created: quizzes,

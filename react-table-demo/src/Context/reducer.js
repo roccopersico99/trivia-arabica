@@ -24,7 +24,6 @@ export const AuthReducer = (initialState, action) => {
       };
 
     case 'LOGIN_SUCCESS':
-      console.log(action.payload.googleId)
       return {
         ...initialState,
         user: action.payload.name,

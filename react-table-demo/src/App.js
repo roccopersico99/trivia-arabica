@@ -15,9 +15,7 @@ export default function App() {
     <div className="App">
         <Navigation />
         <Switch>
-          { userDetails.user!=="" &&
-            <Route path="/profile"  render={()=><Profile/>}/>
-          }
+          <Route path="/profile"  render={()=><Profile/>}/>
           <Route path="/"         render={()=><Home/>}/>
         </Switch>
     </div>

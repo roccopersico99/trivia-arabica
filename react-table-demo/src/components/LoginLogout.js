@@ -3,13 +3,15 @@ import { GoogleLogin, GoogleLogout } from 'react-google-login'
 import { refreshTokenSetup } from '../services/refreshToken';
 import * as FirestoreBackend from '../services/Firestore.js'
 import { useAuthState, useAuthDispatch } from '../Context/index'
+import { useHistory } from 'react-router-dom'
 
 const clientId = '232679417776-urc47i20q2haqg0on3cdvbb8k7g3chtl.apps.googleusercontent.com';
 
 export default function LoginLogout() {
 
-  const dispatch = useAuthDispatch()
+  const history = useHistory();
 
+  const dispatch = useAuthDispatch()
   const userDetails = useAuthState()
 
   const onLoginSuccess = (res) => {
@@ -35,6 +37,8 @@ export default function LoginLogout() {
   const onLogoutSuccess = (res) => {
     console.log("Logged out of: ", res);
     dispatch({ type: 'LOGOUT' });
+
+    history.push("/");
   };
 
   if (userDetails.user === "") {
