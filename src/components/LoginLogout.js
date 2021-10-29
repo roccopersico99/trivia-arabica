@@ -43,7 +43,7 @@ export default function LoginLogout() {
 
   if (userDetails.user === "") {
     return (
-      <div>
+      <div style={{margin:"auto", marginRight:"20px"}}>
           <GoogleLogin
             clientId={clientId}
             buttonText="Login"
@@ -57,13 +57,13 @@ export default function LoginLogout() {
     );
   } else {
     return (
-      <div>
+        <div style={{margin:"auto", marginRight:"20px"}}>
         <GoogleLogout
           clientId={clientId}
           buttonText="Logout"
           onLogoutSuccess={onLogoutSuccess}
-        />
-      </div>
+        /> <
+      /div>
     );
   }
 }
