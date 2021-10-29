@@ -13,6 +13,7 @@ import {
   Stack,
   Tab,
   Tabs,
+  Spinner,
 } from "react-bootstrap";
 import Home from "./profile-components/ProfileHome";
 import Quizzes from "./profile-components/Quizzes";
@@ -22,7 +23,7 @@ import About from "./profile-components/About";
 function Profile() {
   const userDetails = useAuthState()
   const [about, setAbout] = useState("");
-
+  const [refreshKey, setRefreshKey] = useState(0)
 
   const getAbout = async () => {
     const usr_query = FirestoreBackend.getUser(userDetails.id);
@@ -43,7 +44,7 @@ function Profile() {
         FirestoreBackend.updateData(userRef, data);
       });
     });
-    setAbout(val)
+    setRefreshKey(refreshKey + 1)
   }
 
   getAbout()
@@ -92,7 +93,7 @@ function Profile() {
   ];
   let user = {
     id: "1",
-    display_name: userDetails.user === "" ? "John Cena" : userDetails.user,
+    display_name: userDetails.user,
     profile_picture: userDetails.imageUrl === "" ? "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" : userDetails.imageUrl,
     banner_image: "https://image.freepik.com/free-vector/abstract-dotted-banner-background_1035-18160.jpg",
     about: {
@@ -110,9 +111,15 @@ function Profile() {
     followers: [],
   };
 
-  console.log(userDetails);
-
-
+  if (user.display_name === "") {
+    return (
+      <Background>
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </Spinner>
+      </Background>
+    )
+  }
   return (
     <Background>
       <Image
