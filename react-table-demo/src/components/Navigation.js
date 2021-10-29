@@ -28,7 +28,7 @@ function Navigation() {
           </Nav>
           <Nav className="ml-auto">
             <LoginLogout />
-            <Navbar.Brand href='/profile'>
+            <Navbar.Brand href={userDetails.user==="" ? '/' : '/profile'}>
               <img
                 src={userIcon}
                 width = "50"

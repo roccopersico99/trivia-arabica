@@ -110,7 +110,7 @@ function Profile() {
     followers: [],
   };
 
-
+  console.log(userDetails);
 
 
   return (
