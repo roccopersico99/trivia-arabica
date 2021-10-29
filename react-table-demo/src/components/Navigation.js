@@ -24,7 +24,7 @@ function Navigation() {
         <Navbar.Collapse id='responsive-navbar-nav'>
           <Nav>
             <Nav.Link href='/'>Home</Nav.Link>
-            <Nav.Link href={userDetails.user==="" ? '/' : '/profile'}>Profile</Nav.Link>
+            <Nav.Link href={userDetails.user==="" ? '/' : '/profile/'+userDetails.id}>Profile</Nav.Link>
           </Nav>
           <Nav className="ml-auto">
             <LoginLogout />
