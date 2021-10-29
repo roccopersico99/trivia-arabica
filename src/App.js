@@ -6,6 +6,7 @@ import Profile from './components/Profile'
 import Navigation from './components/Navigation.js'
 import QuizCreator from './components/QuizCreator.js'
 import QuizPreview from "./components/QuizPreview";
+import QuizPlay from "./components/QuizPlay";
 
 export default function App() {
 
@@ -14,6 +15,7 @@ export default function App() {
     <div className="App">
         <Navigation />
         <Switch>
+          <Route path="/play"         exact component={QuizPlay}/>
           <Route path="/creator"      exact component={QuizCreator}/>
           <Route path="/preview"      exact component={QuizPreview}/>
           <Route path="/profile"      exact component={Profile}/>
