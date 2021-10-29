@@ -5,7 +5,7 @@ import * as FirestoreBackend from '../services/Firestore.js'
 import { useAuthState, useAuthDispatch } from '../Context/index'
 import { useHistory } from 'react-router-dom'
 
-const clientId = '232679417776-urc47i20q2haqg0on3cdvbb8k7g3chtl.apps.googleusercontent.com';
+const clientId = '232679417776-evek906rd0viu2j08vqsciphcrjhttir.apps.googleusercontent.com';
 
 export default function LoginLogout() {
 
