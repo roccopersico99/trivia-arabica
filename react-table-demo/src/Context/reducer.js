@@ -7,11 +7,15 @@ let token = localStorage.getItem('currentUser') ?
 let id = localStorage.getItem('currentUser') ?
   JSON.parse(localStorage.getItem('currentUser')).id :
   '';
+let imageUrl = localStorage.getItem('currentUser') ?
+  JSON.parse(localStorage.getItem('currentUser')).imageUrl :
+  '';
 
 export const initialState = {
   user: '' || user,
   token: '' || token,
   id: '' || id,
+  imageUrl: '' || imageUrl,
   errorMessage: null,
 };
 
@@ -29,6 +33,7 @@ export const AuthReducer = (initialState, action) => {
         user: action.payload.name,
           token: action.payload.auth_token,
           id: action.payload.googleId,
+          imageUrl: action.payload.imageUrl,
       };
 
     case 'LOGOUT':
@@ -37,6 +42,7 @@ export const AuthReducer = (initialState, action) => {
         user: '',
           token: '',
           id: '',
+          imageUrl: '',
       };
 
     case 'LOGIN_ERROR':
