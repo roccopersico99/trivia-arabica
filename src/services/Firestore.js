@@ -2,8 +2,6 @@ import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
 import { collection, query, where, getDocs, limit, updateDoc } from "firebase/firestore";
 
-
-
 import "firebase/firestore";
 
 const firebaseConfig = {
@@ -19,6 +17,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const userRef = collection(db, 'users')
+//const quizRef = collection(db, 'quizzes')
 
 export const updateData = (docRef, updatedData) => {
   updateDoc(docRef, updatedData);
@@ -40,4 +39,36 @@ export const createUser = (userName, userId, imageURL) => {
 export const getUser = (userId, observer) => {
   const q = query(userRef, where("user_id", "==", userId), limit(1));
   return getDocs(q)
+};
+
+export const createQuiz = (userId, quizTitle) => {
+  return db.collection('quizzes')
+    .add({
+      quiz_creator: userId,
+      quiz_title: quizTitle,
+      quiz_image: "",
+      quiz_desc: "",
+      quiz_ratings: {},
+      quiz_settings: {
+        explicit: false,
+        question_time_seconds: 60,
+        total_time_minutes: 10 
+      },
+      publish_state: false,
+      publish_date: null,
+    });
+};
+
+export const getQuiz = (QuizPath) => {
+  return db.collection('quizzes').doc(QuizPath).get();
+};
+
+export const setQuizQuestion = (quizPath, questionNum, imageURL, questionTitle, choices) => {
+  return db.collection('quizzes').doc(quizPath).collection('quiz_questions').doc(questionNum)
+  .set({
+      question_title: questionTitle,
+      question_image: imageURL,
+      quiz_desc: "",
+      question_choices: choices
+  });
 };
