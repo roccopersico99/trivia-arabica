@@ -68,7 +68,6 @@ export const setQuizQuestion = (quizPath, questionNum, imageURL, questionTitle, 
   .set({
       question_title: questionTitle,
       question_image: imageURL,
-      quiz_desc: "",
       question_choices: choices
   });
 };

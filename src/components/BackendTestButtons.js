@@ -1,9 +1,50 @@
 import '../App.css';
 import React from 'react'
+import Container from 'react-bootstrap/Container';
+import Form from 'react-bootstrap/Form';
+import { Button } from 'react-bootstrap';
 import * as FirestoreBackend from '../services/Firestore.js'
 
 function BackendTestButtons() {
 
+    const onSubmit = (e) => {
+        e.preventDefault();
+        const ele = e.target.elements;
+        FirestoreBackend.setQuizQuestion("samplequiz", ele.questionNum.value, "", ele.formName.value, 
+        {
+          choice1: {
+            correct: ele.choice1[0].checked,
+            text: ele.choice1[1].value,
+            times_picked: 0
+          },
+          choice2: {
+            correct: ele.choice2[0].checked,
+            text: ele.choice2[1].value,
+            times_picked: 0
+          },
+          choice3: {
+            correct: ele.choice3[0].checked,
+            text: ele.choice3[1].value,
+            times_picked: 0
+          },
+          choice4: {
+            correct: ele.choice4[0].checked,
+            text: ele.choice4[1].value,
+            times_picked: 0
+          }
+        });
+        ele.questionNum.value = "";
+        ele.formName.value = "";
+        ele.choice1[0].checked = false;
+        ele.choice1[1].value = "";
+        ele.choice2[0].checked = false;
+        ele.choice2[1].value = "";
+        ele.choice3[0].checked = false;
+        ele.choice3[1].value = "";
+        ele.choice4[0].checked = false;
+        ele.choice4[1].value = "";
+      };
+    
   return (
     <div>
       <button onClick={()=>{
@@ -44,34 +85,10 @@ function BackendTestButtons() {
       </button>
       <br/>
       <button onClick={()=>{
-        FirestoreBackend.setQuizQuestion("samplequiz", '2', "", "this is a question", 
-        {
-          choice1: {
-            text: "Lorem ipsum sdfgt amet. 1",
-            times_picked: 0
-          },
-          choice2: {
-            text: "Lorem ipsusdfgr sit amet. 2",
-            times_picked: 0
-          },
-          choice3: {
-            text: "Lorem ipsum dolor sit amet. 3",
-            times_picked: 0
-          },
-          choice4: {
-            text: "Lorem ipsum dolor sit amet. 4",
-            times_picked: 0
-          }
-        });
-      }}>
-        Test add question (path samplequiz, num 1, url "")
-      </button>
-      <br/>
-      <button onClick={()=>{
         const quiz_query = FirestoreBackend.getQuiz('samplequiz');
         quiz_query.then((query_snapshot)=>{
             const quizref = query_snapshot.ref;
-            if(query_snapshot.data().quiz_title == 'Hello World'){
+            if(query_snapshot.data().quiz_title === 'Hello World'){
                 FirestoreBackend.updateData(quizref, {quiz_title: 'Goodbye World'});
             }
             else{
@@ -83,7 +100,38 @@ function BackendTestButtons() {
         Test update quiz data (toggle samplequiz title between Hello World and Goodbye World)
       </button>
       <br/>
+      <Container>
+        <Form onSubmit={(e) => onSubmit(e)}>
+            <Form.Group controlId="formName">
+                <Form.Label>Add Question to samplequiz</Form.Label>
+                <Form.Control type="text" placeholder="Question Text" />
+            </Form.Group>
+            <Form.Group controlId="questionNum">
+                <Form.Control type="text" placeholder="Question #" />
+            </Form.Group>
+            <Form.Group controlId="choice1">
+                <Form.Check aria-label="correct1" />
+                <Form.Control type="text" placeholder="Choice 1" />
+            </Form.Group>
+            <Form.Group controlId="choice2">
+                <Form.Check aria-label="correct2" />
+                <Form.Control type="text" placeholder="Choice 2" />
+            </Form.Group>
+            <Form.Group controlId="choice3">
+                <Form.Check aria-label="correct3" />
+                <Form.Control type="text" placeholder="Choice 3" />
+            </Form.Group>
+            <Form.Group controlId="choice4">
+                <Form.Check aria-label="correct4" />
+                <Form.Control type="text" placeholder="Choice 4" />
+            </Form.Group>
+            <Button type="submit">
+                Submit
+            </Button>
+        </Form>
+      </Container>
       </div>
+      
       
   );
 }
