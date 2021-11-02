@@ -130,6 +130,11 @@ function BackendTestButtons() {
             </Button>
         </Form>
       </Container>
+      <br/>
+      {/* <button onClick={()=>{
+        FirestoreBackend.deleteQuestions('cyr926wFrJR8lNvV136b');
+        }}>Test deletequiz questions
+      </button> */}
       </div>
       
       

@@ -59,8 +59,8 @@ export const createQuiz = (userId, quizTitle) => {
     });
 };
 
-export const getQuiz = (QuizPath) => {
-  return db.collection('quizzes').doc(QuizPath).get();
+export const getQuiz = (quizPath) => {
+  return db.collection('quizzes').doc(quizPath).get();
 };
 
 export const setQuizQuestion = (quizPath, questionNum, imageURL, questionTitle, choices) => {
@@ -71,3 +71,14 @@ export const setQuizQuestion = (quizPath, questionNum, imageURL, questionTitle, 
       question_choices: choices
   });
 };
+
+export const deleteQuestions = (quizPath) => {
+  const collectionref = db.collection('quizzes').doc(quizPath).collection('quiz_questions').get();
+  const batch = db.batch();
+  collectionref.then((query_snapshot)=>{
+    query_snapshot.docs.forEach((question)=>{
+      batch.delete(question.ref);
+    });
+    batch.commit();
+  });
+}
