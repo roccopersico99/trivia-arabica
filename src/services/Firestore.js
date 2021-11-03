@@ -52,7 +52,7 @@ export const createQuiz = (userId, quizTitle) => {
       quiz_settings: {
         explicit: false,
         question_time_seconds: 60,
-        total_time_minutes: 10 
+        total_time_minutes: 10
       },
       publish_state: false,
       publish_date: null,
@@ -63,20 +63,25 @@ export const getQuiz = (quizPath) => {
   return db.collection('quizzes').doc(quizPath).get();
 };
 
+export const getQuizQuestions = async (quizPath) => {
+  const docSnap = await getDocs(collection(db, "quizzes/" + quizPath + "/quiz_questions"));
+  return docSnap;
+}
+
 export const setQuizQuestion = (quizPath, questionNum, imageURL, questionTitle, choices) => {
   return db.collection('quizzes').doc(quizPath).collection('quiz_questions').doc(questionNum)
-  .set({
+    .set({
       question_title: questionTitle,
       question_image: imageURL,
       question_choices: choices
-  });
+    });
 };
 
 export const deleteQuestions = (quizPath) => {
   const collectionref = db.collection('quizzes').doc(quizPath).collection('quiz_questions').get();
   const batch = db.batch();
-  collectionref.then((query_snapshot)=>{
-    query_snapshot.docs.forEach((question)=>{
+  collectionref.then((query_snapshot) => {
+    query_snapshot.docs.forEach((question) => {
       batch.delete(question.ref);
     });
     batch.commit();
