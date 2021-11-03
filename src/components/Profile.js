@@ -66,7 +66,7 @@ function Profile() {
     setRefreshKey(refreshKey + 1)
   }
 
-  setupProfile()
+
 
   let quizzes = [{
       id: "1",
@@ -132,6 +132,7 @@ function Profile() {
   };
 
   if (name === "") {
+    setupProfile()
     return (
       <Background>
         <Spinner style={{marginTop:"100px"}} animation="border" role="status">
