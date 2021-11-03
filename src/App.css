@@ -64,3 +64,9 @@ background: linear-gradient(90deg, rgba(0,167,225,1) 0%, rgba(0,126,167,1) 5%, r
   height: 100vh;
   margin: auto;
 }
+
+.list-group-item {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}

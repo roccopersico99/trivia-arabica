@@ -1,6 +1,6 @@
 import '../App.css';
 import React, { useState } from 'react'
-import { Container, Row, Col, Button, ListGroup, Stack, Form } from 'react-bootstrap';
+import { Container, Button, ListGroup, Stack, Form } from 'react-bootstrap';
 import Background from './Background.js'
 
 function QuizCreator() {
@@ -38,24 +38,24 @@ function QuizCreator() {
 
     return (
         <Background>
-            Welcome to the Quiz Creator!
             <Container>
+                <h1>Welcome to the Quiz Creator!</h1>
+                <br></br>
                 <Stack direction="horizontal">
-                    <Stack gap={3}>
-                        <h3>Left Stack</h3>
-                        <Stack direction="horizontal" gap={5}>
+                    <Stack style={{width:"40%"}}>
+                        <Stack direction="horizontal" gap={4} style={{margin:"auto"}}>
                             <Button variant="outline-success" onClick={handleAddQuestion}>Add Question</Button>
                             <Button variant="outline-danger" onClick={handleRemoveQuestion}>Remove Question</Button>
                         </Stack>
-                        <ListGroup as="ol" numbered className="w-75">
-                                <ListGroup.Item as="li" active={isActive(0)} action onClick={() => setActiveQuestion(0)}>How many iron ingots are require...</ListGroup.Item>
-                                <ListGroup.Item as="li" active={isActive(1)} action onClick={() => setActiveQuestion(1)}>How much coal is needed to smelt...</ListGroup.Item>
-                                <ListGroup.Item as="li" active={isActive(2)} action onClick={() => setActiveQuestion(2)}>On what year did Minecraft first of...</ListGroup.Item>
-                                <ListGroup.Item as="li" active={isActive(3)} action onClick={() => setActiveQuestion(3)}>Which food item restores the mos...</ListGroup.Item>
+                        <ListGroup as="ol" numbered>
+                                <ListGroup.Item className="list-group-item" as="li" active={isActive(0)} action onClick={() => setActiveQuestion(0)}>How many iron ingots are required to craft a full set of armor?</ListGroup.Item>
+                                <ListGroup.Item className="list-group-item" as="li" active={isActive(1)} action onClick={() => setActiveQuestion(1)}>How much coal is needed to smelt a full stack of iron ingots?</ListGroup.Item>
+                                <ListGroup.Item className="list-group-item" as="li" active={isActive(2)} action onClick={() => setActiveQuestion(2)}>On what year did Minecraft first officially release?</ListGroup.Item>
+                                <ListGroup.Item className="list-group-item" as="li" active={isActive(3)} action onClick={() => setActiveQuestion(3)}>Which food item restores the most hunger points?</ListGroup.Item>
                         </ListGroup>
                     </Stack>
-                    <Stack gap={3}>
-                        <h3>Right Stack</h3>
+                    <Stack style={{width:"2%"}}></Stack>
+                    <Stack gap={3} style={{width:"58%"}}>
                         <Form onSubmit={(e) => onSubmit(e)}>
                             <Form.Group controlId="formName">
                                 <Form.Control type="text" placeholder="Question Text" />
