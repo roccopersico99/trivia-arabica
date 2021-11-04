@@ -1,6 +1,6 @@
 import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
-import { collection, query, where, getDocs, limit, updateDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, limit, updateDoc, doc, setDoc } from "firebase/firestore";
 
 import "firebase/firestore";
 
@@ -24,15 +24,14 @@ export const updateData = (docRef, updatedData) => {
 }
 
 export const createUser = (userName, userId, imageURL) => {
-  return db.collection('users')
-    .add({
-      display_name: userName,
-      user_id: userId,
-      medals: 0,
-      profile_image: imageURL,
-      user_bio: "",
-      featured_quiz: ""
-    });
+  return setDoc(doc(db, "users", userId), {
+    display_name: userName,
+    user_id: userId,
+    medals: 0,
+    profile_image: imageURL,
+    user_bio: "",
+    featured_quiz: ""
+  });
 };
 
 //this returns a promise object
@@ -59,12 +58,26 @@ export const createQuiz = (userId, quizTitle) => {
     });
 };
 
-export const getQuiz = (quizPath) => {
-  return db.collection('quizzes').doc(quizPath).get();
+export const getQuiz = async (quizPath) => {
+  const docSnap = await db.collection('quizzes').doc(quizPath).get();
+  return docSnap
 };
+
+export const getUserQuizzes = async (userid) => {
+  const docSnap = await db.collection('users').doc(userid).collection("userquizzes").get();
+  return docSnap;
+}
 
 export const getQuizQuestions = async (quizPath) => {
   const docSnap = await db.collection('quizzes').doc(quizPath).collection('quiz_questions').orderBy('number').get();
+  return docSnap;
+}
+
+export const assignQuizToUser = async (userid, quizID, quizRef) => {
+  const docSnap = await db.collection('users').doc(userid).collection("userquizzes").doc(quizID).set({
+    quizRef: quizRef
+  });
+  console.log(docSnap)
   return docSnap;
 }
 

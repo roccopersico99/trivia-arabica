@@ -47,16 +47,16 @@ function BackendTestButtons() {
 
   return (
     <div>
-      <button onClick={()=>{
-        const usr_query = FirestoreBackend.getUser('1');
-        usr_query.then((query_snapshot)=>{
-          query_snapshot.forEach((user) => {
-            console.log(user.data().display_name);
-            console.log(user.data().user_bio);
-            console.log(user.data().medals);
-            console.log(user.ref.path);
-          });
-        });
+      <button onClick={async ()=>{
+        const ref = await FirestoreBackend.getQuiz("samplequiz")
+        console.log(ref)
+        FirestoreBackend.assignQuizToUser("115046202963837970799", "15", ref.ref)
+        // const res = await FirestoreBackend.getUserQuizzes("115046202963837970799")
+        // console.log(res)
+        // res.docs.forEach((doc) => {
+        //   console.log(doc.data())
+        // });
+
         }}>Test get user where ID=1
       </button>
       <br/>
