@@ -103,8 +103,6 @@ function QuizPlay() {
         else
             console.log("reached last question!")
     }
-    setSelectedChoice(-1);
-  }
 
     if (quizQuestions.length === 0) {
         setupPlay()
