@@ -10,21 +10,9 @@ function Quizzes(props) {
         */}
 
       <Row>
-        <QuizCard
-          title={props.quizzes[0].title}
-          image={props.quizzes[0].image}
-          description={props.quizzes[0].description}
-        ></QuizCard>
-        <QuizCard
-          title={props.quizzes[1].title}
-          image={props.quizzes[1].image}
-          description={props.quizzes[1].description}
-        ></QuizCard>
-        <QuizCard
-          title={props.quizzes[2].title}
-          image={props.quizzes[2].image}
-          description={props.quizzes[2].description}
-        ></QuizCard>
+        <QuizCard quiz={props.quizzes[0]}></QuizCard>
+        <QuizCard quiz={props.quizzes[1]}></QuizCard>
+        <QuizCard quiz={props.quizzes[2]}></QuizCard>
       </Row>
     </Container>
   );

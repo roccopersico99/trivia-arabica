@@ -34,7 +34,8 @@ function Profile() {
   const params = useParams();
   let currentUser = "";
 
-  const getAbout = async () => {
+  const setupProfile = async () => {
+    currentUser = params.id;
     const usr_query = FirestoreBackend.getUser(currentUser);
     usr_query.then((query_snapshot) => {
       query_snapshot.forEach((user) => {
@@ -43,11 +44,6 @@ function Profile() {
         setProfileImage(user.data().profile_image);
       });
     });
-  };
-
-  const setupProfile = async () => {
-    currentUser = params.id;
-    getAbout();
   };
 
   const setAboutText = (val) => {
