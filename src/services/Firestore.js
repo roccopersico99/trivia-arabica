@@ -78,6 +78,11 @@ export const setQuizQuestion = (quizPath, questionNum, imageURL, questionTitle, 
     });
 };
 
+export const deleteQuestion = async (quizPath, questionNum) => {
+  const res = await db.collection('quizzes').doc(quizPath).collection('quiz_questions').doc(questionNum).delete();
+  return res
+}
+
 export const deleteQuestions = (quizPath) => {
   const collectionref = db.collection('quizzes').doc(quizPath).collection('quiz_questions').get();
   const batch = db.batch();

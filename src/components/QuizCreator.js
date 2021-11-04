@@ -19,13 +19,14 @@ function QuizCreator() {
 
   const [questionNames, setQuestionNames] = useState([]); //non-updating array to hold question names as to not dynamically update them before saving
 
+  const [max, setMax] = useState(0) //keep track of max doc id
 
   const setupQuestionNames = (quests) => { //specifically grabs question names from the quizQuestions array and updates them.
     let names = Array.from(quests, x => x.question_title)
     setQuestionNames(names)
   }
 
-  const getQuiz = async () => {
+  const getQuiz = async (removed) => {
     if (loading) {
       return;
     }
@@ -39,10 +40,22 @@ function QuizCreator() {
     let quizQuests = [];
     question_query.docs.forEach((doc) => {
       quizQuests.push(doc.data());
+      console.log(doc.data())
+      console.log(activeQuestion)
+      console.log(quizQuests.length)
+      if (max < parseInt(doc.id)) {
+        setMax(parseInt(doc.id) + 1)
+      }
+
     });
     setQuizQuestions(quizQuests);
     setupQuestionNames(quizQuests);
-    let qz = quizQuests[activeQuestion]
+    let qz;
+    if (removed) {
+      qz = quizQuests[activeQuestion - 1]
+    } else {
+      qz = quizQuests[activeQuestion]
+    }
     let chs = [qz.question_choices.choice1.text, qz.question_choices.choice2.text, qz.question_choices.choice3.text, qz.question_choices.choice4.text]
     setChoices(chs)
     let ans = [qz.question_choices.choice1.correct, qz.question_choices.choice2.correct, qz.question_choices.choice3.correct, qz.question_choices.choice4.correct]
@@ -50,8 +63,8 @@ function QuizCreator() {
     setLoading(false)
   }
 
-  const setupCreator = async () => {
-    getQuiz();
+  const setupCreator = async (removed) => {
+    getQuiz(removed);
   }
 
   function setActive(index) {
@@ -74,6 +87,7 @@ function QuizCreator() {
     let qz = quizQuestions
     qz.push({
       question_title: "",
+      number: max,
       question_choices: {
         choice1: {
           text: "",
@@ -93,14 +107,18 @@ function QuizCreator() {
         }
       }
     })
+    setMax(max + 1)
     setQuizQuestions(qz)
     setupQuestionNames(qz)
     setRefreshKey(refreshKey + 1)
   }
 
   function handleRemoveQuestion() {
-    console.log("user clicked remove question...")
-
+    console.log("user clicked remove question..." + quizQuestions[activeQuestion].number)
+    FirestoreBackend.deleteQuestion('samplequiz', "" + quizQuestions[activeQuestion].number)
+    setActiveQuestion(activeQuestion - 1)
+    setupCreator(true)
+    setRefreshKey(refreshKey + 1)
   }
 
   const onChangeQuestionText = (event) => {
@@ -170,12 +188,12 @@ function QuizCreator() {
       }
     }
 
-    FirestoreBackend.setQuizQuestion("samplequiz", "" + (activeQuestion + 1), "", quizQuestions[activeQuestion].question_title, chs)
-    setupCreator()
+    FirestoreBackend.setQuizQuestion("samplequiz", "" + (quizQuestions[activeQuestion].number), "", quizQuestions[activeQuestion].question_title, chs)
+    setupCreator(false)
   }
 
   if (quizQuestions.length === 0) {
-    setupCreator()
+    setupCreator(false)
     return (
       <Background>
           <Spinner style={{marginTop:"100px"}} animation="border" role="status">
