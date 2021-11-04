@@ -76,25 +76,25 @@ function QuizCreator() {
 
   function onChangeQuestionChoice1(event) {
     setChoices([
-      [event.target.value], choices[1], choices[2], choices[3]
+      event.target.value, choices[1], choices[2], choices[3]
     ])
   }
 
   function onChangeQuestionChoice2(event) {
     setChoices([choices[0],
-      [event.target.value], choices[2], choices[3]
+      event.target.value, choices[2], choices[3]
     ])
   }
 
   function onChangeQuestionChoice3(event) {
     setChoices([choices[0], choices[1],
-      [event.target.value], choices[3]
+      event.target.value, choices[3]
     ])
   }
 
   function onChangeQuestionChoice4(event) {
     setChoices([choices[0], choices[1], choices[2],
-      [event.target.value]
+      event.target.value
     ])
   }
 
@@ -114,20 +114,30 @@ function QuizCreator() {
     setAnswers([false, false, false, true])
   }
 
-  const onSubmit = (e) => {
-    e.preventDefault();
-    const ele = e.target.elements;
-    ele.questionNum.value = "";
-    ele.formName.value = "";
-    ele.choice1[0].checked = false;
-    ele.choice1[1].value = "";
-    ele.choice2[0].checked = false;
-    ele.choice2[1].value = "";
-    ele.choice3[0].checked = false;
-    ele.choice3[1].value = "";
-    ele.choice4[0].checked = false;
-    ele.choice4[1].value = "";
-  };
+  function saveClicked() {
+    //re-build question from choices state, answers state, and questionText state
+    let chs = {
+      choice1: {
+        correct: answers[0],
+        text: choices[0],
+      },
+      choice2: {
+        correct: answers[1],
+        text: choices[1],
+      },
+      choice3: {
+        correct: answers[2],
+        text: choices[2],
+      },
+      choice4: {
+        correct: answers[3],
+        text: choices[3],
+      }
+    }
+
+    FirestoreBackend.setQuizQuestion("samplequiz", "" + (activeQuestion + 1), "", questionText, chs)
+  }
+
   if (quizQuestions.length === 0) {
     setupCreator()
     return (
@@ -188,35 +198,8 @@ function QuizCreator() {
                           <InputGroup.Radio name="answer" onChange={onChangeAnswer4} checked={answers[3]} aria-label="Text input with radio button"/>
                         </InputGroup>
                         <div className="mb-2">
-                          <Button>Save Changes</Button>
+                          <Button onClick={saveClicked}>Save Changes</Button>
                         </div>
-
-                      {/*
-                        <Form onSubmit={(e) => onSubmit(e)}>
-                            <Form.Group controlId="formName">
-                                <Form.Control type="text" onChange={onChangeQuestionText} value={questionText} placeholder="Question Text" />
-                            </Form.Group>
-                            <Form.Group controlId="choice1">
-                                <Form.Check type="radio" aria-label="correct1" value={correctness[0]}/>
-                                <Form.Control type="text" onChange={onChangeQuestionChoice1} value={choices[0]} placeholder="Choice 1" />
-                            </Form.Group>
-                            <Form.Group controlId="choice2">
-                                <Form.Check type="radio" aria-label="correct2" value={correctness[1]}/>
-                                <Form.Control type="text" onChange={onChangeQuestionChoice2} value={choices[1]} placeholder="Choice 2" />
-                            </Form.Group>
-                            <Form.Group controlId="choice3">
-                                <Form.Check type="radio" aria-label="correct3" value={correctness[2]}/>
-                                <Form.Control type="text" onChange={onChangeQuestionChoice3} value={choices[2]} placeholder="Choice 3" />
-                            </Form.Group>
-                            <Form.Group controlId="choice4">
-                                <Form.Check type="radio" aria-label="correct4" value={correctness[3]}/>
-                                <Form.Control type="text" onChange={onChangeQuestionChoice4} value={choices[3]} placeholder="Choice 4" />
-                            </Form.Group>
-                            <Button type="submit">
-                                Save
-                            </Button>
-                        </Form>
-                      */}
                     </Stack>
                 </Stack>
             </Container>
