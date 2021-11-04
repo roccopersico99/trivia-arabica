@@ -68,7 +68,14 @@ function Profile() {
         "https://upload.wikimedia.org/wikipedia/commons/4/40/Heyward_lines_into_double_play_%2828356212176%29.jpg",
       creator: "1",
       platform: "1",
-      questions: [{ title: "First Question", choices: [1, 2, 3, 4] }],
+      questions: [
+        {
+          title: "First Question",
+          choices: [1, 2, 3, 4],
+          image:
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/BarryLamar_Bonds.jpg/220px-BarryLamar_Bonds.jpg",
+        },
+      ],
       ratings: [],
     },
     {

@@ -1,6 +1,5 @@
 import "../App.css";
 import React from "react";
-import { useLocation } from "react-router-dom";
 import Background from "./Background.js";
 import {
   Container,
@@ -10,17 +9,24 @@ import {
   ProgressBar,
   Spinner,
 } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 
 import { useAuthState } from "../Context/index";
 
 function QuizPreview(props) {
+  const history = useHistory();
   const userDetails = useAuthState();
-  const location = useLocation();
-  const quiz = location.state;
+  const quiz = history.location.state;
 
   const likes = 85;
   const dislikes = 15;
+
+  const handleOnClick = (event) => {
+    history.push({
+      pathname: "/play/" + quiz?.id,
+      state: quiz,
+    });
+  };
 
   if (userDetails.user === "") {
     return (
@@ -74,7 +80,11 @@ function QuizPreview(props) {
               />
             </ProgressBar>
             <Stack direction="horizontal" gap={3}>
-              <Link to="/play" className="btn btn-success w-50 p-3">
+              <Link
+                to={{ pathname: "/play/" + quiz?.id, state: quiz }}
+                onClick={handleOnClick}
+                className="btn btn-success w-50 p-3"
+              >
                 Play!
               </Link>
               <Button variant="danger" className="w-50 p-3">

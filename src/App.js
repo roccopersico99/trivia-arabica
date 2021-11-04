@@ -13,7 +13,7 @@ export default function App() {
     <div className="App">
       <Navigation />
       <Switch>
-        <Route path="/play" exact component={QuizPlay} />
+        <Route path="/play/:id" exact component={QuizPlay} />
         <Route path="/creator" exact component={QuizCreator} />
         <Route path="/preview/:id" exact component={QuizPreview} />
         <Route path="/profile/:id" exact component={Profile} />

@@ -8,7 +8,7 @@ function QuizCard(props) {
   const handleOnClick = (event) => {
     history.push({
       pathname: "/preview/" + props.quiz?.id,
-      quiz: props.quiz,
+      state: props.quiz,
     });
   };
 
