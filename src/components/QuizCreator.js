@@ -1,6 +1,6 @@
 import '../App.css';
 import React, { useState } from 'react'
-import { Container, Button, ListGroup, Stack, Form, Spinner } from 'react-bootstrap';
+import { Container, Button, ListGroup, Stack, Spinner, InputGroup, FormControl } from 'react-bootstrap';
 import * as FirestoreBackend from '../services/Firestore.js'
 import Background from './Background.js'
 
@@ -10,9 +10,11 @@ function QuizCreator() {
   const [quizTitle, setQuizTitle] = useState("");
   const [quizQuestions, setQuizQuestions] = useState([]);
 
-  const [loaded, setLoaded] = useState(false) //this is to denote if we have loaded all of the elements
   const [loading, setLoading] = useState(false) //janky: while loading elements, setting state will retrigger loading of the elements again... so we use this state to stop that
 
+  const [questionText, setQuestionText] = useState("")
+  const [choices, setChoices] = useState([]);
+  const [answers, setAnswers] = useState([]); //boolean values for if a choice is correct or not
   const getQuiz = async () => {
     if (loading) {
       return;
@@ -29,13 +31,27 @@ function QuizCreator() {
       quizQuests.push(doc.data());
     });
     setQuizQuestions(quizQuests);
-
+    setQuestionText(quizQuests[0].question_title);
+    let qz = quizQuests[0]
+    let chs = [qz.question_choices.choice1.text, qz.question_choices.choice2.text, qz.question_choices.choice3.text, qz.question_choices.choice4.text]
+    setChoices(chs)
+    let ans = [qz.question_choices.choice1.correct, qz.question_choices.choice2.correct, qz.question_choices.choice3.correct, qz.question_choices.choice4.correct]
+    setAnswers(ans)
     setLoading(false)
   }
 
   const setupCreator = async () => {
     getQuiz();
-    setLoaded(true)
+  }
+
+  function setActive(index) {
+    setActiveQuestion(index)
+    setQuestionText(quizQuestions[index].question_title)
+    let qz = quizQuestions[index]
+    let chs = [qz.question_choices.choice1.text, qz.question_choices.choice2.text, qz.question_choices.choice3.text, qz.question_choices.choice4.text]
+    setChoices(chs)
+    let ans = [qz.question_choices.choice1.correct, qz.question_choices.choice2.correct, qz.question_choices.choice3.correct, qz.question_choices.choice4.correct]
+    setAnswers(ans)
   }
 
   function isActive(n) {
@@ -45,7 +61,8 @@ function QuizCreator() {
   }
 
   function handleAddQuestion() {
-    console.log("user clicked add question...")
+    console.log("user clicked add question..." + activeQuestion)
+
   }
 
   function handleRemoveQuestion() {
@@ -53,6 +70,49 @@ function QuizCreator() {
 
   }
 
+  const onChangeQuestionText = (event) => {
+    setQuestionText(event.target.value)
+  }
+
+  function onChangeQuestionChoice1(event) {
+    setChoices([
+      [event.target.value], choices[1], choices[2], choices[3]
+    ])
+  }
+
+  function onChangeQuestionChoice2(event) {
+    setChoices([choices[0],
+      [event.target.value], choices[2], choices[3]
+    ])
+  }
+
+  function onChangeQuestionChoice3(event) {
+    setChoices([choices[0], choices[1],
+      [event.target.value], choices[3]
+    ])
+  }
+
+  function onChangeQuestionChoice4(event) {
+    setChoices([choices[0], choices[1], choices[2],
+      [event.target.value]
+    ])
+  }
+
+  function onChangeAnswer1(event) {
+    setAnswers([true, false, false, false])
+  }
+
+  function onChangeAnswer2(event) {
+    setAnswers([false, true, false, false])
+  }
+
+  function onChangeAnswer3(event) {
+    setAnswers([false, false, true, false])
+  }
+
+  function onChangeAnswer4(event) {
+    setAnswers([false, false, false, true])
+  }
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -68,7 +128,7 @@ function QuizCreator() {
     ele.choice4[0].checked = false;
     ele.choice4[1].value = "";
   };
-  if (!loaded) {
+  if (quizQuestions.length === 0) {
     setupCreator()
     return (
       <Background>
@@ -92,46 +152,71 @@ function QuizCreator() {
                         </Stack>
                         <ListGroup as="ol" numbered>
                             {quizQuestions.map((quest, index) => {
-                              return (  <ListGroup.Item key={index} className="list-group-item" as="li" active={isActive(index)} action onClick={() => setActiveQuestion(index)}>{quest.question_title}</ListGroup.Item>)
+                              return (  <ListGroup.Item key={index} className="list-group-item" as="li" active={isActive(index)} action onClick={() => setActive(index)}>{quest.question_title}</ListGroup.Item>)
 
                             })}
-                          {/*
-                                <ListGroup.Item className="list-group-item" as="li" active={isActive(0)} action onClick={() => setActiveQuestion(0)}>How many iron ingots are required to craft a full set of armor?</ListGroup.Item>
-                                <ListGroup.Item className="list-group-item" as="li" active={isActive(1)} action onClick={() => setActiveQuestion(1)}>How much coal is needed to smelt a full stack of iron ingots?</ListGroup.Item>
-                                <ListGroup.Item className="list-group-item" as="li" active={isActive(2)} action onClick={() => setActiveQuestion(2)}>On what year did Minecraft first officially release?</ListGroup.Item>
-                                <ListGroup.Item className="list-group-item" as="li" active={isActive(3)} action onClick={() => setActiveQuestion(3)}>Which food item restores the most hunger points?</ListGroup.Item>
-                          */}
                         </ListGroup>
                     </Stack>
                     <Stack style={{width:"2%"}}></Stack>
-                    <Stack gap={3} style={{width:"58%"}}>
+                    <Stack gap={3} style={{width:"70%"}}>
+                        <InputGroup className="mb-3">
+                          <InputGroup.Text id="inputGroup-sizing-default"> Question Text </InputGroup.Text>
+                          <FormControl aria-label="Default" onChange={onChangeQuestionText} value={questionText} placeholder="Question Text"  />
+                        </InputGroup>
+                        <InputGroup className="mb-3">
+                          <InputGroup.Text id="inputGroup-sizing-default"> Choice 1 </InputGroup.Text>
+                          <FormControl aria-label="Default" onChange={onChangeQuestionChoice1} value={choices[0]} placeholder="Choice 1" />
+                          <InputGroup.Text id="inputGroup-sizing-default"> Answer </InputGroup.Text>
+                          <InputGroup.Radio name="answer" onChange={onChangeAnswer1} checked={answers[0]} aria-label="Text input with radio button"/>
+                        </InputGroup>
+                        <InputGroup className="mb-3">
+                          <InputGroup.Text id="inputGroup-sizing-default"> Choice 2 </InputGroup.Text>
+                          <FormControl aria-label="Default" onChange={onChangeQuestionChoice2} value={choices[1]} placeholder="Choice 2" />
+                          <InputGroup.Text id="inputGroup-sizing-default"> Answer </InputGroup.Text>
+                          <InputGroup.Radio name="answer" onChange={onChangeAnswer2} checked={answers[1]} aria-label="Text input with radio button"/>
+                        </InputGroup>
+                        <InputGroup className="mb-3">
+                          <InputGroup.Text id="inputGroup-sizing-default"> Choice 3 </InputGroup.Text>
+                          <FormControl aria-label="Default" onChange={onChangeQuestionChoice3} value={choices[2]} placeholder="Choice 3" />
+                          <InputGroup.Text id="inputGroup-sizing-default"> Answer </InputGroup.Text>
+                          <InputGroup.Radio name="answer" onChange={onChangeAnswer3} checked={answers[2]} aria-label="Text input with radio button"/>
+                        </InputGroup>
+                        <InputGroup className="mb-3">
+                          <InputGroup.Text id="inputGroup-sizing-default"> Choice 4 </InputGroup.Text>
+                          <FormControl aria-label="Default" onChange={onChangeQuestionChoice4} value={choices[3]} placeholder="Choice 4" />
+                          <InputGroup.Text id="inputGroup-sizing-default"> Answer </InputGroup.Text>
+                          <InputGroup.Radio name="answer" onChange={onChangeAnswer4} checked={answers[3]} aria-label="Text input with radio button"/>
+                        </InputGroup>
+                        <div className="mb-2">
+                          <Button>Save Changes</Button>
+                        </div>
+
+                      {/*
                         <Form onSubmit={(e) => onSubmit(e)}>
                             <Form.Group controlId="formName">
-                                <Form.Control type="text" placeholder="Question Text" />
-                            </Form.Group>
-                            <Form.Group controlId="questionNum">
-                                <Form.Control type="text" placeholder="Question #" />
+                                <Form.Control type="text" onChange={onChangeQuestionText} value={questionText} placeholder="Question Text" />
                             </Form.Group>
                             <Form.Group controlId="choice1">
-                                <Form.Check aria-label="correct1" />
-                                <Form.Control type="text" placeholder="Choice 1" />
+                                <Form.Check type="radio" aria-label="correct1" value={correctness[0]}/>
+                                <Form.Control type="text" onChange={onChangeQuestionChoice1} value={choices[0]} placeholder="Choice 1" />
                             </Form.Group>
                             <Form.Group controlId="choice2">
-                                <Form.Check aria-label="correct2" />
-                                <Form.Control type="text" placeholder="Choice 2" />
+                                <Form.Check type="radio" aria-label="correct2" value={correctness[1]}/>
+                                <Form.Control type="text" onChange={onChangeQuestionChoice2} value={choices[1]} placeholder="Choice 2" />
                             </Form.Group>
                             <Form.Group controlId="choice3">
-                                <Form.Check aria-label="correct3" />
-                                <Form.Control type="text" placeholder="Choice 3" />
+                                <Form.Check type="radio" aria-label="correct3" value={correctness[2]}/>
+                                <Form.Control type="text" onChange={onChangeQuestionChoice3} value={choices[2]} placeholder="Choice 3" />
                             </Form.Group>
                             <Form.Group controlId="choice4">
-                                <Form.Check aria-label="correct4" />
-                                <Form.Control type="text" placeholder="Choice 4" />
+                                <Form.Check type="radio" aria-label="correct4" value={correctness[3]}/>
+                                <Form.Control type="text" onChange={onChangeQuestionChoice4} value={choices[3]} placeholder="Choice 4" />
                             </Form.Group>
                             <Button type="submit">
-                                Submit
+                                Save
                             </Button>
                         </Form>
+                      */}
                     </Stack>
                 </Stack>
             </Container>
