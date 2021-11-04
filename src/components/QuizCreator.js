@@ -14,9 +14,17 @@ function QuizCreator() {
 
   const [loading, setLoading] = useState(false) //janky: while loading elements, setting state will retrigger loading of the elements again... so we use this state to stop that
 
-  const [questionText, setQuestionText] = useState("")
   const [choices, setChoices] = useState([]);
   const [answers, setAnswers] = useState([]); //boolean values for if a choice is correct or not
+
+  const [questionNames, setQuestionNames] = useState([]); //non-updating array to hold question names as to not dynamically update them before saving
+
+
+  const setupQuestionNames = (quests) => { //specifically grabs question names from the quizQuestions array and updates them.
+    let names = Array.from(quests, x => x.question_title)
+    setQuestionNames(names)
+  }
+
   const getQuiz = async () => {
     if (loading) {
       return;
@@ -33,8 +41,8 @@ function QuizCreator() {
       quizQuests.push(doc.data());
     });
     setQuizQuestions(quizQuests);
-    setQuestionText(quizQuests[0].question_title);
-    let qz = quizQuests[0]
+    setupQuestionNames(quizQuests);
+    let qz = quizQuests[activeQuestion]
     let chs = [qz.question_choices.choice1.text, qz.question_choices.choice2.text, qz.question_choices.choice3.text, qz.question_choices.choice4.text]
     setChoices(chs)
     let ans = [qz.question_choices.choice1.correct, qz.question_choices.choice2.correct, qz.question_choices.choice3.correct, qz.question_choices.choice4.correct]
@@ -48,7 +56,6 @@ function QuizCreator() {
 
   function setActive(index) {
     setActiveQuestion(index)
-    setQuestionText(quizQuestions[index].question_title)
     let qz = quizQuestions[index]
     let chs = [qz.question_choices.choice1.text, qz.question_choices.choice2.text, qz.question_choices.choice3.text, qz.question_choices.choice4.text]
     setChoices(chs)
@@ -87,8 +94,8 @@ function QuizCreator() {
       }
     })
     setQuizQuestions(qz)
+    setupQuestionNames(qz)
     setRefreshKey(refreshKey + 1)
-    console.log(quizQuestions)
   }
 
   function handleRemoveQuestion() {
@@ -97,7 +104,9 @@ function QuizCreator() {
   }
 
   const onChangeQuestionText = (event) => {
-    setQuestionText(event.target.value)
+    let updated = [...quizQuestions]
+    updated[activeQuestion].question_title = event.target.value;
+    setQuizQuestions(updated)
   }
 
   function onChangeQuestionChoice1(event) {
@@ -161,7 +170,7 @@ function QuizCreator() {
       }
     }
 
-    FirestoreBackend.setQuizQuestion("samplequiz", "" + (activeQuestion + 1), "", questionText, chs)
+    FirestoreBackend.setQuizQuestion("samplequiz", "" + (activeQuestion + 1), "", quizQuestions[activeQuestion].question_title, chs)
     setupCreator()
   }
 
@@ -188,9 +197,8 @@ function QuizCreator() {
                             <Button variant="outline-danger" onClick={handleRemoveQuestion}>Remove Question</Button>
                         </Stack>
                         <ListGroup as="ol" numbered>
-                            {quizQuestions.map((quest, index) => {
-                              return (  <ListGroup.Item key={index} className="list-group-item" as="li" active={isActive(index)} action onClick={() => setActive(index)}>{quest.question_title}</ListGroup.Item>)
-
+                            {questionNames.map((quest, index) => {
+                              return (  <ListGroup.Item key={index} className="list-group-item" as="li" active={isActive(index)} action onClick={() => setActive(index)}>{quest}</ListGroup.Item>)
                             })}
                         </ListGroup>
                     </Stack>
@@ -198,7 +206,7 @@ function QuizCreator() {
                     <Stack gap={3} style={{width:"70%"}}>
                         <InputGroup className="mb-3">
                           <InputGroup.Text id="inputGroup-sizing-default"> Question Text </InputGroup.Text>
-                          <FormControl aria-label="Default" onChange={onChangeQuestionText} value={questionText} placeholder="Question Text"  />
+                          <FormControl aria-label="Default" onChange={onChangeQuestionText} value={quizQuestions[activeQuestion].question_title} placeholder="Question Text"  />
                         </InputGroup>
                         <InputGroup className="mb-3">
                           <InputGroup.Text id="inputGroup-sizing-default"> Choice 1 </InputGroup.Text>

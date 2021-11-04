@@ -64,7 +64,7 @@ export const getQuiz = (quizPath) => {
 };
 
 export const getQuizQuestions = async (quizPath) => {
-  const docSnap = await getDocs(collection(db, "quizzes/" + quizPath + "/quiz_questions"));
+  const docSnap = await db.collection('quizzes').doc(quizPath).collection('quiz_questions').orderBy('number').get();
   return docSnap;
 }
 
@@ -73,7 +73,8 @@ export const setQuizQuestion = (quizPath, questionNum, imageURL, questionTitle, 
     .set({
       question_title: questionTitle,
       question_image: imageURL,
-      question_choices: choices
+      question_choices: choices,
+      number: parseInt(questionNum)
     });
 };
 
