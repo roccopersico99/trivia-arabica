@@ -5,6 +5,8 @@ import * as FirestoreBackend from '../services/Firestore.js'
 import Background from './Background.js'
 
 function QuizCreator() {
+
+  const [refreshKey, setRefreshKey] = useState(0);
   const [activeQuestion, setActiveQuestion] = useState(0);
 
   const [quizTitle, setQuizTitle] = useState("");
@@ -62,7 +64,31 @@ function QuizCreator() {
 
   function handleAddQuestion() {
     console.log("user clicked add question..." + activeQuestion)
-
+    let qz = quizQuestions
+    qz.push({
+      question_title: "",
+      question_choices: {
+        choice1: {
+          text: "",
+          correct: true
+        },
+        choice2: {
+          text: "",
+          correct: false
+        },
+        choice3: {
+          text: "",
+          correct: false
+        },
+        choice4: {
+          text: "",
+          correct: false
+        }
+      }
+    })
+    setQuizQuestions(qz)
+    setRefreshKey(refreshKey + 1)
+    console.log(quizQuestions)
   }
 
   function handleRemoveQuestion() {
@@ -136,6 +162,7 @@ function QuizCreator() {
     }
 
     FirestoreBackend.setQuizQuestion("samplequiz", "" + (activeQuestion + 1), "", questionText, chs)
+    setupCreator()
   }
 
   if (quizQuestions.length === 0) {
