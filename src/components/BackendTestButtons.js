@@ -7,44 +7,44 @@ import * as FirestoreBackend from '../services/Firestore.js'
 
 function BackendTestButtons() {
 
-    const onSubmit = (e) => {
-        e.preventDefault();
-        const ele = e.target.elements;
-        FirestoreBackend.setQuizQuestion("samplequiz", ele.questionNum.value, "", ele.formName.value, 
-        {
-          choice1: {
-            correct: ele.choice1[0].checked,
-            text: ele.choice1[1].value,
-            times_picked: 0
-          },
-          choice2: {
-            correct: ele.choice2[0].checked,
-            text: ele.choice2[1].value,
-            times_picked: 0
-          },
-          choice3: {
-            correct: ele.choice3[0].checked,
-            text: ele.choice3[1].value,
-            times_picked: 0
-          },
-          choice4: {
-            correct: ele.choice4[0].checked,
-            text: ele.choice4[1].value,
-            times_picked: 0
-          }
-        });
-        ele.questionNum.value = "";
-        ele.formName.value = "";
-        ele.choice1[0].checked = false;
-        ele.choice1[1].value = "";
-        ele.choice2[0].checked = false;
-        ele.choice2[1].value = "";
-        ele.choice3[0].checked = false;
-        ele.choice3[1].value = "";
-        ele.choice4[0].checked = false;
-        ele.choice4[1].value = "";
-      };
-    
+  // const onSubmit = (e) => {
+  //     e.preventDefault();
+  //     const ele = e.target.elements;
+  //     FirestoreBackend.setQuizQuestion("samplequiz", ele.questionNum.value, "", ele.formName.value,
+  //     {
+  //       choice1: {
+  //         correct: ele.choice1[0].checked,
+  //         text: ele.choice1[1].value,
+  //         times_picked: 0
+  //       },
+  //       choice2: {
+  //         correct: ele.choice2[0].checked,
+  //         text: ele.choice2[1].value,
+  //         times_picked: 0
+  //       },
+  //       choice3: {
+  //         correct: ele.choice3[0].checked,
+  //         text: ele.choice3[1].value,
+  //         times_picked: 0
+  //       },
+  //       choice4: {
+  //         correct: ele.choice4[0].checked,
+  //         text: ele.choice4[1].value,
+  //         times_picked: 0
+  //       }
+  //     });
+  //     ele.questionNum.value = "";
+  //     ele.formName.value = "";
+  //     ele.choice1[0].checked = false;
+  //     ele.choice1[1].value = "";
+  //     ele.choice2[0].checked = false;
+  //     ele.choice2[1].value = "";
+  //     ele.choice3[0].checked = false;
+  //     ele.choice3[1].value = "";
+  //     ele.choice4[0].checked = false;
+  //     ele.choice4[1].value = "";
+  //   };
+
   return (
     <div>
       <button onClick={()=>{
@@ -101,7 +101,7 @@ function BackendTestButtons() {
       </button>
       <br/>
       <Container>
-        <Form onSubmit={(e) => onSubmit(e)}>
+        {/* <Form onSubmit={(e) => onSubmit(e)}>
             <Form.Group controlId="formName">
                 <Form.Label>Add Question to samplequiz</Form.Label>
                 <Form.Control type="text" placeholder="Question Text" />
@@ -128,7 +128,7 @@ function BackendTestButtons() {
             <Button type="submit">
                 Submit
             </Button>
-        </Form>
+        </Form> */}
       </Container>
       <br/>
       {/* <button onClick={()=>{
@@ -136,8 +136,8 @@ function BackendTestButtons() {
         }}>Test deletequiz questions
       </button> */}
       </div>
-      
-      
+
+
   );
 }
 

@@ -73,8 +73,8 @@ export default function LoginLogout() {
           clientId={clientId}
           buttonText="Logout"
           onLogoutSuccess={onLogoutSuccess}
-        /> <
-      /div>
+        />
+      </div>
     );
   }
 }
