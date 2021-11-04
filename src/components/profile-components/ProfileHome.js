@@ -7,10 +7,8 @@ function ProfileHome(props) {
       <Row>
         <QuizCard
           as={Col}
-          style={{ margin: "10px" }}
-          title={props.featured_quiz.title}
-          image={props.featured_quiz.image}
-          description={props.featured_quiz.description}
+          sytle={{ margin: "10px" }}
+          quiz={props.featured_quiz}
         ></QuizCard>
 
         <Card
