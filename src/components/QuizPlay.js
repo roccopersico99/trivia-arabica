@@ -1,11 +1,13 @@
 import '../App.css';
 import React, { useState } from 'react'
 import Background from './Background.js'
+import { useParams } from "react-router-dom";
 import { default as defQuestionImage } from "../shark_nose.jpg";
 import { Stack, Image, Button, ListGroup, Spinner } from 'react-bootstrap';
 import * as FirestoreBackend from '../services/Firestore.js'
 
 function QuizPlay() {
+    const params = useParams();
     const [currQuestionNum, setCurrQuestionNum] = useState(1);
     const [selectedChoice, setSelectedChoice] = useState(-1);
     const [numCorrect, setNumCorrect] = useState(0);
@@ -33,12 +35,12 @@ function QuizPlay() {
         }
         setLoading(true)
 
-        const quiz_query = FirestoreBackend.getQuiz('samplequiz');
+        const quiz_query = FirestoreBackend.getQuiz(params.id);
         quiz_query.then((query_snapshot) => {
             setQuizTitle(query_snapshot.data().quiz_title);
         });
     
-        const question_query = await FirestoreBackend.getQuizQuestions('samplequiz');
+        const question_query = await FirestoreBackend.getQuizQuestions(params.id);
         let quizQuests = [];
         question_query.docs.forEach((doc) => {
           quizQuests.push(doc.data());
@@ -72,7 +74,7 @@ function QuizPlay() {
         if(selectedChoice === -1) {
             console.log("Please select a choice before submitting!")
         }
-        else if(selectedChoice === 0){
+        else if(answers[selectedChoice]){
             console.log("Correct!")
             setNumCorrect(numCorrect+1);
             setSelectedChoice(-1)
