@@ -2,49 +2,42 @@ import * as FirestoreBackend from '../services/Firestore.js'
 import { Container, Row } from "react-bootstrap";
 import QuizCard from './profile-components/QuizCard.js';
 import { useState } from 'react';
+import Quizzes from './profile-components/Quizzes.js'
 
 function RecentQuizzes() {
-    const [recent, setRecent] = useState(null);
+    const [loading, setLoading] = useState(false)
+    const [recent, setRecent] = useState([]);
+    let quizzes = [];
     const getRecent = async () => {
-        const data = FirestoreBackend.recentQuizzes(3);
-        let quizzes = [];
-        data.then((query_snapshot)=>{
-            query_snapshot.forEach((quiz)=>{
-                quizzes.push({
-                    title: quiz.data().quiz_title,
-                    image: quiz.data().quiz_image,
-                    description: quiz.data().quiz_desc
-                });
+      if(loading) {
+        return;
+      }
+      const data = FirestoreBackend.recentQuizzes(3);
+      data.then((query_snapshot)=>{
+        query_snapshot.forEach((qz)=>{
+            quizzes.push({
+              id: qz.id,
+              title: qz.data().quiz_title,
+              description: qz.data().quiz_desc,
+              image: qz.data().quiz_image,
+              creator: "",
+              platform: "unset",
+              ratings: qz.data().quiz_ratings,
             });
-            console.log(quizzes);
-            setRecent(
-              <Container>
-                <Row>
-                  <QuizCard
-                    title={quizzes[0].title}
-                    image={quizzes[0].image}
-                    description={quizzes[0].description}
-                  ></QuizCard>
-                  <QuizCard
-                    title={quizzes[1].title}
-                    image={quizzes[1].image}
-                    description={quizzes[1].description}
-                  ></QuizCard>
-                  <QuizCard
-                    title={quizzes[2].title}
-                    image={quizzes[2].image}
-                    description={quizzes[2].description}
-                  ></QuizCard>
-                </Row>
-              </Container>);
         });
+        setRecent(quizzes);
+        setLoading(true);
+      });
     };
-    if(recent === null){
+    if(!loading){
       getRecent();
+      return(null);
     }
-    return (
-        recent
-      );
+    else {
+      return (
+        <Quizzes quizzes={recent}></Quizzes>
+      )
+    }
   }
 
 export default RecentQuizzes;
