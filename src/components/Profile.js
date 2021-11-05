@@ -5,7 +5,6 @@ import "bootstrap/dist/css/bootstrap.css";
 import * as FirestoreBackend from "../services/Firestore.js";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-
 import {
   Image,
   Container,
@@ -65,9 +64,9 @@ function Profile() {
         platform: "unset",
         ratings: qz.data().quiz_ratings,
       });
+      setQuizzes(quizii);
+      setLoading(false);
     });
-    setQuizzes(quizii);
-    setLoading(false)
   };
 
 
