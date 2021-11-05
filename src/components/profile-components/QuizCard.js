@@ -8,7 +8,7 @@ function QuizCard(props) {
       <Card.Body>
         <Card.Title>{props.quiz?.title}</Card.Title>
         <Card.Img
-          style={{ width: "100px", "background-size": "cover" }}
+          style={{ width: "250px", "background-size": "cover" }}
           variant="top"
           src={props.quiz?.image}
         ></Card.Img>
