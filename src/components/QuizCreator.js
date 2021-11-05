@@ -23,8 +23,6 @@ function QuizCreator() {
 
   const [max, setMax] = useState(0) //keep track of max doc id
 
-  const [currentQuizID, setCurrentQuizID] = useState("")
-
   const setupQuestionNames = (quests) => { //specifically grabs question names from the quizQuestions array and updates them.
     let names = Array.from(quests, x => x.question_title)
     setQuestionNames(names)
