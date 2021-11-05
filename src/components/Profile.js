@@ -3,7 +3,7 @@ import Background from "./Background.js";
 import { useAuthState } from "../Context/index";
 import "bootstrap/dist/css/bootstrap.css";
 import * as FirestoreBackend from "../services/Firestore.js";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import {
   Image,
@@ -23,7 +23,6 @@ import About from "./profile-components/About";
 
 function Profile() {
   const userDetails = useAuthState();
-  const [loading, setLoading] = useState(false)
 
   const [about, setAbout] = useState("");
   const [name, setName] = useState("");
@@ -33,41 +32,41 @@ function Profile() {
 
   const params = useParams();
 
-  const setupProfile = async () => {
-    if (loading) {
-      return;
-    }
-    setLoading(true)
+  useEffect(() => {
     //get user
-    const usr_query = FirestoreBackend.getUser(params.id);
-    usr_query.then((query_snapshot) => {
-      query_snapshot.forEach((user) => {
-        setAbout(user.data().user_bio);
-        setName(user.data().display_name);
-        setProfileImage(user.data().profile_image);
+    async function getData() {
+      if (userDetails.user === "") {
+        return
+      }
+      const usr_query = FirestoreBackend.getUser(params.id);
+      usr_query.then((query_snapshot) => {
+        query_snapshot.forEach((user) => {
+          setAbout(user.data().user_bio);
+          setName(user.data().display_name);
+          setProfileImage(user.data().profile_image);
+        });
       });
-    });
-    //get user's quizzes
-    const userquizzes = await FirestoreBackend.getUserQuizzes(params.id)
-    let quizii = []
-    userquizzes.docs.forEach(async (doc) => {
-      const qz = await FirestoreBackend.getQuizFromRef(doc.data().quizRef)
-      const url = await FirestoreBackend.getImageURL(qz.data().quiz_image)
-      quizii.push({
-        id: qz.id,
-        title: qz.data().quiz_title,
-        description: qz.data().quiz_desc,
-        image: url,
-        creator: name,
-        platform: "unset",
-        ratings: qz.data().quiz_ratings,
+      //get user's quizzes
+      const userquizzes = await FirestoreBackend.getUserQuizzes(params.id)
+      let quizii = []
+      userquizzes.docs.forEach(async (doc) => {
+        const qz = await FirestoreBackend.getQuizFromRef(doc.data().quizRef)
+        const url = await FirestoreBackend.getImageURL(qz.data().quiz_image)
+        quizii.push({
+          id: qz.id,
+          title: qz.data().quiz_title,
+          description: qz.data().quiz_desc,
+          image: url,
+          creator: name,
+          platform: "unset",
+          allowed: userDetails.id === params.id,
+          ratings: qz.data().quiz_ratings,
+        });
+        setQuizzes(quizzes.concat(quizii));
       });
-      setQuizzes(quizzes.concat(quizii));
-      console.log(quizzes.length)
-      setLoading(false);
-    });
-  };
-
+    }
+    getData()
+  }, [userDetails])
 
   const setAboutText = (val) => {
     const usr_query = FirestoreBackend.getUser(userDetails.id);
@@ -116,7 +115,6 @@ function Profile() {
   };
 
   if (name === "") {
-    setupProfile();
     return (
       <Background>
         <Spinner

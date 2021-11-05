@@ -4,9 +4,7 @@ import { useEffect } from 'react'
 
 function Quizzes({ quizzes }) {
 
-  useEffect(() => {
-    console.log(quizzes);
-  }, [quizzes])
+  useEffect(() => {}, [quizzes])
 
   return (
     <Container>

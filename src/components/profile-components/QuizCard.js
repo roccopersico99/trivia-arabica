@@ -8,7 +8,7 @@ function QuizCard(props) {
       <Card.Body>
         <Card.Title>{props.quiz?.title}</Card.Title>
         <Card.Img
-          style={{ width: "250px", "background-size": "cover" }}
+          style={{ width: "250px", backgroundSize: "cover" }}
           variant="top"
           src={props.quiz?.image}
         ></Card.Img>
@@ -21,9 +21,9 @@ function QuizCard(props) {
         </Link>
         <Button variant="success">Like</Button>
         <Button variant="danger">Dislike</Button>
-        <Button href={
+        {props.quiz?.allowed && <Button href={
           "/creator/" + props.quiz?.id
-        } variant="warning">Edit</Button>
+        } variant="warning">Edit</Button>}
       </Card.Body>
     </Card>
   );
