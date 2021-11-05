@@ -1,7 +1,13 @@
 import { Container, Row } from "react-bootstrap";
 import QuizCard from "./QuizCard.js";
+import { useEffect } from 'react'
 
-function Quizzes(props) {
+function Quizzes({ quizzes }) {
+
+  useEffect(() => {
+    console.log(quizzes);
+  }, [quizzes])
+
   return (
     <Container>
       {/*
@@ -10,9 +16,9 @@ function Quizzes(props) {
         */}
 
       <Row>
-        <QuizCard quiz={props.quizzes[0]}></QuizCard>
-        <QuizCard quiz={props.quizzes[1]}></QuizCard>
-        <QuizCard quiz={props.quizzes[2]}></QuizCard>
+        {quizzes.map((quiz, index) => {
+          return (  <QuizCard quiz={quiz} key={index}></QuizCard>)
+        })}
       </Row>
     </Container>
   );

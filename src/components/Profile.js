@@ -24,11 +24,12 @@ import About from "./profile-components/About";
 
 function Profile() {
   const userDetails = useAuthState();
+  const [loading, setLoading] = useState(false)
 
   const [about, setAbout] = useState("");
   const [name, setName] = useState("");
   const [profileImage, setProfileImage] = useState("");
-  //const [quizzes, setQuizzes] = useState([])
+  const [quizzes, setQuizzes] = useState([])
   const [refreshKey, setRefreshKey] = useState(0);
 
   const params = useParams();
@@ -36,6 +37,10 @@ function Profile() {
   let currentUser = "";
 
   const setupProfile = async () => {
+    if (loading) {
+      return;
+    }
+    setLoading(true)
     currentUser = params.id;
     //get user
     const usr_query = FirestoreBackend.getUser(currentUser);
@@ -51,10 +56,20 @@ function Profile() {
     let quizii = []
     userquizzes.docs.forEach(async (doc) => {
       const qz = await FirestoreBackend.getQuizFromRef(doc.data().quizRef)
-      quizii.push(qz.data());
+      quizii.push({
+        id: qz.id,
+        title: qz.data().quiz_title,
+        description: qz.data().quiz_desc,
+        image: qz.data().quiz_image,
+        creator: name,
+        platform: "unset",
+        ratings: qz.data().quiz_ratings,
+      });
     });
-    console.log(quizii)
+    setQuizzes(quizii);
+    setLoading(false)
   };
+
 
   const setAboutText = (val) => {
     const usr_query = FirestoreBackend.getUser(userDetails.id);
@@ -69,41 +84,6 @@ function Profile() {
     setRefreshKey(refreshKey + 1);
   };
 
-  let quizzes = [{
-      id: "1",
-      title: "Baseball Quiz!!!",
-      description: "This quiz is about MLB history.",
-      image: "https://upload.wikimedia.org/wikipedia/commons/4/40/Heyward_lines_into_double_play_%2828356212176%29.jpg",
-      creator: "1",
-      platform: "1",
-      questions: [{
-        title: "First Question",
-        choices: [1, 2, 3, 4],
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/BarryLamar_Bonds.jpg/220px-BarryLamar_Bonds.jpg",
-      }, ],
-      ratings: [],
-    },
-    {
-      id: "2",
-      title: "Football Quiz!!!",
-      description: "This quiz is about NFL history.",
-      image: "https://wallpaperbat.com/img/157590-troy-polamalus-hall-of-fame-career-was-pure-chaos.jpg",
-      creator: "1",
-      platform: "1",
-      questions: [{ title: "First Question", choices: [1, 2, 3, 4] }],
-      ratings: [],
-    },
-    {
-      id: "3",
-      title: "Basketball Quiz!!!",
-      description: "This quiz is about NBA history.",
-      image: "https://theundefeated.com/wp-content/uploads/2018/03/gettyimages-587625016.jpg",
-      creator: "1",
-      platform: "1",
-      questions: [{ title: "First Question", choices: [1, 2, 3, 4] }],
-      ratings: [],
-    },
-  ];
   let posts = [{
       title: "First Post",
       content: "This is my first post",
@@ -191,7 +171,7 @@ function Profile() {
                 ></Home>
               </Tab>
               <Tab eventKey="quizzes" title="Quizzes">
-                <Quizzes quizzes={user.quizzes_created}></Quizzes>
+                <Quizzes quizzes={quizzes}></Quizzes>
               </Tab>
               <Tab eventKey="posts" title="Posts">
                 <Posts posts={user.posts}></Posts>

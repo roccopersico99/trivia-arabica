@@ -20,7 +20,7 @@ function ProfileHome(props) {
           }}
         >
           <Card.Body>
-            <Card.Title>{props.featured_quiz.questions[0].title}</Card.Title>
+            <Card.Title>heya</Card.Title>
           </Card.Body>
         </Card>
       </Row>
