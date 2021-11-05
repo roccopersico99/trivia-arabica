@@ -1,7 +1,7 @@
 import '../App.css';
 import React, { useState } from 'react'
 import Background from './Background.js'
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { default as defQuestionImage } from "../shark_nose.jpg";
 import { Stack, Image, Button, ListGroup, Spinner } from 'react-bootstrap';
 import * as FirestoreBackend from '../services/Firestore.js'
@@ -124,6 +124,8 @@ function QuizPlay() {
                 <br></br>
                 <h1>Quiz Completed!</h1>
                 <h1>You scored {numCorrect}/{quizQuestions.length}</h1>
+                <br></br>
+                <Link to="/" className="btn btn-outline-danger">Exit Quiz</Link>
             </Background>
         )
     }
@@ -158,7 +160,7 @@ function QuizPlay() {
                     </ListGroup>
                 </Stack>
                 <br></br>
-                <Button style={{width:"15%", margin:"auto"}} variant="success" onClick={handleSubmitChoice}>Submit</Button>
+                <Button style={{width:"15%", margin:"auto"}} variant="outline-success" onClick={handleSubmitChoice}>Submit</Button>
         </Stack>
         </Background>
     );
