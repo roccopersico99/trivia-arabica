@@ -1,6 +1,6 @@
 import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
-import { collection, query, where, getDocs, limit, updateDoc, doc, setDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, getDoc, limit, updateDoc, doc, setDoc } from "firebase/firestore";
 
 import "firebase/firestore";
 
@@ -58,6 +58,11 @@ export const createQuiz = async (userId, quizTitle) => {
     });
   return docSnap;
 };
+
+export const getQuizFromRef = async (quizRef) => {
+  const docSnap = await getDoc(quizRef);
+  return docSnap
+}
 
 export const getQuiz = async (quizPath) => {
   const docSnap = await db.collection('quizzes').doc(quizPath).get();

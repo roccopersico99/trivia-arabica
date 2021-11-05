@@ -28,7 +28,7 @@ function Profile() {
   const [about, setAbout] = useState("");
   const [name, setName] = useState("");
   const [profileImage, setProfileImage] = useState("");
-
+  //const [quizzes, setQuizzes] = useState([])
   const [refreshKey, setRefreshKey] = useState(0);
 
   const params = useParams();
@@ -37,6 +37,7 @@ function Profile() {
 
   const setupProfile = async () => {
     currentUser = params.id;
+    //get user
     const usr_query = FirestoreBackend.getUser(currentUser);
     usr_query.then((query_snapshot) => {
       query_snapshot.forEach((user) => {
@@ -45,6 +46,14 @@ function Profile() {
         setProfileImage(user.data().profile_image);
       });
     });
+    //get user's quizzes
+    const userquizzes = await FirestoreBackend.getUserQuizzes(currentUser)
+    let quizii = []
+    userquizzes.docs.forEach(async (doc) => {
+      const qz = await FirestoreBackend.getQuizFromRef(doc.data().quizRef)
+      quizii.push(qz.data());
+    });
+    console.log(quizii)
   };
 
   const setAboutText = (val) => {
@@ -110,8 +119,7 @@ function Profile() {
     id: "1",
     display_name: name,
     profile_picture: profileImage === "" ?
-      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" :
-      profileImage,
+      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" : profileImage,
     banner_image: "https://image.freepik.com/free-vector/abstract-dotted-banner-background_1035-18160.jpg",
     about: {
       content: "About Me",
