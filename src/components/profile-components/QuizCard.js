@@ -21,6 +21,9 @@ function QuizCard(props) {
         </Link>
         <Button variant="success">Like</Button>
         <Button variant="danger">Dislike</Button>
+        <Button href={
+          "/creator/" + props.quiz?.id
+        } variant="warning">Edit</Button>
       </Card.Body>
     </Card>
   );
