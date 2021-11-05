@@ -8,28 +8,29 @@ import { Link } from "react-router-dom"
 import { useAuthState } from '../Context/index'
 
 function QuizPreview(props) {
-    const userDetails = useAuthState();
-    let history = useHistory();
-    console.log(userDetails);
+  const userDetails = useAuthState();
+  let history = useHistory();
+  const quiz = history.location.state;
+  console.log(userDetails);
 
-    const likes = 85;
-    const dislikes = 15;
+  const likes = 85;
+  const dislikes = 15;
 
-    function handleGoBack() {
-        history.push("/profile");
-    }
+  function handleGoBack() {
+    history.push("/profile");
+  }
 
-    if (userDetails.user === "") {
-        return (
-          <Background>
+  if (userDetails.user === "") {
+    return (
+      <Background>
             <Spinner style={{marginTop:"100px"}} animation="border" role="status">
               <span className="visually-hidden">Loading...</span>
             </Spinner>
           </Background>
-        )
-    }
-    return (
-        <Background>
+    )
+  }
+  return (
+    <Background>
             <Container>
                 <Stack direction="horizontal" gap={3}>
                     <Stack gap={3}>
@@ -68,13 +69,14 @@ function QuizPreview(props) {
                             alt="Quiz Image"
                             className="block-example border border-dark w-100 p-3">
                         </Image>
-                        <h1 className="block-example border border-dark">Quiz Title</h1>
-                        <p className="block-example border border-dark">Quiz Description goes here</p>
+                        <h1 className="block-example border border-dark">{quiz?.title}</h1>
+                        <p className="block-example border border-dark">
+                        {quiz?.description === "" ? "This is where the quiz description would go, IF IT EXISTED!" : quiz?.description}</p>
                     </Stack>
                 </Stack>
             </Container>
         </Background>
-    );
+  );
 }
 
 export default QuizPreview;
