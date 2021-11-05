@@ -63,6 +63,7 @@ function Profile() {
         ratings: qz.data().quiz_ratings,
       });
       setQuizzes(quizzes.concat(quizii));
+      console.log(quizzes.length)
       setLoading(false);
     });
   };

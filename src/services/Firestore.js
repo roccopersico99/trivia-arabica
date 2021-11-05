@@ -149,6 +149,9 @@ export const uploadFile = async (userid, file) => {
 }
 
 export const getImageURL = async (filepath) => {
+  if (filepath === "") {
+    return ""
+  }
   const geturl = await getDownloadURL(ref(storage, filepath)).then(async (url) => {
     return url
   })
