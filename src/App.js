@@ -8,6 +8,7 @@ import QuizCreator from "./components/QuizCreator.js";
 import QuizPreview from "./components/QuizPreview";
 import QuizPlay from "./components/QuizPlay";
 import QuizInitiator from "./components/QuizInitiator";
+import Discover from "./components/Discover";
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
         <Route path="/creator/" exact component={QuizInitiator} />
         <Route path="/preview/:id" exact component={QuizPreview} />
         <Route path="/profile/:id" exact component={Profile} />
+        <Route path="/discover" exact component={Discover} />
         <Route path="/" exact component={Home} />
       </Switch>
     </div>
