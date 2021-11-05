@@ -19,7 +19,6 @@ function QuizPlay() {
 
     const [loading, setLoading] = useState(false) //janky: while loading elements, setting state will retrigger loading of the elements again... so we use this state to stop that
 
-    const [questionText, setQuestionText] = useState("")
     const [questionImage, setQuestionImage] = useState(defQuestionImage)
     const [choices, setChoices] = useState([]);
     const [answers, setAnswers] = useState([]); //boolean values for if a choice is correct or not
@@ -42,14 +41,18 @@ function QuizPlay() {
     
         const question_query = await FirestoreBackend.getQuizQuestions(params.id);
         let quizQuests = [];
-        question_query.docs.forEach((doc) => {
-          quizQuests.push(doc.data());
-        });
+        if(question_query === undefined){
+            return;
+        }
+        else{
+            question_query.docs.forEach((doc) => {
+            quizQuests.push(doc.data());
+            });
+        }
 
         setQuizQuestions(quizQuests);
         setupQuestionNames(quizQuests);
 
-        setQuestionText(quizQuests[0].question_title);
         quizQuests[0].question_image = "" ? setQuestionImage(defQuestionImage) : setQuestionImage(quizQuests[0].question_image);
         let qz = quizQuests[0]
         let chs = [qz.question_choices.choice1.text, qz.question_choices.choice2.text, qz.question_choices.choice3.text, qz.question_choices.choice4.text]
@@ -93,7 +96,6 @@ function QuizPlay() {
         setCurrQuestionNum(currQuestionNum+1)
         if (currQuestionNum < quizQuestions.length) {
             console.log("now on question #", currQuestionNum)
-            setQuestionText(quizQuestions[currQuestionNum].questionText);
             setQuestionImage(quizQuestions[currQuestionNum].questionImage);
             let qz = quizQuestions[currQuestionNum];
             let chs = [qz.question_choices.choice1.text, qz.question_choices.choice2.text, qz.question_choices.choice3.text, qz.question_choices.choice4.text]
