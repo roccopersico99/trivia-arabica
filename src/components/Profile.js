@@ -33,16 +33,13 @@ function Profile() {
 
   const params = useParams();
 
-  let currentUser = "";
-
   const setupProfile = async () => {
     if (loading) {
       return;
     }
     setLoading(true)
-    currentUser = params.id;
     //get user
-    const usr_query = FirestoreBackend.getUser(currentUser);
+    const usr_query = FirestoreBackend.getUser(params.id);
     usr_query.then((query_snapshot) => {
       query_snapshot.forEach((user) => {
         setAbout(user.data().user_bio);
@@ -51,7 +48,7 @@ function Profile() {
       });
     });
     //get user's quizzes
-    const userquizzes = await FirestoreBackend.getUserQuizzes(currentUser)
+    const userquizzes = await FirestoreBackend.getUserQuizzes(params.id)
     let quizii = []
     userquizzes.docs.forEach(async (doc) => {
       const qz = await FirestoreBackend.getQuizFromRef(doc.data().quizRef)
@@ -104,7 +101,7 @@ function Profile() {
     about: {
       content: "About Me",
       description: about,
-      allowed: userDetails.id === currentUser,
+      allowed: userDetails.id === params.id,
     },
     posts: posts,
     quizzes_created: quizzes,
