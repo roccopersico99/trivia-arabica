@@ -1,26 +1,25 @@
 import { Col, Card, Button } from "react-bootstrap";
 import { Link, useHistory } from "react-router-dom";
-import { React, useEffect } from "react";
+import React from "react";
 
-function QuizCard({ quiz }) {
+function QuizCard(props) {
   const history = useHistory();
+
   const handleOnClick = (event) => {
     history.push({
-      pathname: "/preview/" + quiz.id,
-      state: quiz,
+      pathname: "/preview/" + props.quiz?.id,
+      state: props.quiz,
     });
   };
-  useEffect(() => {
-    console.log(quiz);
-  }, [quiz])
+
   return (
     <Card as={Col} style={{ margin: "10px" }}>
       <Card.Body>
-        <Card.Title>{quiz?.title}</Card.Title>
-        <Card.Img variant="top" src={quiz?.image}></Card.Img>
-        <Card.Text>{quiz?.description}</Card.Text>
+        <Card.Title>{props.quiz?.title}</Card.Title>
+        <Card.Img variant="top" src={props.quiz?.image}></Card.Img>
+        <Card.Text>{props.quiz?.description}</Card.Text>
         <Link
-          to={{ pathname: "/preview/" + quiz?.id, state: quiz }}
+          to={{ pathname: "/preview/" + props.quiz?.id, state: props.quiz }}
           onClick={handleOnClick}
           className="btn btn-primary"
         >
