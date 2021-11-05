@@ -96,7 +96,7 @@ function QuizPreview(props) {
             ></Image>
             <h1 className="block-example border border-dark">{quiz?.title}</h1>
             <p className="block-example border border-dark">
-              {quiz?.description == "" ? "This is where the quiz description would go, IF IT EXISTED!" : quiz?.description}
+              {quiz?.description === "" ? "This is where the quiz description would go, IF IT EXISTED!" : quiz?.description}
             </p>
           </Stack>
         </Stack>
