@@ -1,10 +1,12 @@
 import '../App.css';
 import React, { useState } from 'react'
+import { useParams } from "react-router-dom";
 import { Container, Button, ListGroup, Stack, Spinner, InputGroup, FormControl } from 'react-bootstrap';
 import * as FirestoreBackend from '../services/Firestore.js'
 import Background from './Background.js'
 
 function QuizCreator() {
+  const params = useParams();
 
   const [refreshKey, setRefreshKey] = useState(0);
   const [activeQuestion, setActiveQuestion] = useState(0);
@@ -21,6 +23,8 @@ function QuizCreator() {
 
   const [max, setMax] = useState(0) //keep track of max doc id
 
+  const [currentQuizID, setCurrentQuizID] = useState("")
+
   const setupQuestionNames = (quests) => { //specifically grabs question names from the quizQuestions array and updates them.
     let names = Array.from(quests, x => x.question_title)
     setQuestionNames(names)
@@ -31,18 +35,16 @@ function QuizCreator() {
       return;
     }
     setLoading(true)
-    const quiz_query = FirestoreBackend.getQuiz('samplequiz');
+
+    const quiz_query = FirestoreBackend.getQuiz(params.id);
     quiz_query.then((query_snapshot) => {
       setQuizTitle(query_snapshot.data().quiz_title);
     });
 
-    const question_query = await FirestoreBackend.getQuizQuestions('samplequiz');
+    const question_query = await FirestoreBackend.getQuizQuestions(params.id);
     let quizQuests = [];
     question_query.docs.forEach((doc) => {
       quizQuests.push(doc.data());
-      console.log(doc.data())
-      console.log(activeQuestion)
-      console.log(quizQuests.length)
       if (max < parseInt(doc.id)) {
         setMax(parseInt(doc.id) + 1)
       }
@@ -61,6 +63,9 @@ function QuizCreator() {
     let ans = [qz.question_choices.choice1.correct, qz.question_choices.choice2.correct, qz.question_choices.choice3.correct, qz.question_choices.choice4.correct]
     setAnswers(ans)
     setLoading(false)
+
+
+
   }
 
   const setupCreator = async (removed) => {
@@ -114,8 +119,11 @@ function QuizCreator() {
   }
 
   function handleRemoveQuestion() {
+    if (quizQuestions.length === 1) {
+      return
+    }
     console.log("user clicked remove question..." + quizQuestions[activeQuestion].number)
-    FirestoreBackend.deleteQuestion('samplequiz', "" + quizQuestions[activeQuestion].number)
+    FirestoreBackend.deleteQuestion(params.id, "" + quizQuestions[activeQuestion].number)
     setActiveQuestion(activeQuestion - 1)
     setupCreator(true)
     setRefreshKey(refreshKey + 1)
@@ -188,7 +196,7 @@ function QuizCreator() {
       }
     }
 
-    FirestoreBackend.setQuizQuestion("samplequiz", "" + (quizQuestions[activeQuestion].number), "", quizQuestions[activeQuestion].question_title, chs)
+    FirestoreBackend.setQuizQuestion(params.id, "" + (quizQuestions[activeQuestion].number), "", quizQuestions[activeQuestion].question_title, chs)
     setupCreator(false)
   }
 

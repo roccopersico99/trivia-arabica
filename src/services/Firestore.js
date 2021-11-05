@@ -40,8 +40,8 @@ export const getUser = (userId, observer) => {
   return getDocs(q)
 };
 
-export const createQuiz = (userId, quizTitle) => {
-  return db.collection('quizzes')
+export const createQuiz = async (userId, quizTitle) => {
+  const docSnap = await db.collection('quizzes')
     .add({
       quiz_creator: userId,
       quiz_title: quizTitle,
@@ -56,6 +56,7 @@ export const createQuiz = (userId, quizTitle) => {
       publish_state: false,
       publish_date: null,
     });
+  return docSnap;
 };
 
 export const getQuiz = async (quizPath) => {
