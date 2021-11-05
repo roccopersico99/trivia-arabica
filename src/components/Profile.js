@@ -64,7 +64,7 @@ function Profile() {
         platform: "unset",
         ratings: qz.data().quiz_ratings,
       });
-      setQuizzes(quizii);
+      setQuizzes(quizzes.concat(quizii));
       setLoading(false);
     });
   };
