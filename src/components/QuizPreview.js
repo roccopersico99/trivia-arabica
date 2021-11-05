@@ -21,13 +21,6 @@ function QuizPreview(props) {
   const likes = 85;
   const dislikes = 15;
 
-  const handleOnClick = (event) => {
-    history.push({
-      pathname: "/play/" + quiz?.id,
-      state: quiz,
-    });
-  };
-
   if (userDetails.user === "") {
     return (
       <Background>
@@ -82,7 +75,6 @@ function QuizPreview(props) {
             <Stack direction="horizontal" gap={3}>
               <Link
                 to={{ pathname: "/play/" + quiz?.id, state: quiz }}
-                onClick={handleOnClick}
                 className="btn btn-success w-50 p-3"
               >
                 Play!

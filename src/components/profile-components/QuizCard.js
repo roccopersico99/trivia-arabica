@@ -1,16 +1,8 @@
 import { Col, Card, Button } from "react-bootstrap";
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import React from "react";
 
 function QuizCard(props) {
-  const history = useHistory();
-
-  const handleOnClick = (event) => {
-    history.push({
-      pathname: "/preview/" + props.quiz?.id,
-      state: props.quiz,
-    });
-  };
 
   return (
     <Card as={Col} style={{ margin: "10px" }}>
@@ -20,7 +12,6 @@ function QuizCard(props) {
         <Card.Text>{props.quiz?.description}</Card.Text>
         <Link
           to={{ pathname: "/preview/" + props.quiz?.id, state: props.quiz }}
-          onClick={handleOnClick}
           className="btn btn-primary"
         >
           Play
