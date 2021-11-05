@@ -1,7 +1,7 @@
 import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
-import { collection, query, where, getDocs, getDoc, limit, updateDoc, doc, setDoc } from "firebase/firestore";
-
+import { collection, query, where, getDocs, getDoc, limit, updateDoc, orderBy, doc, setDoc } from "firebase/firestore";
+import { Timestamp } from "@firebase/firestore";
 import "firebase/firestore";
 
 const firebaseConfig = {
@@ -17,7 +17,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const userRef = collection(db, 'users')
-//const quizRef = collection(db, 'quizzes')
+const quizRef = collection(db, 'quizzes')
 
 export const updateData = (docRef, updatedData) => {
   updateDoc(docRef, updatedData);
@@ -111,4 +111,20 @@ export const deleteQuestions = (quizPath) => {
     });
     batch.commit();
   });
+}
+
+export const publishQuiz = (quizPath) => {
+  const batch = db.batch();
+  const quiz_query = getQuiz(quizPath);
+    quiz_query.then((query_snapshot)=>{
+      const quizref = query_snapshot.ref;
+      batch.update(quizref, {publish_state: true});
+      batch.update(quizref, {publish_date: Timestamp.now()});
+      batch.commit();
+    });
+}
+
+export const recentQuizzes = (limitResults = 10) => {
+  const q = query(quizRef, orderBy("publish_date", "desc"), limit(limitResults));
+  return getDocs(q)
 }

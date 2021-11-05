@@ -2,6 +2,7 @@ import '../App.css';
 import React from 'react'
 import Background from './Background.js'
 import BackendTestButtons from './BackendTestButtons.js'
+import RecentQuizzes from './RecentQuizzes';
 
 function Home() {
 
@@ -11,6 +12,7 @@ function Home() {
 
       {/* test buttons for backend functions */}
       <BackendTestButtons></BackendTestButtons> 
+      <RecentQuizzes></RecentQuizzes>
 
     </Background>
   );

@@ -1,6 +1,8 @@
 import '../App.css';
 import React from 'react'
 import Container from 'react-bootstrap/Container';
+// import Form from 'react-bootstrap/Form';
+// import { Button } from 'react-bootstrap';
 import * as FirestoreBackend from '../services/Firestore.js'
 
 function BackendTestButtons() {
@@ -133,8 +135,15 @@ function BackendTestButtons() {
         FirestoreBackend.deleteQuestions('cyr926wFrJR8lNvV136b');
         }}>Test deletequiz questions
       </button> */}
+      <br/>
+      <button onClick={()=>{
+        FirestoreBackend.publishQuiz("zt4qaubxRDH0QXSa1VnT");
+      }}>
+        Test publish quiz
+      </button>
+      <br/>
       </div>
-
+      
 
   );
 }
