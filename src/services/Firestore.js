@@ -40,13 +40,13 @@ export const getUser = (userId, observer) => {
   return getDocs(q)
 };
 
-export const createQuiz = async (userId, quizTitle) => {
+export const createQuiz = async (userId, quizTitle, quizDesc) => {
   const docSnap = await db.collection('quizzes')
     .add({
       quiz_creator: userId,
       quiz_title: quizTitle,
       quiz_image: "",
-      quiz_desc: "",
+      quiz_desc: quizDesc,
       quiz_ratings: {},
       quiz_settings: {
         explicit: false,

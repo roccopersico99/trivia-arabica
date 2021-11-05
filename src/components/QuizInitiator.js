@@ -10,6 +10,7 @@ function QuizInitiator() {
 
   const userDetails = useAuthState();
   const [name, setName] = useState("")
+  const [desc, setDesc] = useState("")
 
   const history = useHistory();
 
@@ -18,7 +19,7 @@ function QuizInitiator() {
       return
     }
     //create a quiz with a blank question with the name given
-    let res = await FirestoreBackend.createQuiz(userDetails.id, name);
+    let res = await FirestoreBackend.createQuiz(userDetails.id, name, desc);
     FirestoreBackend.setQuizQuestion(res.id, 1 + "", "", " ", {
       choice1: {
         text: "",
@@ -48,12 +49,19 @@ function QuizInitiator() {
     setName(event.target.value)
   }
 
+  const onDescChange = (event) => {
+    setDesc(event.target.value)
+  }
+
   return (
     <Background>
       <h1> Quiz Creator </h1>
       <Stack style={{alignItems:"center", marginTop:"50px"}}>
       <InputGroup style={{width:"50%"}} className="mb-3">
         <FormControl  aria-label="Default" onChange={onNameChange} placeholder="Quiz Name" />
+      </InputGroup>
+      <InputGroup style={{width:"70%"}} className="mb-3">
+        <FormControl as="textarea" onChange={onDescChange} placeHolder="Quiz Description" />
       </InputGroup>
       <Button primary onClick={createClicked}>Create Quiz</Button>
     </Stack>
