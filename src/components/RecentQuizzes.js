@@ -13,20 +13,21 @@ function RecentQuizzes() {
         return;
       }
       const data = FirestoreBackend.recentQuizzes(3);
-      data.then((query_snapshot)=>{
-        query_snapshot.forEach((qz)=>{
-            quizzes.push({
-              id: qz.id,
-              title: qz.data().quiz_title,
-              description: qz.data().quiz_desc,
-              image: qz.data().quiz_image,
-              creator: "",
-              platform: "unset",
-              ratings: qz.data().quiz_ratings,
-            });
+      data.then(async (query_snapshot)=>{
+        query_snapshot.forEach(async (qz)=>{
+          const url = await FirestoreBackend.getImageURL(qz.data().quiz_image);
+          quizzes.push({
+            id: qz.id,
+            title: qz.data().quiz_title,
+            description: qz.data().quiz_desc,
+            image: url,
+            creator: "",
+            platform: "unset",
+            ratings: qz.data().quiz_ratings,
+          });
+          setLoading(true);
+          setRecent(recent.concat(quizzes));
         });
-        setRecent(quizzes);
-        setLoading(true);
       });
     };
     if(!loading){
@@ -34,6 +35,7 @@ function RecentQuizzes() {
       return(null);
     }
     else {
+      console.log(recent)
       return (
         <Quizzes quizzes={recent}></Quizzes>
       )
