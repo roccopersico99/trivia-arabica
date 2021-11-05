@@ -1,23 +1,21 @@
 import { Container, Row } from "react-bootstrap";
 import QuizCard from "./QuizCard.js";
-import { useEffect } from 'react'
 
 function Quizzes({ quizzes }) {
 
-  useEffect(() => {}, [quizzes])
+  const rows = [...Array(Math.ceil(quizzes.length / 3))];
+  const quizRows = rows.map((row, index) => quizzes.slice(index * 3, index * 3 + 3))
+
+  const content = quizRows.map((row, index) => (
+    <Row className="row" key={index}>
+      {row.map(quiz => (
+        <QuizCard quiz={quiz} key={quiz}></QuizCard>
+      ))}
+    </Row>));
 
   return (
     <Container>
-      {/*
-        get number of quizzes from this user
-        generate n rows for every i (3) quizzes
-        */}
-
-      <Row>
-        {quizzes.map((quiz, index) => {
-          return (  <QuizCard quiz={quiz} key={index}></QuizCard>)
-        })}
-      </Row>
+      {content}
     </Container>
   );
 }
