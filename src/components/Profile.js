@@ -55,11 +55,12 @@ function Profile() {
     let quizii = []
     userquizzes.docs.forEach(async (doc) => {
       const qz = await FirestoreBackend.getQuizFromRef(doc.data().quizRef)
+      const url = await FirestoreBackend.getImageURL(qz.data().quiz_image)
       quizii.push({
         id: qz.id,
         title: qz.data().quiz_title,
         description: qz.data().quiz_desc,
-        image: qz.data().quiz_image,
+        image: url,
         creator: name,
         platform: "unset",
         ratings: qz.data().quiz_ratings,
