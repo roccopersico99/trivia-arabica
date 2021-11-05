@@ -45,8 +45,8 @@ function QuizPreview(props) {
     <Background>
       <Container>
         <Stack direction="horizontal" gap={3}>
-          <Stack gap={3}>
-            <h3>Left Stack</h3>
+          <Stack gap={3} style={{width:"48%"}}>
+            <br></br>
             <Stack
               gap={5}
               direction="horizontal"
@@ -92,19 +92,19 @@ function QuizPreview(props) {
               </Button>
             </Stack>
           </Stack>
-          <Stack gap={3}>
-            <h3>Right Stack</h3>
+          <Stack gap={3} style={{width:"48%"}}>
+            <br></br>
             <Image
               style={{
                 height: "350px",
               }}
-              src={quiz.image}
+              src={quiz?.image}
               alt="Quiz Image"
               className="block-example border border-dark w-100 p-3"
             ></Image>
-            <h1 className="block-example border border-dark">Quiz Title</h1>
+            <h1 className="block-example border border-dark">{quiz?.title}</h1>
             <p className="block-example border border-dark">
-              Quiz Description goes here
+              {quiz?.description === "" ? "This is where the quiz description would go, IF IT EXISTED!" : quiz?.description}
             </p>
           </Stack>
         </Stack>
