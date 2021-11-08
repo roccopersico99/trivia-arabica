@@ -1,17 +1,24 @@
 import '../App.css';
 import React, { useState } from 'react'
 import { useParams } from "react-router-dom";
-import { Container, Button, ListGroup, Stack, Spinner, InputGroup, FormControl } from 'react-bootstrap';
+import { useAuthState } from "../Context/index";
+import { Container, Button, ListGroup, Stack, Spinner, InputGroup, Form, FormControl, Image } from 'react-bootstrap';
 import * as FirestoreBackend from '../services/Firestore.js'
 import Background from './Background.js'
 
 function QuizCreator() {
   const params = useParams();
+  const userDetails = useAuthState();
 
   const [refreshKey, setRefreshKey] = useState(0);
   const [activeQuestion, setActiveQuestion] = useState(0);
 
+  const [quizRef, setQuizRef] = useState("");
   const [quizTitle, setQuizTitle] = useState("");
+  const [quizImage, setQuizImage] = useState("")
+  const [quizImageChanged, setQuizImageChanged] = useState(false);
+  const [imgFile, setImgFile] = useState(null)
+
   const [quizQuestions, setQuizQuestions] = useState([]);
 
   const [loading, setLoading] = useState(false) //janky: while loading elements, setting state will retrigger loading of the elements again... so we use this state to stop that
@@ -32,11 +39,13 @@ function QuizCreator() {
     if (loading) {
       return;
     }
-    setLoading(true)
+    setLoading(true);
 
     const quiz_query = FirestoreBackend.getQuiz(params.id);
-    quiz_query.then((query_snapshot) => {
+    quiz_query.then(async (query_snapshot) => {
+      setQuizRef(query_snapshot.ref);
       setQuizTitle(query_snapshot.data().quiz_title);
+      setQuizImage(await FirestoreBackend.getImageURL(query_snapshot.data().quiz_image));
     });
 
     const question_query = await FirestoreBackend.getQuizQuestions(params.id);
@@ -61,9 +70,6 @@ function QuizCreator() {
     let ans = [qz.question_choices.choice1.correct, qz.question_choices.choice2.correct, qz.question_choices.choice3.correct, qz.question_choices.choice4.correct]
     setAnswers(ans)
     setLoading(false)
-
-
-
   }
 
   const setupCreator = async (removed) => {
@@ -141,19 +147,19 @@ function QuizCreator() {
 
   function onChangeQuestionChoice2(event) {
     setChoices([choices[0],
-      event.target.value, choices[2], choices[3]
+    event.target.value, choices[2], choices[3]
     ])
   }
 
   function onChangeQuestionChoice3(event) {
     setChoices([choices[0], choices[1],
-      event.target.value, choices[3]
+    event.target.value, choices[3]
     ])
   }
 
   function onChangeQuestionChoice4(event) {
     setChoices([choices[0], choices[1], choices[2],
-      event.target.value
+    event.target.value
     ])
   }
 
@@ -173,7 +179,12 @@ function QuizCreator() {
     setAnswers([false, false, false, true])
   }
 
-  function saveClicked() {
+  const onImgUpld = async (event) => {
+    setQuizImageChanged(true);
+    setImgFile(event.target.files[0])
+  }
+
+  async function saveClicked() {
     //re-build question from choices state, answers state, and questionText state
     let chs = {
       choice1: {
@@ -194,6 +205,14 @@ function QuizCreator() {
       }
     }
 
+    let imgPath = ""
+    if (imgFile !== null && imgFile !== undefined) {
+      const imgSnap = await FirestoreBackend.uploadFile(userDetails.id, imgFile)
+      imgPath = imgSnap.ref.fullPath
+    }
+
+    let res = await FirestoreBackend.updateData(quizRef, {quiz_image: imgPath});
+
     FirestoreBackend.setQuizQuestion(params.id, "" + (quizQuestions[activeQuestion].number), "", quizQuestions[activeQuestion].question_title, chs)
     setupCreator(false)
   }
@@ -202,67 +221,77 @@ function QuizCreator() {
     setupCreator(false)
     return (
       <Background>
-          <Spinner style={{marginTop:"100px"}} animation="border" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </Spinner>
-        </Background>
+        <Spinner style={{ marginTop: "100px" }} animation="border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </Spinner>
+      </Background>
     )
   }
   return (
     <Background>
-            <Container>
-                <h1>Welcome to the Quiz Creator!</h1>
-                <h2> Currently Editing: {quizTitle}</h2>
-                <br></br>
-                <Stack direction="horizontal">
-                    <Stack style={{width:"40%"}}>
-                        <Stack direction="horizontal" gap={4} style={{margin:"auto"}}>
-                            <Button variant="outline-success" onClick={handleAddQuestion}>Add Question</Button>
-                            <Button variant="outline-danger" onClick={handleRemoveQuestion}>Remove Question</Button>
-                        </Stack>
-                        <ListGroup as="ol" numbered>
-                            {questionNames.map((quest, index) => {
-                              return (  <ListGroup.Item key={index} className="list-group-item" as="li" active={isActive(index)} action onClick={() => setActive(index)}>{quest}</ListGroup.Item>)
-                            })}
-                        </ListGroup>
-                    </Stack>
-                    <Stack style={{width:"2%"}}></Stack>
-                    <Stack gap={3} style={{width:"70%"}}>
-                        <InputGroup className="mb-3">
-                          <InputGroup.Text id="inputGroup-sizing-default"> Question Text </InputGroup.Text>
-                          <FormControl aria-label="Default" onChange={onChangeQuestionText} value={quizQuestions[activeQuestion].question_title} placeholder="Question Text"  />
-                        </InputGroup>
-                        <InputGroup className="mb-3">
-                          <InputGroup.Text id="inputGroup-sizing-default"> Choice 1 </InputGroup.Text>
-                          <FormControl aria-label="Default" onChange={onChangeQuestionChoice1} value={choices[0]} placeholder="Choice 1" />
-                          <InputGroup.Text id="inputGroup-sizing-default"> Answer </InputGroup.Text>
-                          <InputGroup.Radio name="answer" onChange={onChangeAnswer1} checked={answers[0]} aria-label="Text input with radio button"/>
-                        </InputGroup>
-                        <InputGroup className="mb-3">
-                          <InputGroup.Text id="inputGroup-sizing-default"> Choice 2 </InputGroup.Text>
-                          <FormControl aria-label="Default" onChange={onChangeQuestionChoice2} value={choices[1]} placeholder="Choice 2" />
-                          <InputGroup.Text id="inputGroup-sizing-default"> Answer </InputGroup.Text>
-                          <InputGroup.Radio name="answer" onChange={onChangeAnswer2} checked={answers[1]} aria-label="Text input with radio button"/>
-                        </InputGroup>
-                        <InputGroup className="mb-3">
-                          <InputGroup.Text id="inputGroup-sizing-default"> Choice 3 </InputGroup.Text>
-                          <FormControl aria-label="Default" onChange={onChangeQuestionChoice3} value={choices[2]} placeholder="Choice 3" />
-                          <InputGroup.Text id="inputGroup-sizing-default"> Answer </InputGroup.Text>
-                          <InputGroup.Radio name="answer" onChange={onChangeAnswer3} checked={answers[2]} aria-label="Text input with radio button"/>
-                        </InputGroup>
-                        <InputGroup className="mb-3">
-                          <InputGroup.Text id="inputGroup-sizing-default"> Choice 4 </InputGroup.Text>
-                          <FormControl aria-label="Default" onChange={onChangeQuestionChoice4} value={choices[3]} placeholder="Choice 4" />
-                          <InputGroup.Text id="inputGroup-sizing-default"> Answer </InputGroup.Text>
-                          <InputGroup.Radio name="answer" onChange={onChangeAnswer4} checked={answers[3]} aria-label="Text input with radio button"/>
-                        </InputGroup>
-                        <div className="mb-2">
-                          <Button onClick={saveClicked}>Save Changes</Button>
-                        </div>
-                    </Stack>
-                </Stack>
-            </Container>
-        </Background>
+      <Container>
+        <br></br>
+        <h2> Currently Editing: {quizTitle}</h2>
+        <Image
+          style={{ width: "250px", backgroundSize: "cover" }}
+          src={quizImage}
+          alt="Quiz Image"
+        ></Image>
+        <Form.Group controlId="formFile" className="mb-3" style={{ margin: "auto", width: "25%" }}>
+          Quiz Image
+          <Form.Control onChange={onImgUpld} accept=".jpg, .jpeg, .png" type="file" />
+        </Form.Group>
+        <div className="mb-2">
+          <Button onClick={saveClicked}>Save Changes</Button>
+        </div>
+        <hr></hr>
+        <Stack direction="horizontal">
+          <Stack style={{ width: "40%" }}>
+            <Stack direction="horizontal" gap={4} style={{ marginLeft: "auto", marginRight: "auto" }}>
+              <Button variant="outline-success" onClick={handleAddQuestion}>Add Question</Button>
+              <Button variant="outline-danger" onClick={handleRemoveQuestion}>Remove Question</Button>
+            </Stack>
+            <br></br>
+            <ListGroup as="ol" numbered>
+              {questionNames.map((quest, index) => {
+                return (<ListGroup.Item key={index} className="list-group-item" as="li" active={isActive(index)} action onClick={() => setActive(index)}>{quest}</ListGroup.Item>)
+              })}
+            </ListGroup>
+          </Stack>
+          <Stack style={{ width: "2%" }}></Stack>
+          <Stack gap={3} style={{ width: "70%" }}>
+            <InputGroup className="mb-3">
+              <InputGroup.Text id="inputGroup-sizing-default"> Question Text </InputGroup.Text>
+              <FormControl aria-label="Default" onChange={onChangeQuestionText} value={quizQuestions[activeQuestion].question_title} placeholder="Question Text" />
+            </InputGroup>
+            <InputGroup className="mb-3">
+              <InputGroup.Text id="inputGroup-sizing-default"> Choice 1 </InputGroup.Text>
+              <FormControl aria-label="Default" onChange={onChangeQuestionChoice1} value={choices[0]} placeholder="Choice 1" />
+              <InputGroup.Text id="inputGroup-sizing-default"> Answer </InputGroup.Text>
+              <InputGroup.Radio name="answer" onChange={onChangeAnswer1} checked={answers[0]} aria-label="Text input with radio button" />
+            </InputGroup>
+            <InputGroup className="mb-3">
+              <InputGroup.Text id="inputGroup-sizing-default"> Choice 2 </InputGroup.Text>
+              <FormControl aria-label="Default" onChange={onChangeQuestionChoice2} value={choices[1]} placeholder="Choice 2" />
+              <InputGroup.Text id="inputGroup-sizing-default"> Answer </InputGroup.Text>
+              <InputGroup.Radio name="answer" onChange={onChangeAnswer2} checked={answers[1]} aria-label="Text input with radio button" />
+            </InputGroup>
+            <InputGroup className="mb-3">
+              <InputGroup.Text id="inputGroup-sizing-default"> Choice 3 </InputGroup.Text>
+              <FormControl aria-label="Default" onChange={onChangeQuestionChoice3} value={choices[2]} placeholder="Choice 3" />
+              <InputGroup.Text id="inputGroup-sizing-default"> Answer </InputGroup.Text>
+              <InputGroup.Radio name="answer" onChange={onChangeAnswer3} checked={answers[2]} aria-label="Text input with radio button" />
+            </InputGroup>
+            <InputGroup className="mb-3">
+              <InputGroup.Text id="inputGroup-sizing-default"> Choice 4 </InputGroup.Text>
+              <FormControl aria-label="Default" onChange={onChangeQuestionChoice4} value={choices[3]} placeholder="Choice 4" />
+              <InputGroup.Text id="inputGroup-sizing-default"> Answer </InputGroup.Text>
+              <InputGroup.Radio name="answer" onChange={onChangeAnswer4} checked={answers[3]} aria-label="Text input with radio button" />
+            </InputGroup>
+          </Stack>
+        </Stack>
+      </Container>
+    </Background>
   );
 }
 

@@ -51,6 +51,8 @@ function Profile() {
       let quizii = []
       userquizzes.docs.forEach(async (doc) => {
         const qz = await FirestoreBackend.getQuizFromRef(doc.data().quizRef)
+        console.log(qz.data());
+        console.log('QUIZ');
         const url = await FirestoreBackend.getImageURL(qz.data().quiz_image)
         quizii.push({
           id: qz.id,
@@ -76,6 +78,7 @@ function Profile() {
         //const medalCount = user.data().medals;
         const data = { user_bio: val };
         FirestoreBackend.updateData(userRef, data);
+        console.log(userRef);
       });
     });
     setRefreshKey(refreshKey + 1);

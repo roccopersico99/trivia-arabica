@@ -38,24 +38,26 @@ function QuizPreview(props) {
     <Background>
       <Container>
         <Stack direction="horizontal" gap={3}>
-          <Stack gap={3} style={{width:"48%"}}>
+          <Stack gap={3} style={{ width: "48%" }}>
             <br></br>
-            <Stack
-              gap={5}
-              direction="horizontal"
-              className="block-example border border-dark"
-            >
-              <Image
-                style={{
-                  width: "100px",
-                  height: "100px",
-                }}
-                src={userDetails.imageUrl}
-                alt="Profile Image"
+            <Link to={{ pathname: "/profile/" + userDetails.id }}>
+              <Stack
+                gap={5}
+                direction="horizontal"
                 className="block-example border border-dark"
-              ></Image>
-              <h1>{userDetails.user}</h1>
-            </Stack>
+              >
+                <Image
+                  style={{
+                    width: "100px",
+                    height: "100px",
+                  }}
+                  src={userDetails.imageUrl}
+                  alt="Profile Image"
+                  className="block-example border border-dark"
+                ></Image>
+                <h1>{userDetails.user}</h1>
+              </Stack>
+            </Link>
             <h2>Quiz Created: 10/29/2021</h2>
             <h2>Community Rating:</h2>
             <ProgressBar>
@@ -84,7 +86,7 @@ function QuizPreview(props) {
               </Button>
             </Stack>
           </Stack>
-          <Stack gap={3} style={{width:"48%"}}>
+          <Stack gap={3} style={{ width: "48%" }}>
             <br></br>
             <Image
               style={{
@@ -101,7 +103,7 @@ function QuizPreview(props) {
           </Stack>
         </Stack>
       </Container>
-    </Background>
+    </Background >
   );
 }
 
