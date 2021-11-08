@@ -211,7 +211,9 @@ function QuizCreator() {
       imgPath = imgSnap.ref.fullPath
     }
 
-    let res = await FirestoreBackend.updateData(quizRef, {quiz_image: imgPath});
+    if (quizImageChanged) {
+      await FirestoreBackend.updateData(quizRef, {quiz_image: imgPath});
+    }
 
     FirestoreBackend.setQuizQuestion(params.id, "" + (quizQuestions[activeQuestion].number), "", quizQuestions[activeQuestion].question_title, chs)
     setupCreator(false)
