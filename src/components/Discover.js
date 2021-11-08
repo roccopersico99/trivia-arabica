@@ -2,6 +2,7 @@ import { Container, Row, Stack, InputGroup, FormControl, Button, Dropdown, Dropd
 import QuizCard from "./profile-components/QuizCard";
 import { useState } from 'react'
 import Background from "./Background";
+import { searchQuizzes } from "../services/Firestore";
 
 function Discover() {
 
@@ -9,7 +10,17 @@ function Discover() {
     const [searchFilter, setSearchFilter] = useState("SmartSort");
 
     function handleSearch(target) {
-        console.log("searching for: '", target.textContent, "'")
+        console.log("searching for: '", target.nextSibling.value, "'")
+        const results = searchQuizzes(target.nextSibling.value);
+        results.then((query_snapshot)=>{
+            if(query_snapshot.empty){
+                console.log("nothing found!");
+            }
+            query_snapshot.forEach((quiz) => {
+                const quizRef = quiz.ref;
+                console.log(quiz.data());
+            });
+        });
     }
 
     return (

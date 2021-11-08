@@ -63,6 +63,16 @@ export const getQuiz = async (quizPath) => {
 };
 
 export const createQuiz = async (userId, quizTitle, quizDesc, imgPath) => {
+  let title = quizTitle.toLowerCase()
+  let str = '';
+  let searchIndex = [];
+  for(let i = 0; i<title.length; i++) {
+    console.log(str[i]);
+    str = str.concat(title[i]);
+    console.log(str);
+    searchIndex.push(str);
+    console.log(searchIndex);
+  }
   const docSnap = await db.collection('quizzes')
     .add({
       quiz_creator: userId,
@@ -77,6 +87,7 @@ export const createQuiz = async (userId, quizTitle, quizDesc, imgPath) => {
       },
       publish_state: false,
       publish_date: null,
+      search_index: searchIndex
     });
   return docSnap;
 };
@@ -133,8 +144,11 @@ export const recentQuizzes = (limitResults = 10) => {
   return getDocs(q)
 }
 
-
-
+export const searchQuizzes = (search = "", limitResults = 5, completionState = "all", orderOn = "publish_date", order = "desc") => {
+  search = search.toLowerCase();
+  const q = query(quizRef, where('publish_state', '==', true), where('search_index', 'array-contains', search), orderBy('publish_date', 'desc'), limit(limitResults));
+  return getDocs(q);
+}
 
 // FIREBASE STORAGE
 
@@ -156,4 +170,28 @@ export const getImageURL = async (filepath) => {
     return url
   })
   return geturl
+}
+
+// to update search_index in every quiz, for reference when collections need to be updated as a whole
+
+export const updateSearchIndex = async () => {
+  const thing = getDocs(quizRef)
+  thing.then((snapshot)=> {
+    snapshot.forEach((doc)=>{
+      let quizTitle = doc.data().quiz_title
+      let title = quizTitle.toLowerCase()
+      let str = '';
+      let searchIndex = [];
+      for(let i = 0; i<title.length; i++) {
+        console.log(str[i]);
+        str = str.concat(title[i]);
+        console.log(str);
+        searchIndex.push(str);
+        console.log(searchIndex);
+      }
+      updateDoc(doc.ref, {
+        search_index: searchIndex
+      })
+    })
+  })
 }
