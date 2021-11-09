@@ -44,6 +44,7 @@ export const getUser = (userId, observer) => {
   return getDocs(q)
 };
 
+
 export const getUserQuizzes = async (userid) => {
   const docSnap = await db.collection('users').doc(userid).collection("userquizzes").get();
   return docSnap;
@@ -74,28 +75,33 @@ export const createQuiz = async (userId, quizTitle, quizDesc, imgPath) => {
     console.log(searchIndex);
   }
   const docSnap = await db.collection('quizzes')
-    .add({
-      quiz_creator: userId,
-      quiz_title: quizTitle,
-      quiz_image: imgPath,
-      quiz_desc: quizDesc,
-      quiz_ratings: {},
-      quiz_settings: {
-        explicit: false,
-        question_time_seconds: 60,
-        total_time_minutes: 10
-      },
-      publish_state: false,
-      publish_date: null,
-      search_index: searchIndex
-    });
+  .add({
+    quiz_creator: userId,
+    quiz_title: quizTitle,
+    quiz_image: imgPath,
+    quiz_desc: quizDesc,
+    quiz_ratings: {},
+    quiz_settings: {
+      explicit: false,
+      question_time_seconds: 60,
+      total_time_minutes: 10
+    },
+    publish_state: false,
+    publish_date: null,
+    search_index: searchIndex
+  });
   return docSnap;
 };
+
+export const resolveUserRef = async (userRef) => {
+  const snapshot = (await db.collection('users').doc(userRef).get()).data();
+  return snapshot;
+}
 
 export const resolveQuizRef = async (quizRef) => {
   const snapshot = await getDoc(quizRef);
   const imageUrl = await getImageURL(snapshot.data().quiz_image);
-
+  
   return {
     id: snapshot.id,
     allowed: false,

@@ -13,18 +13,16 @@ function Discover() {
     function handleSearch(target) {
         setResults([]);
         const searchQuery = target.nextSibling.value;
-        console.log("searching for: '", searchQuery, "'")
+        console.log(searchQuery);
         const results = FirestoreBackend.searchQuizzes(searchQuery);
         results.then((query_snapshot) => {
-            if (query_snapshot.empty) {
-                console.log("nothing found!");
-            }
             query_snapshot.forEach(async (quiz) => {
                 const resolvedQuiz = await FirestoreBackend.resolveQuizRef(quiz.ref);
                 setResults(results => [...results, resolvedQuiz]);
             });
         });
     }
+    console.log(results);
 
     const rows = [...Array(Math.ceil(results.length / 3))];
     const quizRows = rows.map((row, index) => results.slice(index * 3, index * 3 + 3))
@@ -44,7 +42,7 @@ function Discover() {
             <br></br>
             <Stack direction="horizontal" gap={2} style={{ margin: "10px" }}>
                 <InputGroup>
-                    <Button onClick={(e) => handleSearch(e.target)} variant="dark" id="button-addon1">🔍</Button>
+                    <Button onClick={(e) => handleSearch(e.target)} variant="secondary" id="button-addon1">🔍</Button>
                     <FormControl aria-label="Example text with button addon" placeholder="Enter search terms..." aria-describedby="basic-addon1" />
                 </InputGroup>
                 <DropdownButton variant="outline-secondary" title={completedFilter + " "} id="input-group-dropdown-1">

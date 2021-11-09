@@ -1,5 +1,5 @@
 import "../App.css";
-import React from "react";
+import React, { useState } from "react";
 import Background from "./Background.js";
 import {
   Container,
@@ -10,16 +10,24 @@ import {
   Spinner,
 } from "react-bootstrap";
 import { Link, useHistory } from "react-router-dom";
+import * as FirestoreBackend from '../services/Firestore.js';
 
 import { useAuthState } from "../Context/index";
 
-function QuizPreview(props) {
+function QuizPreview() {
   const history = useHistory();
   const userDetails = useAuthState();
   const quiz = history.location.state;
 
+  const [quizCreator, setQuizCreator] = useState(async () => {
+    await FirestoreBackend.resolveUserRef(quiz.creator).then((user) => {
+      setQuizCreator(user);
+    })
+  });
+
   const likes = 85;
   const dislikes = 15;
+
 
   if (userDetails.user === "") {
     return (
@@ -40,7 +48,7 @@ function QuizPreview(props) {
         <Stack direction="horizontal" gap={3}>
           <Stack gap={3} style={{ width: "48%" }}>
             <br></br>
-            <Link to={{ pathname: "/profile/" + userDetails.id }}>
+            <Link to={{ pathname: "/profile/" + quizCreator?.user_id }}>
               <Stack
                 gap={5}
                 direction="horizontal"
@@ -51,11 +59,11 @@ function QuizPreview(props) {
                     width: "100px",
                     height: "100px",
                   }}
-                  src={userDetails.imageUrl}
+                  src={quizCreator?.profile_image}
                   alt="Profile Image"
                   className="block-example border border-dark"
                 ></Image>
-                <h1>{userDetails.user}</h1>
+                <h1>{quizCreator?.display_name}</h1>
               </Stack>
             </Link>
             <h2>Quiz Created: 10/29/2021</h2>
