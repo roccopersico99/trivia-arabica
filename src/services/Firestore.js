@@ -92,6 +92,22 @@ export const createQuiz = async (userId, quizTitle, quizDesc, imgPath) => {
   return docSnap;
 };
 
+export const resolveQuizRef = async (quizRef) => {
+  const snapshot = await getDoc(quizRef);
+  const imageUrl = await getImageURL(snapshot.data().quiz_image);
+
+  return {
+    id: snapshot.id,
+    allowed: false,
+    platform: "unset",
+    title: snapshot.data().quiz_title,
+    description: snapshot.data().quiz_desc,
+    image: imageUrl,
+    creator: snapshot.data().quiz_creator,
+    ratings: snapshot.data().quiz_ratings
+  }
+}
+
 export const getQuizFromRef = async (quizRef) => {
   const docSnap = await getDoc(quizRef);
   return docSnap

@@ -50,20 +50,9 @@ function Profile() {
       const userquizzes = await FirestoreBackend.getUserQuizzes(params.id)
       let quizii = []
       userquizzes.docs.forEach(async (doc) => {
-        const qz = await FirestoreBackend.getQuizFromRef(doc.data().quizRef)
-        console.log(qz.data());
-        console.log('QUIZ');
-        const url = await FirestoreBackend.getImageURL(qz.data().quiz_image)
-        quizii.push({
-          id: qz.id,
-          title: qz.data().quiz_title,
-          description: qz.data().quiz_desc,
-          image: url,
-          creator: name,
-          platform: "unset",
-          allowed: userDetails.id === params.id,
-          ratings: qz.data().quiz_ratings,
-        });
+        const quiz = await FirestoreBackend.resolveQuizRef(doc.data().quizRef);
+        quiz.allowed = userDetails.id === params.id;
+        quizii.push(quiz);
         setQuizzes(quizzes.concat(quizii));
       });
     }
