@@ -142,6 +142,10 @@ export const createQuiz = async (userId, quizTitle, quizDesc, imgPath) => {
   return docSnap;
 };
 
+export const resolveUserRef = async (userRef) => {
+  const snapshot = (await db.collection('users').doc(userRef).get()).data();
+  return snapshot;
+}
 
 export const resolveQuizRef = async (quizRef) => {
   const snapshot = await getDoc(quizRef);

@@ -10,7 +10,7 @@ import {
   Spinner,
 } from "react-bootstrap";
 import { Link, useHistory } from "react-router-dom";
-import * as FirestoreBackend from '../services/Firestore.js';
+import { resolveUserRef } from '../services/Firestore.js';
 
 import { useAuthState } from "../Context/index";
 
@@ -20,7 +20,7 @@ function QuizPreview() {
   const quiz = history.location.state;
 
   const [quizCreator, setQuizCreator] = useState(async () => {
-    await FirestoreBackend.resolveUserRef(quiz.creator).then((user) => {
+    await resolveUserRef(quiz.creator).then((user) => {
       setQuizCreator(user);
     })
   });
