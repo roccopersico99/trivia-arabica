@@ -11,8 +11,10 @@ function Discover() {
     const [results, setResults] = useState([]);
 
     function handleSearch(target) {
-        console.log("searching for: '", target.nextSibling.value, "'")
-        const results = FirestoreBackend.searchQuizzes(target.nextSibling.value);
+        setResults([]);
+        const searchQuery = target.nextSibling.value;
+        console.log("searching for: '", searchQuery, "'")
+        const results = FirestoreBackend.searchQuizzes(searchQuery);
         results.then((query_snapshot) => {
             if (query_snapshot.empty) {
                 console.log("nothing found!");
