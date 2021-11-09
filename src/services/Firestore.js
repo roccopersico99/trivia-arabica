@@ -78,7 +78,6 @@ export const getQuizRatings = async (quizID) => {
 
 export const updateQuizRatings = async (quizID, likes, dislikes) => {
   const quiz = await (await getQuiz(quizID)).data()
-  console.log(quiz)
   const docSnap = await setDoc(doc(db, "quizzes", quizID), {
     quiz_creator: quiz.quiz_creator,
     quiz_title: quiz.quiz_title,

@@ -10,7 +10,6 @@ function QuizCard(props) {
 
   async function handleLike() {
     console.log("like clicked!")
-    console.log("userID: ", userDetails.id)
     const userquizzes = await FirestoreBackend.getUserRatedQuizzes(userDetails.id)
     let rated_quizzii = []
     let quizRatings = []
@@ -25,7 +24,10 @@ function QuizCard(props) {
       newRating = false;
       if(quizRatings[rated_quizzii.indexOf(props.quiz?.id)].like === false) {
         changingRating = true;
+        console.log("changing rating from dislike -> like")
       }
+      else
+        console.log("quiz already liked!")
     }
 
     if (newRating){
@@ -49,7 +51,6 @@ function QuizCard(props) {
 
   async function handleDislike() {
     console.log("dislike clicked!")
-    console.log("userID: ", userDetails.id)
     const userquizzes = await FirestoreBackend.getUserRatedQuizzes(userDetails.id)
     let rated_quizzii = [];
     let quizRatings = [];
@@ -64,7 +65,10 @@ function QuizCard(props) {
       newRating = false;
       if(quizRatings[rated_quizzii.indexOf(props.quiz?.id)].like === true) {
         changingRating = true;
+        console.log("changing rating from like -> dislike")
       }
+      else
+        console.log("quiz already disliked!")
     }
 
     if (newRating){
