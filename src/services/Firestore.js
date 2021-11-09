@@ -34,9 +34,10 @@ export const createUser = (userName, userId, imageURL) => {
     medals: 0,
     profile_image: imageURL,
     user_bio: "",
-    featured_quiz: ""
+    featured_quiz: "",
   });
 };
+
 
 //this returns a promise object
 export const getUser = (userId, observer) => {
@@ -47,6 +48,54 @@ export const getUser = (userId, observer) => {
 export const getUserQuizzes = async (userid) => {
   const docSnap = await db.collection('users').doc(userid).collection("userquizzes").get();
   return docSnap;
+}
+
+export const addUserRatedQuiz = async (userid, quizID, rating) => {
+  const docSnap = await db.collection('users').doc(userid);
+  return setDoc(doc(docSnap, "rated_quizzes", quizID), {
+    like: rating
+  });
+}
+
+export const getUserRatedQuizzes = async (userid) => {
+  const docSnap = await db.collection('users').doc(userid).collection("rated_quizzes").get();
+  return docSnap;
+}
+
+export const updateUserRatedQuizzes = async (userid, quizID, rating) => {
+  return db.collection('users').doc(userid).collection('rated_quizzes').doc(quizID).set({like: rating});
+}
+
+// returns ratings array = [likes, dislikes]
+export const getQuizRatings = async (quizID) => {
+  let ratings = [];
+  const docSnap = await db.collection('quizzes').doc(quizID)
+  const retreivedDoc = await getDoc(docSnap)
+  ratings[0] = retreivedDoc.data().quiz_likes;
+  ratings[1] = retreivedDoc.data().quiz_dislikes;
+  return ratings;
+}
+
+export const updateQuizRatings = async (quizID, likes, dislikes) => {
+  const quiz = await (await getQuiz(quizID)).data()
+  console.log(quiz)
+  const docSnap = await setDoc(doc(db, "quizzes", quizID), {
+    quiz_creator: quiz.quiz_creator,
+    quiz_title: quiz.quiz_title,
+    quiz_image: quiz.quiz_image,
+    quiz_desc: quiz.quiz_desc,
+    quiz_likes: likes,
+    quiz_dislikes: dislikes,
+    quiz_settings: {
+      explicit: false,
+      question_time_seconds: 60,
+      total_time_minutes: 10
+    },
+    publish_state: false,
+    publish_date: null,
+    search_index: quiz.search_index
+  });
+  return docSnap
 }
 
 export const assignQuizToUser = async (userid, quizID, quizRef) => {
@@ -79,7 +128,8 @@ export const createQuiz = async (userId, quizTitle, quizDesc, imgPath) => {
       quiz_title: quizTitle,
       quiz_image: imgPath,
       quiz_desc: quizDesc,
-      quiz_ratings: {},
+      quiz_likes: 0,
+      quiz_dislikes: 0,
       quiz_settings: {
         explicit: false,
         question_time_seconds: 60,
@@ -91,6 +141,7 @@ export const createQuiz = async (userId, quizTitle, quizDesc, imgPath) => {
     });
   return docSnap;
 };
+
 
 export const resolveQuizRef = async (quizRef) => {
   const snapshot = await getDoc(quizRef);
