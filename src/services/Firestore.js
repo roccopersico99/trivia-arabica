@@ -168,6 +168,9 @@ export const resolveUserRef = async (userRef) => {
 
 export const resolveQuizRef = async (quizRef) => {
   const snapshot = await getDoc(quizRef);
+  if (snapshot.data() === undefined) {
+    return undefined
+  }
   const imageUrl = await getImageURL(snapshot.data().quiz_image);
 
   return {

@@ -90,7 +90,9 @@ function QuizCard(props) {
   async function handleDelete() {
     console.log("delete clicked");
     FirestoreBackend.deleteQuiz(props.quiz?.id);
-    setDeleted(true);
+    props.setQuizzes([])
+    props.setRefreshKey(props.refreshKey + 1)
+    //setDeleted(true);
   }
 
   if (deleted) {
@@ -112,12 +114,12 @@ function QuizCard(props) {
         >
           Play
         </Link>
-        {!props.allowed && <Button onClick={handleLike} variant="success">Like</Button>}
-        {!props.allowed && <Button onClick={handleDislike} variant="danger">Dislike</Button>}
-        {props.allowed && <Button href={
+        {!props.quiz?.allowed && <Button onClick={handleLike} variant="success">Like</Button>}
+        {!props.quiz?.allowed && <Button onClick={handleDislike} variant="danger">Dislike</Button>}
+        {props.quiz?.allowed && <Button href={
           "/creator/" + props.quiz?.id
         } variant="warning">Edit</Button>}
-        {props.allowed && <Button onClick={handleDelete} variant="danger">Delete</Button>}
+        {props.quiz?.allowed && <Button onClick={handleDelete} variant="danger">Delete</Button>}
       </Card.Body>
     </Card>
   );

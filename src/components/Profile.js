@@ -50,9 +50,11 @@ function Profile() {
       let quizii = []
       userquizzes.docs.forEach(async (doc) => {
         const quiz = await FirestoreBackend.resolveQuizRef(doc.data().quizRef);
-        quiz.allowed = userDetails.id === params.id;
-        quizii.push(quiz);
-        setQuizzes(quizii.concat(quizzes));
+        if (quiz !== undefined) {
+          quiz.allowed = userDetails.id === params.id;
+          quizii.push(quiz);
+          setQuizzes(quizii.concat(quizzes));
+        }
       });
     }
     getData()
@@ -156,7 +158,7 @@ function Profile() {
                 ></Home>
               </Tab>
               <Tab eventKey="quizzes" title="Quizzes">
-                <Quizzes quizzes={quizzes}></Quizzes>
+                <Quizzes setQuizzes={setQuizzes} refreshKey={refreshKey} setRefreshKey={setRefreshKey} quizzes={quizzes}></Quizzes>
               </Tab>
               <Tab eventKey="posts" title="Posts">
                 <Posts posts={user.posts}></Posts>
