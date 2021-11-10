@@ -13,13 +13,17 @@ function Discover() {
     function handleSearch(target) {
         setResults([]);
         const searchQuery = target.nextSibling.value;
-        console.log(searchQuery);
+        console.log("searching for: '", searchQuery, "'");
         const results = FirestoreBackend.searchQuizzes(searchQuery);
         results.then((query_snapshot) => {
+            if (query_snapshot.empty) {
+                console.log("nothing found!");
+            }
             query_snapshot.forEach(async (quiz) => {
                 const resolvedQuiz = await FirestoreBackend.resolveQuizRef(quiz.ref);
+                console.log(resolvedQuiz);
                 setResults(results => [...results, resolvedQuiz]);
-            });
+            }); 
         });
     }
     console.log(results);

@@ -1,8 +1,8 @@
 import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
-import { collection, query, where, getDocs, getDoc, limit, updateDoc, orderBy, doc, setDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, getDoc, limit, updateDoc, orderBy, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { Timestamp } from "@firebase/firestore";
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import "firebase/firestore";
 
 const firebaseConfig = {
@@ -142,6 +142,20 @@ export const createQuiz = async (userId, quizTitle, quizDesc, imgPath) => {
   return docSnap;
 };
 
+export const deleteQuiz = async (quizPath) => {
+  console.log(quizPath);
+  db.collection('quizzes').doc(quizPath).get().then((snapshot)=>{
+    const userid = snapshot.data().quiz_creator;
+    const imgname = snapshot.data().quiz_image;
+    const batch = db.batch();
+    batch.delete(doc(collection(doc(userRef, userid), 'userquizzes'), quizPath));
+    batch.delete(doc(quizRef, quizPath));
+    batch.commit();
+    console.log("deleted quiz");
+    deleteFile(imgname);
+  });
+}
+
 export const resolveUserRef = async (userRef) => {
   const snapshot = (await db.collection('users').doc(userRef).get()).data();
   return snapshot;
@@ -228,7 +242,7 @@ export const searchQuizzes = (search = "", limitResults = 5, completionState = "
 const storage = getStorage(firebaseApp)
 
 export const uploadFile = async (userid, file) => {
-  const storageRef = await ref(storage, "" + userid + "/" + file.name);
+  const storageRef = ref(storage, "" + userid + "/" + file.name);
   const snap = await uploadBytes(storageRef, file).then(async (snapshot) => {
     return snapshot
   })
@@ -243,6 +257,16 @@ export const getImageURL = async (filepath) => {
     return url
   })
   return geturl
+}
+
+export const deleteFile = async (filepath) => {
+  console.log(filepath);
+  const storageRef = ref(storage, filepath);
+  deleteObject(storageRef).then(()=>{
+    console.log("deleted file: " + filepath);
+  }).catch((error)=>{
+    console.log("error deleting file");
+  });
 }
 
 // to update search_index in every quiz, for reference when collections need to be updated as a whole

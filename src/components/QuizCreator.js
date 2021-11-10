@@ -219,6 +219,12 @@ function QuizCreator() {
     setupCreator(false)
   }
 
+  function publish(){
+    //todo check there is at least one(maybe more for minimum?) question
+    //todo check that all questions have question text and choices filled in
+    FirestoreBackend.publishQuiz(params.id);
+  }
+
   if (quizQuestions.length === 0) {
     setupCreator(false)
     return (
@@ -245,6 +251,7 @@ function QuizCreator() {
         </Form.Group>
         <div className="mb-2">
           <Button onClick={saveClicked}>Save Changes</Button>
+          <Button onClick={publish} variant="success">Publish Quiz</Button>
         </div>
         <hr></hr>
         <Stack direction="horizontal">

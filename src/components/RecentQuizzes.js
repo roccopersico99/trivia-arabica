@@ -12,21 +12,13 @@ function RecentQuizzes() {
       if(loading) {
         return;
       }
-      const data = FirestoreBackend.recentQuizzes(3);
-      data.then(async (query_snapshot)=>{
-        query_snapshot.forEach(async (qz)=>{
-          const url = await FirestoreBackend.getImageURL(qz.data().quiz_image);
-          quizzes.push({
-            id: qz.id,
-            title: qz.data().quiz_title,
-            description: qz.data().quiz_desc,
-            image: url,
-            creator: "",
-            platform: "unset",
-            ratings: qz.data().quiz_ratings,
+      FirestoreBackend.recentQuizzes(3).then((query_snapshot)=>{
+        query_snapshot.forEach((quiz)=>{
+          FirestoreBackend.resolveQuizRef(quiz.ref).then((data)=>{
+            quizzes.push(data);
+            setLoading(true);
+            setRecent(recent.concat(quizzes));
           });
-          setLoading(true);
-          setRecent(recent.concat(quizzes));
         });
       });
     };

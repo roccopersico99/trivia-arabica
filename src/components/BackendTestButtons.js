@@ -48,16 +48,8 @@ function BackendTestButtons() {
   return (
     <div>
       <button onClick={async ()=>{
-        const ref = await FirestoreBackend.getQuiz("samplequiz")
-        console.log(ref)
-        FirestoreBackend.assignQuizToUser("115046202963837970799", "15", ref.ref)
-        // const res = await FirestoreBackend.getUserQuizzes("115046202963837970799")
-        // console.log(res)
-        // res.docs.forEach((doc) => {
-        //   console.log(doc.data())
-        // });
-
-        }}>Test get user where ID=1
+        FirestoreBackend.deleteFile('117263299673917066121', 'shork.jpg');
+        }}>Test something
       </button>
       <br/>
       <button onClick={()=>FirestoreBackend.createUser("gus", '2')}>
@@ -137,7 +129,7 @@ function BackendTestButtons() {
       </button> */}
       <br/>
       <button onClick={()=>{
-        FirestoreBackend.publishQuiz("B2hDWmDkwXZ4LWK31jxV");
+        FirestoreBackend.publishQuiz("FDhdZv7AFqXXlZIvS8d5");
       }}>
         Test publish quiz
       </button>

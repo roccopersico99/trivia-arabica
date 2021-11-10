@@ -23,15 +23,32 @@ function QuizPreview() {
   const [currQuiz, setCurrQuiz] = useState(async () => {
     await FirestoreBackend.getQuiz(params.id).then((quiz) => {
       setCurrQuiz(quiz.data());
-    })
+    }).catch((error)=>{
+      setCurrQuiz(null);
+      console.log("quiz does not exist or was deleted1");
+    });
   }); 
 
   const [quizCreator, setQuizCreator] = useState(async () => {
+    if(!quiz){
+      console.log("quiz does not exist or was deleted2");
+      return null;
+    }
     await FirestoreBackend.resolveUserRef(quiz.creator).then((user) => {
       setQuizCreator(user);
+    }).catch((error)=>{
+      console.log("quiz does not exist or was deleted3");
     })
   });
   
+  if(!currQuiz){
+    return (
+      <Background>
+        quiz does not exist or was deleted
+      </Background>
+    );
+  }
+
   const likes = currQuiz.quiz_likes;
   const dislikes = currQuiz.quiz_dislikes;
 

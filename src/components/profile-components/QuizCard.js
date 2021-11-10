@@ -3,10 +3,12 @@ import { Link } from "react-router-dom";
 import React from "react";
 import * as FirestoreBackend from "../../services/Firestore";
 import { useAuthState } from "../../Context/index";
+import { useState } from 'react';
 
 function QuizCard(props) {
 
   const userDetails = useAuthState();
+  const [deleted, setDeleted] = useState(false);
 
   async function handleLike() {
     console.log("like clicked!")
@@ -89,6 +91,15 @@ function QuizCard(props) {
     }
   }
 
+  async function handleDelete() {
+    console.log("delete clicked");
+    FirestoreBackend.deleteQuiz(props.quiz?.id);
+    setDeleted(true);
+  }
+
+  if(deleted){
+    return null
+  }
   return (
     <Card as={Col} style={{ margin: "10px" }}>
       <Card.Body>
@@ -105,11 +116,12 @@ function QuizCard(props) {
         >
           Play
         </Link>
-        <Button onClick={handleLike} variant="success">Like</Button>
-        <Button onClick={handleDislike} variant="danger">Dislike</Button>
+        {!props.quiz?.allowed && <Button onClick={handleLike} variant="success">Like</Button>}
+        {!props.quiz?.allowed && <Button onClick={handleDislike} variant="danger">Dislike</Button>}
         {props.quiz?.allowed && <Button href={
           "/creator/" + props.quiz?.id
         } variant="warning">Edit</Button>}
+        {props.quiz?.allowed && <Button onClick={handleDelete} variant="danger">Delete</Button>}
       </Card.Body>
     </Card>
   );
