@@ -34,17 +34,16 @@ function Profile() {
 
   useEffect(() => {
     //get user
+
     async function getData() {
       if (userDetails.user === "") {
         return
       }
       const usr_query = FirestoreBackend.getUser(params.id);
       usr_query.then((query_snapshot) => {
-        query_snapshot.forEach((user) => {
-          setAbout(user.data().user_bio);
-          setName(user.data().display_name);
-          setProfileImage(user.data().profile_image);
-        });
+        setAbout(query_snapshot.data().user_bio);
+        setName(query_snapshot.data().display_name);
+        setProfileImage(query_snapshot.data().profile_image);
       });
       //get user's quizzes
       const userquizzes = await FirestoreBackend.getUserQuizzes(params.id)
@@ -53,24 +52,22 @@ function Profile() {
         const quiz = await FirestoreBackend.resolveQuizRef(doc.data().quizRef);
         quiz.allowed = userDetails.id === params.id;
         quizii.push(quiz);
-        setQuizzes(quizzes.concat(quizii));
+        setQuizzes(quizii.concat(quizzes));
       });
     }
     getData()
-  }, [userDetails])
+  }, [userDetails, refreshKey])
 
-  const setAboutText = (val) => {
+  const setAboutText = async (val) => {
     const usr_query = FirestoreBackend.getUser(userDetails.id);
     usr_query.then((query_snapshot) => {
-      query_snapshot.forEach((user) => {
-        const userRef = user.ref;
-        //const medalCount = user.data().medals;
-        const data = { user_bio: val };
-        FirestoreBackend.updateData(userRef, data);
-        console.log(userRef);
-      });
+      const userRef = query_snapshot.ref;
+      //const medalCount = user.data().medals;
+      const data = { user_bio: val };
+      FirestoreBackend.updateData(userRef, data);
+      setQuizzes([])
+      setRefreshKey(refreshKey + 1);
     });
-    setRefreshKey(refreshKey + 1);
   };
 
   let posts = [{

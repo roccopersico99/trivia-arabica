@@ -26,16 +26,14 @@ export default function LoginLogout() {
         //create account
         FirestoreBackend.createUser(res.profileObj.name, '' + res.profileObj.googleId, res.profileObj.imageUrl)
       } else {
-        query_snapshot.forEach((user) => {
-          //double check profile image is up to date'
-          const userRef = user.ref;
-          const profileImg = user.data().profile_image;
-          if (profileImg !== res.profileObj.imageUrl) {
-            console.log("updating profile image on our end!")
-            const data = { profile_image: res.profileObj.imageUrl };
-            FirestoreBackend.updateData(userRef, data);
-          }
-        });
+        //double check profile image is up to date'
+        const userRef = query_snapshot.ref;
+        const profileImg = query_snapshot.data().profile_image;
+        if (profileImg !== res.profileObj.imageUrl) {
+          console.log("updating profile image on our end!")
+          const data = { profile_image: res.profileObj.imageUrl };
+          FirestoreBackend.updateData(userRef, data);
+        }
       }
     });
   };
@@ -68,7 +66,7 @@ export default function LoginLogout() {
     );
   } else {
     return (
-        <div style={{margin:"auto", marginRight:"20px"}}>
+      <div style={{margin:"auto", marginRight:"20px"}}>
         <GoogleLogout
           clientId={clientId}
           buttonText="Logout"

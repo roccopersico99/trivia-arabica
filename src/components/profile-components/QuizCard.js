@@ -22,31 +22,29 @@ function QuizCard(props) {
       quizRatings.push(doc.data())
     });
 
-    if(rated_quizzii.includes(props.quiz?.id)) {
+    if (rated_quizzii.includes(props.quiz?.id)) {
       newRating = false;
-      if(quizRatings[rated_quizzii.indexOf(props.quiz?.id)].like === false) {
+      if (quizRatings[rated_quizzii.indexOf(props.quiz?.id)].like === false) {
         changingRating = true;
         console.log("changing rating from dislike -> like")
-      }
-      else
+      } else
         console.log("quiz already liked!")
     }
 
-    if (newRating){
+    if (newRating) {
       console.log("adding ", props.quiz?.id, " to user ", userDetails.id)
       let res = await FirestoreBackend.addUserRatedQuiz(userDetails.id, props.quiz?.id, true);
       // add 1 like to current quiz
       let ratings = await FirestoreBackend.getQuizRatings(props.quiz?.id)
-      let resp = await FirestoreBackend.updateQuizRatings(props.quiz?.id, ratings[0]+1, ratings[1])
-    }
-    else {
+      let resp = await FirestoreBackend.updateQuizRatings(props.quiz?.id, ratings[0] + 1, ratings[1])
+    } else {
       // if user is changing rating from like to dislike, then do this. if they already disliked and are clicking dislike again, do nothing
-      if(changingRating) {
+      if (changingRating) {
         console.log("updating user ", userDetails.id, " rating for quiz ", props.quiz?.id, " to TRUE")
         let res = await FirestoreBackend.updateUserRatedQuizzes(userDetails.id, props.quiz?.id, true);
         // add 1 like and remove 1 dislike from current quiz
         let ratings = await FirestoreBackend.getQuizRatings(props.quiz?.id)
-        let resp = await FirestoreBackend.updateQuizRatings(props.quiz?.id, ratings[0]+1, ratings[1]-1)
+        let resp = await FirestoreBackend.updateQuizRatings(props.quiz?.id, ratings[0] + 1, ratings[1] - 1)
       }
     }
   }
@@ -63,30 +61,28 @@ function QuizCard(props) {
       quizRatings.push(doc.data())
     });
 
-    if(rated_quizzii.includes(props.quiz?.id)) {
+    if (rated_quizzii.includes(props.quiz?.id)) {
       newRating = false;
-      if(quizRatings[rated_quizzii.indexOf(props.quiz?.id)].like === true) {
+      if (quizRatings[rated_quizzii.indexOf(props.quiz?.id)].like === true) {
         changingRating = true;
         console.log("changing rating from like -> dislike")
-      }
-      else
+      } else
         console.log("quiz already disliked!")
     }
 
-    if (newRating){
+    if (newRating) {
       console.log("adding ", props.quiz?.id, " to user ", userDetails.id)
       let res = await FirestoreBackend.addUserRatedQuiz(userDetails.id, props.quiz?.id, false);
       // add 1 dislike to current quiz
       let ratings = await FirestoreBackend.getQuizRatings(props.quiz?.id)
-      let resp = await FirestoreBackend.updateQuizRatings(props.quiz?.id, ratings[0], ratings[1]+1)
-    }
-    else {
-      if(changingRating) {
+      let resp = await FirestoreBackend.updateQuizRatings(props.quiz?.id, ratings[0], ratings[1] + 1)
+    } else {
+      if (changingRating) {
         console.log("updating user ", userDetails.id, " rating for quiz ", props.quiz?.id, " to FALSE")
         let res = await FirestoreBackend.updateUserRatedQuizzes(userDetails.id, props.quiz?.id, false);
         // add 1 dislike and remove 1 like from current quiz
         let ratings = await FirestoreBackend.getQuizRatings(props.quiz?.id)
-        let resp = await FirestoreBackend.updateQuizRatings(props.quiz?.id, ratings[0]-1, ratings[1]+1)
+        let resp = await FirestoreBackend.updateQuizRatings(props.quiz?.id, ratings[0] - 1, ratings[1] + 1)
       }
     }
   }
@@ -97,7 +93,7 @@ function QuizCard(props) {
     setDeleted(true);
   }
 
-  if(deleted){
+  if (deleted) {
     return null
   }
   return (
@@ -116,12 +112,12 @@ function QuizCard(props) {
         >
           Play
         </Link>
-        {!props.quiz?.allowed && <Button onClick={handleLike} variant="success">Like</Button>}
-        {!props.quiz?.allowed && <Button onClick={handleDislike} variant="danger">Dislike</Button>}
-        {props.quiz?.allowed && <Button href={
+        {!props.allowed && <Button onClick={handleLike} variant="success">Like</Button>}
+        {!props.allowed && <Button onClick={handleDislike} variant="danger">Dislike</Button>}
+        {props.allowed && <Button href={
           "/creator/" + props.quiz?.id
         } variant="warning">Edit</Button>}
-        {props.quiz?.allowed && <Button onClick={handleDelete} variant="danger">Delete</Button>}
+        {props.allowed && <Button onClick={handleDelete} variant="danger">Delete</Button>}
       </Card.Body>
     </Card>
   );

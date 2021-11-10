@@ -40,9 +40,9 @@ export const createUser = (userName, userId, imageURL) => {
 
 
 //this returns a promise object
-export const getUser = (userId, observer) => {
-  const q = query(userRef, where("user_id", "==", userId), limit(1));
-  return getDocs(q)
+export const getUser = async (userId) => {
+  const docSnap = await db.collection('users').doc(userId).get();
+  return docSnap
 };
 
 
@@ -64,7 +64,7 @@ export const getUserRatedQuizzes = async (userid) => {
 }
 
 export const updateUserRatedQuizzes = async (userid, quizID, rating) => {
-  return db.collection('users').doc(userid).collection('rated_quizzes').doc(quizID).set({like: rating});
+  return db.collection('users').doc(userid).collection('rated_quizzes').doc(quizID).set({ like: rating });
 }
 
 // returns ratings array = [likes, dislikes]
@@ -111,11 +111,16 @@ export const getQuiz = async (quizPath) => {
   return docSnap
 };
 
+export const getQuizzes = async (quizIDs) => {
+  const quizzes = await db.collection('quizzes').where('__name__', 'in', quizIDs).get()
+  return quizzes
+}
+
 export const createQuiz = async (userId, quizTitle, quizDesc, imgPath) => {
   let title = quizTitle.toLowerCase()
   let str = '';
   let searchIndex = [];
-  for(let i = 0; i<title.length; i++) {
+  for (let i = 0; i < title.length; i++) {
     console.log(str[i]);
     str = str.concat(title[i]);
     console.log(str);
@@ -144,7 +149,7 @@ export const createQuiz = async (userId, quizTitle, quizDesc, imgPath) => {
 
 export const deleteQuiz = async (quizPath) => {
   console.log(quizPath);
-  db.collection('quizzes').doc(quizPath).get().then((snapshot)=>{
+  db.collection('quizzes').doc(quizPath).get().then((snapshot) => {
     const userid = snapshot.data().quiz_creator;
     const imgname = snapshot.data().quiz_image;
     const batch = db.batch();
@@ -164,7 +169,7 @@ export const resolveUserRef = async (userRef) => {
 export const resolveQuizRef = async (quizRef) => {
   const snapshot = await getDoc(quizRef);
   const imageUrl = await getImageURL(snapshot.data().quiz_image);
-  
+
   return {
     id: snapshot.id,
     allowed: false,
@@ -262,9 +267,9 @@ export const getImageURL = async (filepath) => {
 export const deleteFile = async (filepath) => {
   console.log(filepath);
   const storageRef = ref(storage, filepath);
-  deleteObject(storageRef).then(()=>{
+  deleteObject(storageRef).then(() => {
     console.log("deleted file: " + filepath);
-  }).catch((error)=>{
+  }).catch((error) => {
     console.log("error deleting file");
   });
 }
@@ -273,13 +278,13 @@ export const deleteFile = async (filepath) => {
 
 export const updateSearchIndex = async () => {
   const thing = getDocs(quizRef)
-  thing.then((snapshot)=> {
-    snapshot.forEach((doc)=>{
+  thing.then((snapshot) => {
+    snapshot.forEach((doc) => {
       let quizTitle = doc.data().quiz_title
       let title = quizTitle.toLowerCase()
       let str = '';
       let searchIndex = [];
-      for(let i = 0; i<title.length; i++) {
+      for (let i = 0; i < title.length; i++) {
         console.log(str[i]);
         str = str.concat(title[i]);
         console.log(str);
