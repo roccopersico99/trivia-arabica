@@ -159,7 +159,9 @@ export const resolveQuizRef = async (quizRef) => {
     description: snapshot.data().quiz_desc,
     image: imageUrl,
     creator: snapshot.data().quiz_creator,
-    ratings: snapshot.data().quiz_ratings
+    likes: snapshot.data().quiz_likes,
+    dislikes: snapshot.data().quiz_dislikes,
+    ratings: snapshot.data().quiz_ratings,
   }
 }
 

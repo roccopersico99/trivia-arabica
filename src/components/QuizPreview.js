@@ -9,25 +9,34 @@ import {
   ProgressBar,
   Spinner,
 } from "react-bootstrap";
-import { Link, useHistory } from "react-router-dom";
-import { resolveUserRef } from '../services/Firestore.js';
+import { Link, useHistory, useParams } from "react-router-dom";
+import * as FirestoreBackend from "../services/Firestore";
 
 import { useAuthState } from "../Context/index";
 
 function QuizPreview() {
   const history = useHistory();
   const userDetails = useAuthState();
+  const params = useParams();
   const quiz = history.location.state;
 
+  const [currQuiz, setCurrQuiz] = useState(async () => {
+    await FirestoreBackend.getQuiz(params.id).then((quiz) => {
+      setCurrQuiz(quiz.data());
+    })
+  }); 
+
   const [quizCreator, setQuizCreator] = useState(async () => {
-    await resolveUserRef(quiz.creator).then((user) => {
+    await FirestoreBackend.resolveUserRef(quiz.creator).then((user) => {
       setQuizCreator(user);
     })
   });
+  
+  const likes = currQuiz.quiz_likes;
+  const dislikes = currQuiz.quiz_dislikes;
 
-  const likes = 85;
-  const dislikes = 15;
-
+  const likePercent = Math.floor((likes/(likes+dislikes))*100)
+  const dislikePercent = Math.floor((dislikes/(likes+dislikes))*100)
 
   if (userDetails.user === "") {
     return (
@@ -71,15 +80,15 @@ function QuizPreview() {
             <ProgressBar>
               <ProgressBar
                 variant="success"
-                now={85}
+                now={likePercent}
                 key={1}
-                label={`${likes}%`}
+                label={`${likePercent}%`}
               />
               <ProgressBar
                 variant="danger"
-                now={15}
+                now={dislikePercent}
                 key={2}
-                label={`${dislikes}%`}
+                label={`${dislikePercent}%`}
               />
             </ProgressBar>
             <Stack direction="horizontal" gap={3}>
