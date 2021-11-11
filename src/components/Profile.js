@@ -52,9 +52,10 @@ function Profile() {
       //get user's quizzes
       const userquizzes = FirestoreBackend.searchUserQuizzes(params.id, (userDetails.id === params.id))
       let quizii = []
-      userquizzes.then((query_snapshot)=>{
+      userquizzes.then(async (query_snapshot)=>{
         console.log(query_snapshot);
-        query_snapshot.forEach(async (doc)=>{
+        // query_snapshot.forEach(async (doc)=> 
+        for (const doc of query_snapshot.docs) {
           console.log(doc.ref);
           const quiz = await FirestoreBackend.resolveQuizRef(doc.ref);
           if(quiz !== undefined){
@@ -63,8 +64,8 @@ function Profile() {
             quizii.push(quiz);
             setQuizzes(quizzes.concat(quizii));
           }
-        })
-      })
+        }
+      });
       // old get user's quizzes
       // const userquizzes = await FirestoreBackend.getUserQuizzes(params.id)
       // userquizzes.docs.forEach(async (doc) => {
@@ -82,15 +83,15 @@ function Profile() {
     const searchQuery = target.nextSibling.value;
     console.log("searching for: '", searchQuery, "'");
     const results = FirestoreBackend.searchUserQuizzes(params.id, (userDetails.id === params.id), searchQuery);
-    results.then((query_snapshot) => {
+    results.then(async (query_snapshot) => {
         if (query_snapshot.empty) {
             console.log("nothing found!");
         }
-        query_snapshot.forEach(async (quiz) => {
+        for (const quiz of query_snapshot.docs) {
             const resolvedQuiz = await FirestoreBackend.resolveQuizRef(quiz.ref);
             console.log(resolvedQuiz);
             setQuizzes(results => [...results, resolvedQuiz]);
-        }); 
+        }; 
     });
   }
 

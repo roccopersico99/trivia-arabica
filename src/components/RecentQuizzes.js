@@ -12,14 +12,13 @@ function RecentQuizzes() {
       if(loading) {
         return;
       }
-      FirestoreBackend.searchQuizzes().then((query_snapshot)=>{
-        query_snapshot.forEach(async (quiz)=>{
-          FirestoreBackend.resolveQuizRef(quiz.ref).then((data)=>{
-            quizzes.push(data);
-            setLoading(true);
-            setRecent(recent => [...recent, data]);
-          });
-        });
+      FirestoreBackend.searchQuizzes().then(async (query_snapshot)=>{
+        for (const quiz of query_snapshot.docs) {
+          const data = await FirestoreBackend.resolveQuizRef(quiz.ref)
+          quizzes.push(data);
+          setLoading(true);
+          setRecent(recent => [...recent, data]);
+        }
       });
     };
     if(!loading){
