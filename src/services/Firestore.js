@@ -99,6 +99,20 @@ export const getQuiz = async (quizPath) => {
   return docSnap
 };
 
+export const getAllQuizzes = async () => {
+  const quizzes = [];
+  let id = 0;
+  db.collection('quizzes').get().then((snapshot) => {
+    snapshot.forEach((doc) => {
+      let title = doc.data().quiz_title;
+      let desc = doc.data().quiz_desc;
+      quizzes.push({id, title, desc})
+      id++;
+    })
+  });
+  return quizzes
+}
+
 export const getQuizzes = async (quizIDs) => {
   const quizzes = await db.collection('quizzes').where('__name__', 'in', quizIDs).get()
   return quizzes
