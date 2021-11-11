@@ -1,6 +1,6 @@
 import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
-import { collection, query, where, getDocs, getDoc, limit, updateDoc, orderBy, doc, setDoc, deleteDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, getDoc, limit, updateDoc, orderBy, doc, setDoc } from "firebase/firestore";
 import { Timestamp } from "@firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import "firebase/firestore";
@@ -79,21 +79,9 @@ export const getQuizRatings = async (quizID) => {
 
 export const updateQuizRatings = async (quizID, likes, dislikes) => {
   const quiz = await (await getQuiz(quizID)).data()
-  const docSnap = await setDoc(doc(db, "quizzes", quizID), {
-    quiz_creator: quiz.quiz_creator,
-    quiz_title: quiz.quiz_title,
-    quiz_image: quiz.quiz_image,
-    quiz_desc: quiz.quiz_desc,
+  const docSnap = await updateDoc(doc(db, "quizzes", quizID), {
     quiz_likes: likes,
     quiz_dislikes: dislikes,
-    quiz_settings: {
-      explicit: false,
-      question_time_seconds: 60,
-      total_time_minutes: 10
-    },
-    publish_state: false,
-    publish_date: null,
-    search_index: quiz.search_index
   });
   return docSnap
 }
@@ -119,7 +107,7 @@ export const getQuizzes = async (quizIDs) => {
 export const createQuiz = async (userId, quizTitle, quizDesc, imgPath) => {
   let title = quizTitle.toLowerCase()
   let str = '';
-  let searchIndex = [];
+  let searchIndex = [''];
   for (let i = 0; i < title.length; i++) {
     console.log(str[i]);
     str = str.concat(title[i]);
@@ -141,7 +129,7 @@ export const createQuiz = async (userId, quizTitle, quizDesc, imgPath) => {
         total_time_minutes: 10
       },
       publish_state: false,
-      publish_date: null,
+      publish_date: Timestamp.now(), // for sorting unpublished quizzes, it will be overwritten on publish
       search_index: searchIndex
     });
   return docSnap;
@@ -157,6 +145,7 @@ export const deleteQuiz = async (quizPath) => {
     batch.delete(doc(quizRef, quizPath));
     batch.commit();
     console.log("deleted quiz");
+    deleteQuestions(quizPath);
     deleteFile(imgname);
   });
 }
@@ -184,6 +173,7 @@ export const resolveQuizRef = async (quizRef) => {
     likes: snapshot.data().quiz_likes,
     dislikes: snapshot.data().quiz_dislikes,
     ratings: snapshot.data().quiz_ratings,
+    publish_date: snapshot.data().publish_date
   }
 }
 
@@ -239,10 +229,38 @@ export const recentQuizzes = (limitResults = 10) => {
   return getDocs(q)
 }
 
-export const searchQuizzes = (search = "", limitResults = 5, completionState = "all", orderOn = "publish_date", order = "desc") => {
+export const searchQuizzes = (search = "", limitResults = 30, completionState = "all", orderOn = "publish_date", order = "desc") => {
   search = search.toLowerCase();
-  const q = query(quizRef, where('publish_state', '==', true), where('search_index', 'array-contains', search), orderBy('publish_date', 'desc'), limit(limitResults));
+  const q = query(quizRef, 
+    where('search_index', 'array-contains', search), 
+    where('publish_state', '==', true), 
+    orderBy(orderOn, order), 
+    limit(limitResults));
   return getDocs(q);
+}
+
+export const searchUserQuizzes = ( userid, isowner, search = "", limitResults = 30, orderOn = "publish_date", order = "desc") => {
+  search = search.toLowerCase();
+  console.log(userid);
+  console.log(isowner);
+  if (isowner){
+    const q = query(quizRef, 
+      where('search_index', 'array-contains', search), 
+      where('quiz_creator', '==', userid), 
+      orderBy(orderOn, order), 
+      limit(limitResults));
+    return getDocs(q);
+  }
+  else{
+    const q = query(quizRef, 
+      where('search_index', 'array-contains', search), 
+      where('publish_state', '==', true), 
+      where('quiz_creator', '==', userid), 
+      orderBy(orderOn, order), 
+      limit(limitResults));
+    return getDocs(q);
+  }
+  
 }
 
 // FIREBASE STORAGE
@@ -286,7 +304,7 @@ export const updateSearchIndex = async () => {
       let quizTitle = doc.data().quiz_title
       let title = quizTitle.toLowerCase()
       let str = '';
-      let searchIndex = [];
+      let searchIndex = [''];
       for (let i = 0; i < title.length; i++) {
         console.log(str[i]);
         str = str.concat(title[i]);
@@ -295,7 +313,9 @@ export const updateSearchIndex = async () => {
         console.log(searchIndex);
       }
       updateDoc(doc.ref, {
-        search_index: searchIndex
+        // search_index: searchIndex,
+        // quiz_dislikes: 0,
+        // quiz_likes: 0
       })
     })
   })

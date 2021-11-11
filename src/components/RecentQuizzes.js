@@ -12,12 +12,12 @@ function RecentQuizzes() {
       if(loading) {
         return;
       }
-      FirestoreBackend.recentQuizzes(3).then((query_snapshot)=>{
-        query_snapshot.forEach((quiz)=>{
+      FirestoreBackend.searchQuizzes().then((query_snapshot)=>{
+        query_snapshot.forEach(async (quiz)=>{
           FirestoreBackend.resolveQuizRef(quiz.ref).then((data)=>{
             quizzes.push(data);
             setLoading(true);
-            setRecent(recent.concat(quizzes));
+            setRecent(recent => [...recent, data]);
           });
         });
       });

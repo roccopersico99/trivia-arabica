@@ -48,7 +48,7 @@ function BackendTestButtons() {
   return (
     <div>
       <button onClick={async ()=>{
-        FirestoreBackend.deleteFile('117263299673917066121', 'shork.jpg');
+        FirestoreBackend.updateSearchIndex();
         }}>Test something
       </button>
       <br/>

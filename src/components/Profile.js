@@ -15,6 +15,7 @@ import {
   Tab,
   Tabs,
   Spinner,
+  InputGroup, FormControl,Dropdown, DropdownButton
 } from "react-bootstrap";
 import Home from "./profile-components/ProfileHome";
 import Quizzes from "./profile-components/Quizzes";
@@ -23,6 +24,9 @@ import About from "./profile-components/About";
 
 function Profile() {
   const userDetails = useAuthState();
+
+  const [completedFilter, setCompletedFilter] = useState("Completed");
+  const [searchFilter, setSearchFilter] = useState("SmartSort");
 
   const [about, setAbout] = useState("");
   const [name, setName] = useState("");
@@ -46,19 +50,49 @@ function Profile() {
         setProfileImage(query_snapshot.data().profile_image);
       });
       //get user's quizzes
-      const userquizzes = await FirestoreBackend.getUserQuizzes(params.id)
+      const userquizzes = FirestoreBackend.searchUserQuizzes(params.id, (userDetails.id === params.id))
       let quizii = []
-      userquizzes.docs.forEach(async (doc) => {
-        const quiz = await FirestoreBackend.resolveQuizRef(doc.data().quizRef);
-        if (quiz !== undefined) {
-          quiz.allowed = userDetails.id === params.id;
-          quizii.push(quiz);
-          setQuizzes(quizii.concat(quizzes));
-        }
-      });
+      userquizzes.then((query_snapshot)=>{
+        console.log(query_snapshot);
+        query_snapshot.forEach(async (doc)=>{
+          console.log(doc.ref);
+          const quiz = await FirestoreBackend.resolveQuizRef(doc.ref);
+          if(quiz !== undefined){
+            quiz.allowed = userDetails.id === params.id;
+            console.log(quiz);
+            quizii.push(quiz);
+            setQuizzes(quizzes.concat(quizii));
+          }
+        })
+      })
+      // old get user's quizzes
+      // const userquizzes = await FirestoreBackend.getUserQuizzes(params.id)
+      // userquizzes.docs.forEach(async (doc) => {
+      //   const quiz = await FirestoreBackend.resolveQuizRef(doc.data().quizRef);
+      //   quiz.allowed = userDetails.id === params.id;
+      //   quizii.push(quiz);
+      //   setQuizzes(quizzes.concat(quizii));
+      // });
     }
     getData()
   }, [userDetails, refreshKey])
+
+  function handleSearch(target) {
+    setQuizzes([]);
+    const searchQuery = target.nextSibling.value;
+    console.log("searching for: '", searchQuery, "'");
+    const results = FirestoreBackend.searchUserQuizzes(params.id, (userDetails.id === params.id), searchQuery);
+    results.then((query_snapshot) => {
+        if (query_snapshot.empty) {
+            console.log("nothing found!");
+        }
+        query_snapshot.forEach(async (quiz) => {
+            const resolvedQuiz = await FirestoreBackend.resolveQuizRef(quiz.ref);
+            console.log(resolvedQuiz);
+            setQuizzes(results => [...results, resolvedQuiz]);
+        }); 
+    });
+  }
 
   const setAboutText = async (val) => {
     const usr_query = FirestoreBackend.getUser(userDetails.id);
@@ -158,6 +192,22 @@ function Profile() {
                 ></Home>
               </Tab>
               <Tab eventKey="quizzes" title="Quizzes">
+                <Stack direction="horizontal" gap={2} style={{ margin: "10px" }}>
+                  <InputGroup>
+                      <Button onClick={(e) => handleSearch(e.target)} variant="secondary" id="button-addon1">🔍</Button>
+                      <FormControl aria-label="Example text with button addon" placeholder="Enter search terms..." aria-describedby="basic-addon1" />
+                  </InputGroup>
+                  <DropdownButton variant="outline-secondary" title={completedFilter + " "} id="input-group-dropdown-1">
+                      <Dropdown.Item as="button"><div >Completed</div></Dropdown.Item>
+                      <Dropdown.Item as="button"><div >Not Completed</div></Dropdown.Item>
+                      <Dropdown.Item as="button"><div >All Quizzes</div></Dropdown.Item>
+                  </DropdownButton>
+                  <DropdownButton variant="outline-secondary" title={searchFilter + " "} id="input-group-dropdown-2">
+                      <Dropdown.Item as="button"><div >Ascending</div></Dropdown.Item>
+                      <Dropdown.Item as="button"><div >Descending</div></Dropdown.Item>
+                      <Dropdown.Item as="button"><div >SmartSort</div></Dropdown.Item>
+                  </DropdownButton>
+                </Stack>  
                 <Quizzes setQuizzes={setQuizzes} refreshKey={refreshKey} setRefreshKey={setRefreshKey} quizzes={quizzes}></Quizzes>
               </Tab>
               <Tab eventKey="posts" title="Posts">
