@@ -89,6 +89,7 @@ function Profile() {
         }
         for (const quiz of query_snapshot.docs) {
             const resolvedQuiz = await FirestoreBackend.resolveQuizRef(quiz.ref);
+            resolvedQuiz.allowed = userDetails.id === params.id;
             console.log(resolvedQuiz);
             setQuizzes(results => [...results, resolvedQuiz]);
         }; 
