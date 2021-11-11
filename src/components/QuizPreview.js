@@ -51,9 +51,14 @@ function QuizPreview() {
 
   const likes = currQuiz.quiz_likes;
   const dislikes = currQuiz.quiz_dislikes;
-
-  const likePercent = Math.floor((likes/(likes+dislikes))*100)
-  const dislikePercent = Math.floor((dislikes/(likes+dislikes))*100)
+  let noRatings = false;
+  let totalRatings = likes+dislikes;
+  if(totalRatings <= 0) {
+    totalRatings = 1;
+    noRatings = true;
+  }
+  const likePercent = Math.floor((likes/totalRatings)*100)
+  const dislikePercent = Math.floor((dislikes/totalRatings)*100)
 
   if (userDetails.user === "") {
     return (
@@ -99,7 +104,7 @@ function QuizPreview() {
                 variant="success"
                 now={likePercent}
                 key={1}
-                label={`${likePercent}%`}
+                label={noRatings ? `` : `${likePercent}%`}
               />
               <ProgressBar
                 variant="danger"
