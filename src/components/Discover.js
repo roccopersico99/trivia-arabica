@@ -9,7 +9,7 @@ import Fuse from 'fuse.js'
 function Discover() {
 
     const [completedFilter, setCompletedFilter] = useState("Completed");
-    const [searchFilter, setSearchFilter] = useState("SmartSort");
+    const [searchFilter, setSearchFilter] = useState("Descending");
     const [results, setResults] = useState([]);
     const [quizzes, setQuizzes] = useState([]);
 
@@ -47,25 +47,29 @@ function Discover() {
     };
 
     const handleSearch = async (target) => {
-        const all_quizzes = await FirestoreBackend.getAllQuizzes();
-        setQuizzes(all_quizzes);
-        console.log(quizzes)
+        // const all_quizzes = await FirestoreBackend.getAllQuizzes();
+        // setQuizzes(all_quizzes);
+        // console.log(quizzes)
         
 
-        // setResults([]);
-        // const searchQuery = target.nextSibling.value;
-        // console.log("searching for: '", searchQuery, "'");
-        // const results = FirestoreBackend.searchQuizzes(searchQuery);
-        // results.then(async (query_snapshot) => {
-        //     if (query_snapshot.empty) {
-        //         console.log("nothing found!");
-        //     }
-        //     for (const quiz of query_snapshot.docs) {
-        //         const resolvedQuiz = await FirestoreBackend.resolveQuizRef(quiz.ref);
-        //         console.log(resolvedQuiz);
-        //         setResults(results => [...results, resolvedQuiz]);
-        //     }; 
-        // });
+        setResults([]);
+        const searchQuery = target.nextSibling.value;
+        
+        let order = 'desc';
+        if(searchFilter === "Ascending")
+            order = 'asc';
+        console.log("searching for: '", searchQuery, "', Date order : '" + order + "'");
+        const results = FirestoreBackend.searchQuizzes(searchQuery, 99, 'publish_date', order);
+        results.then(async (query_snapshot) => {
+            if (query_snapshot.empty) {
+                console.log("nothing found!");
+            }
+            for (const quiz of query_snapshot.docs) {
+                const resolvedQuiz = await FirestoreBackend.resolveQuizRef(quiz.ref);
+                console.log(resolvedQuiz);
+                setResults(results => [...results, resolvedQuiz]);
+            }; 
+        });
     }
     //console.log(results);
 
@@ -105,7 +109,7 @@ function Discover() {
                 <DropdownButton variant="outline-secondary" title={searchFilter + " "} id="input-group-dropdown-2">
                     <Dropdown.Item as="button"><div onClick={(e) => setSearchFilter(e.target.textContent)}>Ascending</div></Dropdown.Item>
                     <Dropdown.Item as="button"><div onClick={(e) => setSearchFilter(e.target.textContent)}>Descending</div></Dropdown.Item>
-                    <Dropdown.Item as="button"><div onClick={(e) => setSearchFilter(e.target.textContent)}>SmartSort</div></Dropdown.Item>
+                    {/* <Dropdown.Item as="button"><div onClick={(e) => setSearchFilter(e.target.textContent)}>SmartSort</div></Dropdown.Item> */}
                 </DropdownButton>
             </Stack>
             <br></br>

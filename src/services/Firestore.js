@@ -243,7 +243,7 @@ export const recentQuizzes = (limitResults = 10) => {
   return getDocs(q)
 }
 
-export const searchQuizzes = (search = "", limitResults = 30, completionState = "all", orderOn = "publish_date", order = "desc") => {
+export const searchQuizzes = (search = "", limitResults = 30, orderOn = "publish_date", order = "desc") => {
   search = search.toLowerCase();
   const q = query(quizRef, 
     where('search_index', 'array-contains', search), 
@@ -325,6 +325,21 @@ export const updateSearchIndex = async () => {
         console.log(str);
         searchIndex.push(str);
         console.log(searchIndex);
+      }
+      let strings = title.split(" ");
+      console.log(strings)
+      for (let n = 1; n < strings.length; n++)
+      {
+        let str = '';
+        let string = strings[n];
+        console.log("hi " + string);
+        for (let i = 0; i < string.length; i++) {
+          console.log(str[i]);
+          str = str.concat(string[i]);
+          console.log(str);
+          searchIndex.push(str);
+          console.log(searchIndex);
+        }
       }
       updateDoc(doc.ref, {
         // search_index: searchIndex,
