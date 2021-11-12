@@ -97,7 +97,7 @@ function Profile() {
     const yourProfile = userDetails.id === params.id
     if (searchFilter === "Ascending")
       order = 'asc';
-    const results = FirestoreBackend.searchUserQuizzes(params.id, yourProfile, searchQuery, 99, 'publish_date', order);
+    const results = FirestoreBackend.searchUserQuizzes(params.id, yourProfile, searchQuery, 99, 'quiz_title', order);
     results.then(async (query_snapshot) => {
       if (query_snapshot.empty) {
         console.log("nothing found!");
@@ -238,7 +238,8 @@ function Profile() {
                     {/* <Dropdown.Item as="button"><div onClick={(e) => setSearchFilter(e.target.textContent)}>SmartSort</div></Dropdown.Item> */}
                   </DropdownButton>
                 </Stack>
-                <Quizzes setQuizzes={setQuizzes} handleSearch={handleSearch} quizzes={quizzes}></Quizzes>
+                {quizzes.length===0 && <Spinner style={{ marginTop: "100px" }} animation="border" role="status"></Spinner>}
+                {quizzes.length>0 && <Quizzes setQuizzes={setQuizzes} handleSearch={handleSearch} quizzes={quizzes}></Quizzes>}
               </Tab>
               <Tab eventKey="posts" title="Posts">
                 <Posts posts={user.posts}></Posts>

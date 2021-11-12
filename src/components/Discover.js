@@ -1,6 +1,6 @@
-import { Container, Row, Stack, InputGroup, FormControl, Button, Dropdown, DropdownButton } from "react-bootstrap";
+import { Container, Row, Stack, InputGroup, FormControl, Spinner, Button, Dropdown, DropdownButton } from "react-bootstrap";
 import QuizCard from "./profile-components/QuizCard";
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Background from "./Background";
 import * as FirestoreBackend from "../services/Firestore";
 //import { ReactSearchAutocomplete } from "react-search-autocomplete";
@@ -44,29 +44,30 @@ function Discover() {
 //     console.log(item.title);
 //     const fetchQuiz = await FirestoreBackend.getQuizzes()
 //   };
+  useEffect(() => {
+    handleSearch()
+  }, [completedFilter, searchFilter])
 
   const handleFilterChange = (e) => {
     setCompletedFilter(e)
-    handleSearch()
   }
 
   const handleSortChange = (e) => {
     setSearchFilter(e)
-    handleSearch();
   }
 
   const searchChanged = (e) => {
     setSearchTarget(e.target.value)
   }
 
-  const handleSearch = async (target) => {
+  const handleSearch = async () => {
     setQuizzes([]);
     const searchQuery = searchTarget;
     let order = 'desc';
     if (searchFilter === "Ascending")
         order = 'asc';
     console.log("searching for: '", searchQuery, "'");
-    const results = FirestoreBackend.searchQuizzes(searchQuery, 99, 'publish_date', order);
+    const results = FirestoreBackend.searchQuizzes(searchQuery, 99, 'quiz_title', order);
     results.then(async (query_snapshot) => {
         if (query_snapshot.empty) {
         console.log("nothing found!");
@@ -76,24 +77,35 @@ function Discover() {
         resolvedQuiz.allowed = false;
         console.log(completedFilter, " | ", resolvedQuiz.completed_state);
         if(completedFilter === "Completed" && resolvedQuiz.completed_state){
-            console.log("first")
             setQuizzes(results => [...results, resolvedQuiz]);
         }
         else if(completedFilter === "Not Completed" && !resolvedQuiz.completed_state){
-            console.log("2nd")
             setQuizzes(results => [...results, resolvedQuiz]);
         }
         else if (completedFilter === "All Quizzes") {
-            console.log("3rd")
             setQuizzes(results => [...results, resolvedQuiz]);
         }
         };
     });
+    //sortQuizzes();
+  }
+
+  function sortQuizzes() {
+    if(quizzes.length > 0) {
+        quizzes.sort(function(a, b){
+            let x = a.title.toLowerCase();
+            let y = b.title.toLowerCase();
+            if (x < y) {return -1;}
+            if (x > y) {return 1;}
+            return 0;
+        });
+        console.log(quizzes)
+        setQuizzes(quizzes)
+    }
   }
 
   const rows = [...Array(Math.ceil(quizzes.length / 3))];
   const quizRows = rows.map((row, index) => quizzes.slice(index * 3, index * 3 + 3))
-
   const content = quizRows.map((row, index) => (
     <Row className="row" key={index}>
             {row.map(quiz => (
@@ -131,9 +143,8 @@ function Discover() {
                   </DropdownButton>
                 </Stack>
             <br></br>
-            <Container>
-                {content}
-            </Container>
+            {quizzes.length===0 && <Spinner style={{ marginTop: "100px" }} animation="border" role="status"></Spinner>}
+            {quizzes.length>0 && <Container>{content}</Container>}
         </Background>
   );
 }
