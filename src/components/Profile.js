@@ -40,6 +40,9 @@ function Profile() {
   const [quizzes, setQuizzes] = useState([])
   const [refreshKey, setRefreshKey] = useState(0);
 
+  const [featuredQuiz, setFeaturedQuiz] = useState();
+  const [featuredPost, setFeaturedPost] = useState();
+
   const params = useParams();
 
   useEffect(() => {
@@ -55,19 +58,8 @@ function Profile() {
         setName(query_snapshot.data().display_name);
         setProfileImage(query_snapshot.data().profile_image);
       });
-      //get user's quizzes
-      // const userquizzes = FirestoreBackend.searchUserQuizzes(params.id, (userDetails.id === params.id))
-      // let quizii = []
-      // userquizzes.then(async (query_snapshot) => {
-      //   for (const doc of query_snapshot.docs) {
-      //     const quiz = await FirestoreBackend.resolveQuizRef(doc.ref);
-      //     if (quiz !== undefined) {
-      //       quiz.allowed = userDetails.id === params.id;
-      //       quizii.push(quiz);
-      //       setQuizzes(quizzes.concat(quizii));
-      //     }
-      //   }
-      // });
+      //TODO get featued quiz and post
+
     }
     getData()
   }, [userDetails, refreshKey])
@@ -166,7 +158,7 @@ function Profile() {
     quizzes_taken: quizzes,
     platforms: [],
     medals: [],
-    featured_quiz: quizzes[0],
+    featured_quiz: featuredQuiz,
     featured_post: posts[0],
     following: [],
     followers: [],
