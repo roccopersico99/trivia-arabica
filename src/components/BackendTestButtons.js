@@ -135,23 +135,22 @@ function BackendTestButtons() {
       </button>
       <br/>
       <button onClick={()=>{
-        {
+
           const usr_query = FirestoreBackend.searchQuizzes('samp');
           usr_query.then((query_snapshot)=>{
             console.log(query_snapshot);
 
             query_snapshot.forEach((quiz) => {
-              const quizRef = quiz.ref;
               console.log(quiz.data());
             });
           });
-        }
+
       }}>
         Test search quiz
       </button>
       <br/>
       </div>
-      
+
 
   );
 }

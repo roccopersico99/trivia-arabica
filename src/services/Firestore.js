@@ -78,7 +78,7 @@ export const getQuizRatings = async (quizID) => {
 }
 
 export const updateQuizRatings = async (quizID, likes, dislikes) => {
-  const quiz = await (await getQuiz(quizID)).data()
+  //const quiz = await (await getQuiz(quizID)).data()
   const docSnap = await updateDoc(doc(db, "quizzes", quizID), {
     quiz_likes: likes,
     quiz_dislikes: dislikes,
@@ -106,7 +106,7 @@ export const getAllQuizzes = async () => {
     snapshot.forEach((doc) => {
       let title = doc.data().quiz_title;
       let desc = doc.data().quiz_desc;
-      quizzes.push({id, title, desc})
+      quizzes.push({ id, title, desc })
       id++;
     })
   });
@@ -245,36 +245,35 @@ export const recentQuizzes = (limitResults = 10) => {
 
 export const searchQuizzes = (search = "", limitResults = 30, orderOn = "publish_date", order = "desc") => {
   search = search.toLowerCase();
-  const q = query(quizRef, 
-    where('search_index', 'array-contains', search), 
-    where('publish_state', '==', true), 
-    orderBy(orderOn, order), 
+  const q = query(quizRef,
+    where('search_index', 'array-contains', search),
+    where('publish_state', '==', true),
+    orderBy(orderOn, order),
     limit(limitResults));
   return getDocs(q);
 }
 
-export const searchUserQuizzes = ( userid, isowner, search = "", limitResults = 30, orderOn = "publish_date", order = "desc") => {
+export const searchUserQuizzes = (userid, isowner, search = "", limitResults = 30, orderOn = "publish_date", order = "desc") => {
   search = search.toLowerCase();
   console.log(userid);
   console.log(isowner);
-  if (isowner){
-    const q = query(quizRef, 
-      where('search_index', 'array-contains', search), 
-      where('quiz_creator', '==', userid), 
-      orderBy(orderOn, order), 
+  if (isowner) {
+    const q = query(quizRef,
+      where('search_index', 'array-contains', search),
+      where('quiz_creator', '==', userid),
+      orderBy(orderOn, order),
+      limit(limitResults));
+    return getDocs(q);
+  } else {
+    const q = query(quizRef,
+      where('search_index', 'array-contains', search),
+      where('publish_state', '==', true),
+      where('quiz_creator', '==', userid),
+      orderBy(orderOn, order),
       limit(limitResults));
     return getDocs(q);
   }
-  else{
-    const q = query(quizRef, 
-      where('search_index', 'array-contains', search), 
-      where('publish_state', '==', true), 
-      where('quiz_creator', '==', userid), 
-      orderBy(orderOn, order), 
-      limit(limitResults));
-    return getDocs(q);
-  }
-  
+
 }
 
 // FIREBASE STORAGE
@@ -328,8 +327,7 @@ export const updateSearchIndex = async () => {
       }
       let strings = title.split(" ");
       console.log(strings)
-      for (let n = 1; n < strings.length; n++)
-      {
+      for (let n = 1; n < strings.length; n++) {
         let str = '';
         let string = strings[n];
         console.log("hi " + string);
