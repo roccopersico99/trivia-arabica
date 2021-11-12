@@ -89,10 +89,11 @@ function Profile() {
     setQuizzes([]);
     const searchQuery = searchTarget;
     let order = 'desc';
+    const yourProfile = userDetails.id === params.id
     if (searchFilter === "Ascending")
       order = 'asc';
     console.log("searching for: '", searchQuery, "'");
-    const results = FirestoreBackend.searchUserQuizzes(params.id, (userDetails.id === params.id), searchQuery, 99, 'publish_date', order);
+    const results = FirestoreBackend.searchUserQuizzes(params.id, yourProfile, searchQuery, 99, 'publish_date', order);
     results.then(async (query_snapshot) => {
       if (query_snapshot.empty) {
         console.log("nothing found!");
@@ -101,6 +102,7 @@ function Profile() {
         const resolvedQuiz = await FirestoreBackend.resolveQuizRef(quiz.ref);
         resolvedQuiz.allowed = userDetails.id === params.id;
         console.log(resolvedQuiz);
+        console.log(results)
         setQuizzes(results => [...results, resolvedQuiz]);
       };
     });
@@ -209,12 +211,12 @@ function Profile() {
                       <Button onClick={handleSearch} variant="secondary" id="button-addon1">🔍</Button>
                       <FormControl onChange={searchChanged} aria-label="Example text with button addon" placeholder="Enter search terms..." aria-describedby="basic-addon1" />
                   </InputGroup>
-                {(userDetails.id === params.id) && <DropdownButton variant="outline-secondary" title={completedFilter + " "} id="input-group-dropdown-1">
+                {(userDetails.id === params.id) && <DropdownButton variant="outline-secondary" onSelect={handleFilterChange} title={completedFilter + " "} id="input-group-dropdown-1">
                       <Dropdown.Item eventKey="All Quizzes">All Quizzes</Dropdown.Item>
                       <Dropdown.Item eventKey="Published">Published</Dropdown.Item>
                       <Dropdown.Item eventKey="Not Published">Not Published</Dropdown.Item>
                   </DropdownButton>}
-                  {(userDetails.id !== params.id) && <DropdownButton variant="outline-secondary" title={completedFilter + " "} id="input-group-dropdown-1">
+                  {(userDetails.id !== params.id) && <DropdownButton variant="outline-secondary" onSelect={handleFilterChange} title={completedFilter + " "} id="input-group-dropdown-1">
                         <Dropdown.Item eventKey="All Quizzes">All Quizzes</Dropdown.Item>
                         <Dropdown.Item eventKey="Completed">Completed</Dropdown.Item>
                         <Dropdown.Item eventKey="Not Completed">Not Completed</Dropdown.Item>
