@@ -29,6 +29,7 @@ function Profile() {
   const userDetails = useAuthState();
 
   const [completedFilter, setCompletedFilter] = useState("All Quizzes");
+  const [publishedFilter, setPublishedFilter] = useState("All Quizzes");
   const [searchFilter, setSearchFilter] = useState("Ascending");
 
   const [searchTarget, setSearchTarget] = useState("")
@@ -72,7 +73,10 @@ function Profile() {
   }, [userDetails, refreshKey])
 
   const handleFilterChange = (e) => {
-    setCompletedFilter(e)
+    if(userDetails.id === params.id)
+      setPublishedFilter(e)
+    else
+      setCompletedFilter(e)
     handleSearch()
   }
 
@@ -101,9 +105,19 @@ function Profile() {
       for (const quiz of query_snapshot.docs) {
         const resolvedQuiz = await FirestoreBackend.resolveQuizRef(quiz.ref);
         resolvedQuiz.allowed = userDetails.id === params.id;
-        console.log(resolvedQuiz);
-        console.log(results)
-        setQuizzes(results => [...results, resolvedQuiz]);
+        console.log(publishedFilter, " | ", resolvedQuiz.publish_state);
+        if(yourProfile && publishedFilter === "Published" && resolvedQuiz.publish_state){
+          console.log("first")
+          setQuizzes(results => [...results, resolvedQuiz]);
+        }
+        else if(yourProfile && publishedFilter === "Not Published" && !resolvedQuiz.publish_state){
+          console.log("2nd")
+          setQuizzes(results => [...results, resolvedQuiz]);
+        }
+        else if (yourProfile && publishedFilter === "All Quizzes") {
+          console.log("3rd")
+          setQuizzes(results => [...results, resolvedQuiz]);
+        }
       };
     });
   }
@@ -211,7 +225,7 @@ function Profile() {
                       <Button onClick={handleSearch} variant="secondary" id="button-addon1">🔍</Button>
                       <FormControl onChange={searchChanged} aria-label="Example text with button addon" placeholder="Enter search terms..." aria-describedby="basic-addon1" />
                   </InputGroup>
-                {(userDetails.id === params.id) && <DropdownButton variant="outline-secondary" onSelect={handleFilterChange} title={completedFilter + " "} id="input-group-dropdown-1">
+                {(userDetails.id === params.id) && <DropdownButton variant="outline-secondary" onSelect={(e) => {setPublishedFilter(e); handleSearch();}} title={publishedFilter + " "} id="input-group-dropdown-1">
                       <Dropdown.Item eventKey="All Quizzes">All Quizzes</Dropdown.Item>
                       <Dropdown.Item eventKey="Published">Published</Dropdown.Item>
                       <Dropdown.Item eventKey="Not Published">Not Published</Dropdown.Item>

@@ -187,7 +187,8 @@ export const resolveQuizRef = async (quizRef) => {
     likes: snapshot.data().quiz_likes,
     dislikes: snapshot.data().quiz_dislikes,
     ratings: snapshot.data().quiz_ratings,
-    publish_date: snapshot.data().publish_date
+    publish_date: snapshot.data().publish_date,
+    publish_state: snapshot.data().publish_state
   }
 }
 
