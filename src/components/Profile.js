@@ -28,7 +28,7 @@ import About from "./profile-components/About";
 function Profile() {
   const userDetails = useAuthState();
 
-  const [completedFilter, setCompletedFilter] = useState("Completed");
+  const [completedFilter, setCompletedFilter] = useState("All Quizzes");
   const [searchFilter, setSearchFilter] = useState("Ascending");
 
   const [searchTarget, setSearchTarget] = useState("")
@@ -70,6 +70,11 @@ function Profile() {
     }
     getData()
   }, [userDetails, refreshKey])
+
+  const handleFilterChange = (e) => {
+    setCompletedFilter(e)
+    handleSearch()
+  }
 
   const handleSortChange = (e) => {
     setSearchFilter(e)
@@ -205,10 +210,15 @@ function Profile() {
                       <FormControl onChange={searchChanged} aria-label="Example text with button addon" placeholder="Enter search terms..." aria-describedby="basic-addon1" />
                   </InputGroup>
                 {(userDetails.id === params.id) && <DropdownButton variant="outline-secondary" title={completedFilter + " "} id="input-group-dropdown-1">
-                      <Dropdown.Item as="button"><div >All Quizzes</div></Dropdown.Item>
-                      <Dropdown.Item as="button"><div >Published</div></Dropdown.Item>
-                      <Dropdown.Item as="button"><div >Not Published</div></Dropdown.Item>
+                      <Dropdown.Item eventKey="All Quizzes">All Quizzes</Dropdown.Item>
+                      <Dropdown.Item eventKey="Published">Published</Dropdown.Item>
+                      <Dropdown.Item eventKey="Not Published">Not Published</Dropdown.Item>
                   </DropdownButton>}
+                  {(userDetails.id !== params.id) && <DropdownButton variant="outline-secondary" title={completedFilter + " "} id="input-group-dropdown-1">
+                        <Dropdown.Item eventKey="All Quizzes">All Quizzes</Dropdown.Item>
+                        <Dropdown.Item eventKey="Completed">Completed</Dropdown.Item>
+                        <Dropdown.Item eventKey="Not Completed">Not Completed</Dropdown.Item>
+                    </DropdownButton>}
                   <DropdownButton variant="outline-secondary" onSelect={handleSortChange} title={searchFilter + " "} id="input-group-dropdown-2">
                   <Dropdown.Item eventKey="Ascending">Ascending</Dropdown.Item>
                     <Dropdown.Item eventKey="Descending">Descending</Dropdown.Item>
