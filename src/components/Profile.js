@@ -246,7 +246,7 @@ function Profile() {
                     {/* <Dropdown.Item as="button"><div onClick={(e) => setSearchFilter(e.target.textContent)}>SmartSort</div></Dropdown.Item> */}
                   </DropdownButton>
                 </Stack>
-                <Quizzes setQuizzes={setQuizzes} refreshKey={refreshKey} setRefreshKey={setRefreshKey} quizzes={quizzes}></Quizzes>
+                <Quizzes setQuizzes={setQuizzes} handleSearch={handleSearch} quizzes={quizzes}></Quizzes>
               </Tab>
               <Tab eventKey="posts" title="Posts">
                 <Posts posts={user.posts}></Posts>

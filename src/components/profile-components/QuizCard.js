@@ -89,7 +89,7 @@ function QuizCard(props) {
     console.log("delete clicked");
     FirestoreBackend.deleteQuiz(props.quiz?.id);
     props.setQuizzes([])
-    props.setRefreshKey(props.refreshKey + 1)
+    props.handleSearch()
   }
 
   return (
