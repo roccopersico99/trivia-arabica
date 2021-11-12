@@ -90,7 +90,6 @@ export const assignQuizToUser = async (userid, quizID, quizRef) => {
   const docSnap = await db.collection('users').doc(userid).collection("userquizzes").doc(quizID).set({
     quizRef: quizRef
   });
-  console.log(docSnap)
   return docSnap;
 }
 
@@ -123,11 +122,11 @@ export const createQuiz = async (userId, quizTitle, quizDesc, imgPath) => {
   let str = '';
   let searchIndex = [''];
   for (let i = 0; i < title.length; i++) {
-    console.log(str[i]);
+
     str = str.concat(title[i]);
-    console.log(str);
+
     searchIndex.push(str);
-    console.log(searchIndex);
+
   }
   const docSnap = await db.collection('quizzes')
     .add({
@@ -256,8 +255,7 @@ export const searchQuizzes = (search = "", limitResults = 30, orderOn = "publish
 
 export const searchUserQuizzes = (userid, isowner, search = "", limitResults = 30, orderOn = "publish_date", order = "desc") => {
   search = search.toLowerCase();
-  console.log(userid);
-  console.log(isowner);
+
   if (isowner) {
     const q = query(quizRef,
       where('search_index', 'array-contains', search),
