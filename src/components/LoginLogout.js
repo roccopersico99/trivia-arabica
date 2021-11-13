@@ -22,7 +22,7 @@ export default function LoginLogout() {
 
     const usr_query = FirestoreBackend.getUser('' + res.profileObj.googleId);
     usr_query.then((query_snapshot) => {
-      if (query_snapshot.empty) {
+      if (!query_snapshot.exists) {
         //create account
         FirestoreBackend.createUser(res.profileObj.name, '' + res.profileObj.googleId, res.profileObj.imageUrl)
       } else {
