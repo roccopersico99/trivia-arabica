@@ -104,16 +104,15 @@ function Profile() {
       }
       for (const quiz of query_snapshot.docs) {
         const resolvedQuiz = await FirestoreBackend.resolveQuizRef(quiz.ref);
-        resolvedQuiz.allowed = userDetails.id === params.id;
+        if(resolvedQuiz){
+          resolvedQuiz.allowed = userDetails.id === params.id;
         if (yourProfile && publishedFilter === "Published" && resolvedQuiz.publish_state) {
-
           setQuizzes(results => [...results, resolvedQuiz]);
         } else if (yourProfile && publishedFilter === "Not Published" && !resolvedQuiz.publish_state) {
-
           setQuizzes(results => [...results, resolvedQuiz]);
         } else if (yourProfile && publishedFilter === "All Quizzes") {
-
           setQuizzes(results => [...results, resolvedQuiz]);
+        }
         }
       };
     });
