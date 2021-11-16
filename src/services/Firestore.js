@@ -51,6 +51,19 @@ export const getUserQuizzes = async (userid) => {
   return docSnap;
 }
 
+export const updateUserMedals = async (userid, addedMedals) => {
+  let newMedals = await (await db.collection('users').doc(userid).get()).data().medals;
+  if(isNaN(newMedals)) {
+    newMedals = 0;
+  }
+  newMedals += addedMedals;
+  const docSnap = await updateDoc(doc(db, "users", userid), {
+    medals: newMedals,
+  });
+  console.log("newMedals: " + newMedals)
+  return newMedals;
+}
+
 export const addUserRatedQuiz = async (userid, quizID, rating) => {
   const docSnap = await db.collection('users').doc(userid);
   return setDoc(doc(docSnap, "rated_quizzes", quizID), {

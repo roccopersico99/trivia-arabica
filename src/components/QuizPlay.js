@@ -5,9 +5,15 @@ import { useParams, Link } from "react-router-dom";
 import { default as defQuestionImage } from "../shark_nose.jpg";
 import { Stack, Image, Button, ListGroup, Spinner } from 'react-bootstrap';
 import * as FirestoreBackend from '../services/Firestore.js'
+import { useAuthState } from '../Context';
 
 function QuizPlay() {
+    const userDetails = useAuthState();
     const params = useParams();
+
+    const [userMedals, setUserMedals] = useState(0)
+    const [quizFinished, setQuizFinished] = useState(false)
+
     const [currQuestionNum, setCurrQuestionNum] = useState(1);
     const [selectedChoice, setSelectedChoice] = useState(-1);
     const [numCorrect, setNumCorrect] = useState(0);
@@ -26,6 +32,13 @@ function QuizPlay() {
     const setupQuestionNames = (quests) => { //specifically grabs question names from the quizQuestions array and updates them.
         let names = Array.from(quests, x => x.question_title)
         setQuestionNames(names)
+    }
+
+    const updateMedals = async (addedMedals) => {
+        if(userDetails.user !== "") {
+            const newMedals = await FirestoreBackend.updateUserMedals(userDetails.id, addedMedals);
+            setUserMedals(newMedals)
+        }
     }
 
     const getQuiz = async () => {
@@ -104,8 +117,11 @@ function QuizPlay() {
             setAnswers(ans)
             setLoading(false)
         }
-        else
+        else {
             console.log("reached last question!")
+            setQuizFinished(true)
+        }
+
     }
 
     if (quizQuestions.length === 0) {
@@ -119,11 +135,25 @@ function QuizPlay() {
         )
     }
     else if(currQuestionNum > quizQuestions.length){
+        const earnedMedals = (numCorrect/quizQuestions.length) * 100;
+        if(quizFinished) {
+            updateMedals(earnedMedals);
+            if(userDetails.user !== "") {
+                userDetails.medals = userMedals
+            }
+            setQuizFinished(false)
+        }
+
         return (
             <Background>
                 <br></br>
                 <h1>Quiz Completed!</h1>
-                <h1>You scored {numCorrect}/{quizQuestions.length}</h1>
+                <h2>You scored {numCorrect}/{quizQuestions.length}</h2>
+                <br></br>
+                {userDetails.user !== "" && <h2>You gained {earnedMedals} medals!</h2>}
+                {userDetails.user !== "" && <h3>New Total Medal Count: {userMedals}</h3>}
+                {userDetails.user === "" && <h2>You could've earned {earnedMedals} medals!</h2>}
+                {userDetails.user === "" && <h3>Unfortunately, medals can only be earned when logged in!</h3>}
                 <br></br>
                 <Link to="/" className="btn btn-outline-danger">Exit Quiz</Link>
             </Background>
