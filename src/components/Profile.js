@@ -24,13 +24,10 @@ import Home from "./profile-components/ProfileHome";
 import Quizzes from "./profile-components/Quizzes";
 import Posts from "./profile-components/Posts";
 import About from "./profile-components/About";
+import Search from "./Search";
 
 function Profile() {
   const userDetails = useAuthState();
-
-  const [completedFilter, setCompletedFilter] = useState("All Quizzes");
-  const [publishedFilter, setPublishedFilter] = useState("All Quizzes");
-  const [searchFilter, setSearchFilter] = useState("Ascending");
 
   const [searchTarget, setSearchTarget] = useState("")
 
@@ -64,58 +61,9 @@ function Profile() {
     getData()
   }, [userDetails, refreshKey])
 
-
-  useEffect(() => {
-    handleSearch()
-  }, [publishedFilter, completedFilter, searchFilter])
-
-  const handleFilterChange = (e) => {
-    if (userDetails.id === params.id)
-      setPublishedFilter(e)
-    else
-      setCompletedFilter(e)
-  }
-
-  const handleSortChange = (e) => {
-    setSearchFilter(e)
-  }
-
-  const searchChanged = (e) => {
-    setSearchTarget(e.target.value)
-  }
-
   const handleTabChange = (e) => {
     if (e === "quizzes") {
-      handleSearch();
     }
-  }
-
-  const handleSearch = () => {
-    setQuizzes([]);
-    const searchQuery = searchTarget;
-    let order = 'desc';
-    const yourProfile = userDetails.id === params.id
-    if (searchFilter === "Ascending")
-      order = 'asc';
-    const results = FirestoreBackend.searchUserQuizzes(params.id, yourProfile, searchQuery, 99, 'quiz_title', order);
-    results.then(async (query_snapshot) => {
-      if (query_snapshot.empty) {
-        console.log("nothing found!");
-      }
-      for (const quiz of query_snapshot.docs) {
-        const resolvedQuiz = await FirestoreBackend.resolveQuizRef(quiz.ref);
-        if(resolvedQuiz){
-            resolvedQuiz.allowed = userDetails.id === params.id;
-          if (yourProfile && publishedFilter === "Published" && resolvedQuiz.publish_state) {
-            setQuizzes(results => [...results, resolvedQuiz]);
-          } else if (yourProfile && publishedFilter === "Not Published" && !resolvedQuiz.publish_state) {
-            setQuizzes(results => [...results, resolvedQuiz]);
-          } else if (yourProfile && publishedFilter === "All Quizzes") {
-            setQuizzes(results => [...results, resolvedQuiz]);
-          }
-        }
-      };
-    });
   }
 
   const setAboutText = async (val) => {
@@ -216,29 +164,7 @@ function Profile() {
                 ></Home>
               </Tab>
               <Tab eventKey="quizzes" title="Quizzes">
-                <Stack direction="horizontal" gap={2} style={{ margin: "10px" }}>
-                  <InputGroup>
-                      <Button onClick={handleSearch} variant="secondary" id="button-addon1">🔍</Button>
-                      <FormControl onChange={searchChanged} aria-label="Example text with button addon" placeholder="Enter search terms..." aria-describedby="basic-addon1" />
-                  </InputGroup>
-                {(userDetails.id === params.id) && <DropdownButton variant="outline-secondary" onSelect={setPublishedFilter} title={publishedFilter + " "} id="input-group-dropdown-1">
-                      <Dropdown.Item eventKey="All Quizzes">All Quizzes</Dropdown.Item>
-                      <Dropdown.Item eventKey="Published">Published</Dropdown.Item>
-                      <Dropdown.Item eventKey="Not Published">Not Published</Dropdown.Item>
-                  </DropdownButton>}
-                  {(userDetails.id !== params.id) && <DropdownButton variant="outline-secondary" onSelect={handleFilterChange} title={completedFilter + " "} id="input-group-dropdown-1">
-                        <Dropdown.Item eventKey="All Quizzes">All Quizzes</Dropdown.Item>
-                        <Dropdown.Item eventKey="Completed">Completed</Dropdown.Item>
-                        <Dropdown.Item eventKey="Not Completed">Not Completed</Dropdown.Item>
-                    </DropdownButton>}
-                  <DropdownButton variant="outline-secondary" onSelect={handleSortChange} title={searchFilter + " "} id="input-group-dropdown-2">
-                  <Dropdown.Item eventKey="Ascending">Ascending</Dropdown.Item>
-                    <Dropdown.Item eventKey="Descending">Descending</Dropdown.Item>
-                    {/* <Dropdown.Item as="button"><div onClick={(e) => setSearchFilter(e.target.textContent)}>SmartSort</div></Dropdown.Item> */}
-                  </DropdownButton>
-                </Stack>
-                {quizzes.length===0 && <Spinner style={{ marginTop: "100px" }} animation="border" role="status"></Spinner>}
-                {quizzes.length>0 && <Quizzes setQuizzes={setQuizzes} handleSearch={handleSearch} quizzes={quizzes}></Quizzes>}
+                <Search userDetails={userDetails}></Search>
               </Tab>
               <Tab eventKey="posts" title="Posts">
                 <Posts posts={user.posts}></Posts>
