@@ -92,6 +92,7 @@ function QuizCard(props) {
     props.handleSearch()
   }
 
+
   return (
     <Card as={Col} style={{ margin: "10px" }}>
       <Card.Body>
@@ -108,12 +109,10 @@ function QuizCard(props) {
         >
           Play
         </Link>
-        {!props.quiz?.allowed && <Button onClick={handleLike} variant="success">Like</Button>}
-        {!props.quiz?.allowed && <Button onClick={handleDislike} variant="danger">Dislike</Button>}
-        {props.quiz?.allowed && <Button href={
-          "/creator/" + props.quiz?.id
-        } variant="warning">Edit</Button>}
-        {props.quiz?.allowed && <Button onClick={handleDelete} variant="danger">Delete</Button>}
+        {!props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleLike} variant="success">Like</Button>}
+        {!props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleDislike} variant="danger">Dislike</Button>}
+        {props.quiz?.allowed && userDetails.user !== "" && <Button href={"/creator/" + props.quiz?.id} variant="warning">Edit</Button>}
+        {props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleDelete} variant="danger">Delete</Button>}
       </Card.Body>
     </Card>
   );

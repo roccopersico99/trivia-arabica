@@ -60,19 +60,19 @@ function QuizPreview() {
   const likePercent = Math.floor((likes/totalRatings)*100)
   const dislikePercent = Math.floor((dislikes/totalRatings)*100)
 
-  if (userDetails.user === "") {
-    return (
-      <Background>
-        <Spinner
-          style={{ marginTop: "100px" }}
-          animation="border"
-          role="status"
-        >
-          <span className="visually-hidden">Loading...</span>
-        </Spinner>
-      </Background>
-    );
-  }
+  // if (userDetails.user === "") {
+  //   return (
+  //     <Background>
+  //       <Spinner
+  //         style={{ marginTop: "100px" }}
+  //         animation="border"
+  //         role="status"
+  //       >
+  //         <span className="visually-hidden">Loading...</span>
+  //       </Spinner>
+  //     </Background>
+  //   );
+  // }
   return (
     <Background>
       <Container>
@@ -114,15 +114,9 @@ function QuizPreview() {
               />
             </ProgressBar>
             <Stack direction="horizontal" gap={3}>
-              <Link
-                to={{ pathname: "/play/" + quiz?.id, state: quiz }}
-                className="btn btn-success w-50 p-3"
-              >
-                Play!
-              </Link>
-              <Button variant="danger" className="w-50 p-3">
-                Report
-              </Button>
+              {userDetails.user !== "" && <Link to={{ pathname: "/play/" + quiz?.id, state: quiz }} className="btn btn-success w-100 p-3">Play!</Link>}
+              {userDetails.user === "" && <Link to={{ pathname: "/play/" + quiz?.id, state: quiz }} className="btn btn-success w-50 p-3">Play!</Link>}
+              {userDetails.user !== "" && <Button variant="danger" className="w-50 p-3">Report</Button>}
             </Stack>
           </Stack>
           <Stack gap={3} style={{ width: "48%" }}>
