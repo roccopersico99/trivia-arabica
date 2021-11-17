@@ -11,14 +11,37 @@ import {
 } from "react-bootstrap";
 import { Link, useHistory, useParams } from "react-router-dom";
 import * as FirestoreBackend from "../services/Firestore";
-
+import { Timestamp } from "@firebase/firestore";
 import { useAuthState } from "../Context/index";
+import * as Email from "smtpjs"
 
 function QuizPreview() {
   const history = useHistory();
   const userDetails = useAuthState();
   const params = useParams();
   const quiz = history.location.state;
+
+  function handleReport() {
+    console.log("clicked report...")
+    let sentBy = ""
+    userDetails.user === "" ? sentBy = "Guest" : sentBy = userDetails.id
+    try {
+    Email.send({
+      SecureToken : "63471289-57ce-4b8d-a62a-fc08d4430e06",
+      To : 'roccopersico99@gmail.com',
+      From : "roccopersico99@gmail.com",
+      Subject : "Quiz Reported: " + params.id,
+      Body : "A quiz has been reported on Trivia Arabica...\n"
+      + "Reported Quiz: " + params.id + "\n"
+      + "Reported by User: " + sentBy + "\n"
+      + "Time of Report: " + Timestamp.now()
+    }).then(
+      message => alert(message)
+    );
+    } catch(e){
+      console.log(e)
+    }
+  }
 
   const [currQuiz, setCurrQuiz] = useState(async () => {
     await FirestoreBackend.getQuiz(params.id).then((quiz) => {
@@ -116,7 +139,7 @@ function QuizPreview() {
             <Stack direction="horizontal" gap={3}>
               {userDetails.user !== "" && <Link to={{ pathname: "/play/" + quiz?.id, state: quiz }} className="btn btn-success w-100 p-3">Play!</Link>}
               {userDetails.user === "" && <Link to={{ pathname: "/play/" + quiz?.id, state: quiz }} className="btn btn-success w-50 p-3">Play!</Link>}
-              {userDetails.user !== "" && <Button variant="danger" className="w-50 p-3">Report</Button>}
+              {userDetails.user !== "" && <Button onClick={handleReport} variant="danger" className="w-50 p-3">Report</Button>}
             </Stack>
           </Stack>
           <Stack gap={3} style={{ width: "48%" }}>
