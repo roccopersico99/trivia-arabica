@@ -13,7 +13,6 @@ import { Link, useHistory, useParams } from "react-router-dom";
 import * as FirestoreBackend from "../services/Firestore";
 import { Timestamp } from "@firebase/firestore";
 import { useAuthState } from "../Context/index";
-import * as Email from "smtpjs"
 
 function QuizPreview() {
   const history = useHistory();
@@ -26,7 +25,7 @@ function QuizPreview() {
     let sentBy = ""
     userDetails.user === "" ? sentBy = "Guest" : sentBy = userDetails.id
     try {
-    Email.send({
+    window.Email.send({
       SecureToken : "63471289-57ce-4b8d-a62a-fc08d4430e06",
       To : 'roccopersico99@gmail.com',
       From : "roccopersico99@gmail.com",
