@@ -11,7 +11,7 @@ function Home() {
       <p>Home</p>
 
       {/* test buttons for backend functions */}
-      <BackendTestButtons></BackendTestButtons> 
+      {/* <BackendTestButtons></BackendTestButtons>  */}
       <RecentQuizzes></RecentQuizzes>
 
     </Background>

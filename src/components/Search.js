@@ -6,7 +6,8 @@ import { useParams } from "react-router-dom";
 
 function Search(props) {
   const [completedFilter, setCompletedFilter] = useState("All Quizzes");
-  const [searchFilter, setSearchFilter] = useState("Ascending");
+  const [orderBy, setOrderBy] = useState("Publish Date")
+  const [searchFilter, setSearchFilter] = useState("Descending");
   const [searchTarget, setSearchTarget] = useState("")
   const [quizzes, setQuizzes] = useState([]);
   const params = useParams();
@@ -14,7 +15,7 @@ function Search(props) {
 
   useEffect(() => {
     handleSearch()
-  }, [completedFilter, searchFilter])
+  }, [completedFilter, searchFilter, orderBy])
 
   const handleFilterChange = (e) => {
     setCompletedFilter(e)
@@ -22,6 +23,10 @@ function Search(props) {
 
   const handleSortChange = (e) => {
     setSearchFilter(e)
+  }
+
+  const handleSortByChange = (e) => {
+    setOrderBy(e)
   }
 
   const searchChanged = (e) => {
@@ -35,17 +40,20 @@ function Search(props) {
     let order = 'desc';
     if (searchFilter === "Ascending")
         order = 'asc';
+    let orderOn = 'publish_date'
+    if (orderBy === "Quiz Name")
+        orderOn = 'search_title'
     console.log("searching for: '", searchQuery, "'");
     if(page === 'discover'){
-        searchDiscover(searchQuery, order);
+        searchDiscover(searchQuery, orderOn, order);
     } else if(page === 'profile'){
-        searchProfile(searchQuery, order);
+        searchProfile(searchQuery, orderOn, order);
     }
   }
 
-    const searchDiscover = async (searchQuery, order) => {
+    const searchDiscover = async (searchQuery, orderOn, order) => {
         //TODO: ACTUALLY FILTER COMPLETED/NOT COMPLETED QUIZZES
-        const results = FirestoreBackend.searchQuizzes(searchQuery, 99, 'quiz_title', order);
+        const results = FirestoreBackend.searchQuizzes(searchQuery, 99, orderOn, order);
         results.then(async (query_snapshot) => {
             if (query_snapshot.empty) {
             console.log("nothing found!");
@@ -57,9 +65,9 @@ function Search(props) {
         });
     }
 
-    const searchProfile = async (searchQuery, order) => {
+    const searchProfile = async (searchQuery, orderOn, order) => {
         const yourProfile = props.userDetails.id === params.id
-        const results = FirestoreBackend.searchUserQuizzes(params.id, yourProfile, searchQuery, 99, 'quiz_title', order);
+        const results = FirestoreBackend.searchUserQuizzes(params.id, yourProfile, searchQuery, 99, orderOn, order);
         results.then(async (query_snapshot) => {
             if (query_snapshot.empty) {
                 console.log("nothing found!");
@@ -143,6 +151,10 @@ function Search(props) {
                 <Dropdown.Item eventKey="Completed">Completed</Dropdown.Item>
                 <Dropdown.Item eventKey="Not Completed">Not Completed</Dropdown.Item>
             </DropdownButton>}
+            <DropdownButton variant="outline-secondary" onSelect={handleSortByChange} title={orderBy + " "} id="input-group-dropdown-3">
+                <Dropdown.Item eventKey="Publish Date">Order by Publish Date</Dropdown.Item>
+                <Dropdown.Item eventKey="Quiz Name">Order by Quiz Name</Dropdown.Item>
+            </DropdownButton>
             <DropdownButton variant="outline-secondary" onSelect={handleSortChange} title={searchFilter + " "} id="input-group-dropdown-2">
                 <Dropdown.Item eventKey="Ascending">Ascending</Dropdown.Item>
                 <Dropdown.Item eventKey="Descending">Descending</Dropdown.Item>

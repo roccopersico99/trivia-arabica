@@ -331,27 +331,28 @@ export const updateSearchIndex = async () => {
       let str = '';
       let searchIndex = [''];
       for (let i = 0; i < title.length; i++) {
-        console.log(str[i]);
+        // console.log(str[i]);
         str = str.concat(title[i]);
-        console.log(str);
+        // console.log(str);
         searchIndex.push(str);
-        console.log(searchIndex);
+        // console.log(searchIndex);
       }
       let strings = title.split(" ");
-      console.log(strings)
+      // console.log(strings)
       for (let n = 1; n < strings.length; n++) {
         let str = '';
         let string = strings[n];
-        console.log("hi " + string);
+        // console.log("hi " + string);
         for (let i = 0; i < string.length; i++) {
-          console.log(str[i]);
+          // console.log(str[i]);
           str = str.concat(string[i]);
-          console.log(str);
+          // console.log(str);
           searchIndex.push(str);
-          console.log(searchIndex);
+          // console.log(searchIndex);
         }
       }
       updateDoc(doc.ref, {
+        // search_title: title
         // search_index: searchIndex,
         // quiz_dislikes: 0,
         // quiz_likes: 0
