@@ -11,7 +11,6 @@ import {
 } from "react-bootstrap";
 import { Link, useHistory, useParams } from "react-router-dom";
 import * as FirestoreBackend from "../services/Firestore";
-import { Timestamp } from "@firebase/firestore";
 import { useAuthState } from "../Context/index";
 import ReportPopup from "./ReportPopup.js"
 
@@ -23,22 +22,24 @@ function QuizPreview() {
 
   const [modalShow, setModalShow] = useState(false);
 
+
   function handleReport(res) {
     let sentBy = ""
     userDetails.user === "" ? sentBy = "Guest" : sentBy = userDetails.id
+    let currentTime = new Date()
     try {
     window.Email.send({
       SecureToken : "36297ca5-2675-43a0-82be-c6640938db00",
       To : 'rocco.persico@stonybrook.edu',
       From : "roccopersico99@gmail.com",
       Subject : "Quiz Reported: " + params.id,
-      Body : "A quiz has been reported on Trivia Arabica...\n"
-      + "Reported Quiz: " + params.id + "\n"
-      + "Reported by User: " + sentBy + "\n"
-      + "Time of Report: " + Timestamp.now() + "\n"
+      Body : "A quiz has been reported on Trivia Arabica...<br />"
+      + "Reported Quiz: " + params.id + "<br />"
+      + "Reported by User: " + sentBy + "<br />"
+      + "Time of Report: " + currentTime.toString() + "<br />"
       + "User Response: " + res
     }).then(
-      message => message=="OK" ? alert("Report Submitted. Thank you!") : alert(message)
+      message => message==="OK" ? alert("Report Submitted. Thank you!") : alert(message)
     ).then(setModalShow(false));
     } catch(e){
       console.log(e)
