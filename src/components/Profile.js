@@ -46,9 +46,6 @@ function Profile() {
     //get user
 
     async function getData() {
-      if (userDetails.user === "") {
-        return
-      }
       const usr_query = FirestoreBackend.getUser(params.id);
       usr_query.then((query_snapshot) => {
         setAbout(query_snapshot.data().user_bio);
@@ -62,8 +59,7 @@ function Profile() {
   }, [userDetails, refreshKey])
 
   const handleTabChange = (e) => {
-    if (e === "quizzes") {
-    }
+    if (e === "quizzes") {}
   }
 
   const setAboutText = async (val) => {

@@ -53,7 +53,7 @@ export const getUserQuizzes = async (userid) => {
 
 export const updateUserMedals = async (userid, addedMedals) => {
   let newMedals = await (await db.collection('users').doc(userid).get()).data().medals;
-  if(isNaN(newMedals)) {
+  if (isNaN(newMedals)) {
     newMedals = 0;
   }
   newMedals += addedMedals;
@@ -72,6 +72,9 @@ export const addUserRatedQuiz = async (userid, quizID, rating) => {
 }
 
 export const getUserRatedQuizzes = async (userid) => {
+  if (userid === undefined || userid === null || userid === "") {
+    return
+  }
   const docSnap = await db.collection('users').doc(userid).collection("rated_quizzes").get();
   return docSnap;
 }

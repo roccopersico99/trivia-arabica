@@ -9,20 +9,22 @@ function QuizCard(props) {
   const userDetails = useAuthState();
   const [isLiked, setIsLiked] = useState(async () => {
     const userquizzes = await FirestoreBackend.getUserRatedQuizzes(userDetails.id)
-    let rated_quizzii = []
-    let quizRatings = []
-    userquizzes.docs.forEach(async (doc) => {
-      rated_quizzii.push(doc.id);
-      quizRatings.push(doc.data())
-    });
+    if (userquizzes !== undefined) {
+      let rated_quizzii = []
+      let quizRatings = []
+      userquizzes.docs.forEach(async (doc) => {
+        rated_quizzii.push(doc.id);
+        quizRatings.push(doc.data())
+      });
 
-    if (rated_quizzii.includes(props.quiz?.id)) {
-      if (quizRatings[rated_quizzii.indexOf(props.quiz?.id)].like === false)
-        setIsLiked(2)
-      else if(quizRatings[rated_quizzii.indexOf(props.quiz?.id)].like === true)
-        setIsLiked(1)
-      else
-        setIsLiked(0)
+      if (rated_quizzii.includes(props.quiz?.id)) {
+        if (quizRatings[rated_quizzii.indexOf(props.quiz?.id)].like === false)
+          setIsLiked(2)
+        else if (quizRatings[rated_quizzii.indexOf(props.quiz?.id)].like === true)
+          setIsLiked(1)
+        else
+          setIsLiked(0)
+      }
     }
   });
 
