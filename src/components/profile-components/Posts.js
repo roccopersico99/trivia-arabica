@@ -4,25 +4,16 @@ function Posts(props) {
   return (
     <Container>
       <ListGroup>
-        <Card>
-          <Card.Body>
-            <Card.Title>{props.posts[0].title}</Card.Title>
-            <Card.Text>{props.posts[0].content}</Card.Text>
-            <Button variant="success">Like</Button>
-            <Button variant="danger">Dislike</Button>
-          </Card.Body>
-        </Card>
-
-        <br></br>
-
-        <Card>
-          <Card.Body>
-            <Card.Title>{props.posts[1].title}</Card.Title>
-            <Card.Text>{props.posts[1].content}</Card.Text>
-            <Button variant="success">Like</Button>
-            <Button variant="danger">Dislike</Button>
-          </Card.Body>
-        </Card>
+        {props.posts?.map((post)=>(
+          <Card>
+            <Card.Body>
+              <Card.Title>{post.post_title + " by userID: " + post.post_creator}</Card.Title>
+              <Card.Text>{post.publish_date.toDate().toString() + "\n" + post.post_text}</Card.Text>
+              <Button variant="success">Like</Button>
+              <Button variant="danger">Dislike</Button>
+            </Card.Body>
+          </Card>
+        ))}
       </ListGroup>
     </Container>
   );

@@ -179,6 +179,23 @@ export const deleteQuiz = async (quizPath) => {
   });
 }
 
+export const createUserPagePost = async (posterId, userpageId, postTitle, postText) => {
+  const docSnap = await db.collection('users').doc(userpageId).collection("user_posts").add({
+    post_creator: posterId,
+    post_title: postTitle,
+    post_text: postText,
+    post_likes: 0,
+    post_dislikes: 0,
+    publish_date: Timestamp.now(), 
+  });
+  return docSnap;
+};
+
+export const getUserPagePosts = (userPageId) => {
+  const docSnap = db.collection('users').doc(userPageId).collection('user_posts').orderBy('publish_date', 'desc').get()
+  return docSnap
+}
+
 export const resolveUserRef = async (userRef) => {
   const snapshot = (await db.collection('users').doc(userRef).get()).data();
   return snapshot;
@@ -288,7 +305,6 @@ export const searchUserQuizzes = (userid, isowner, search = "", limitResults = 3
       limit(limitResults));
     return getDocs(q);
   }
-
 }
 
 // FIREBASE STORAGE

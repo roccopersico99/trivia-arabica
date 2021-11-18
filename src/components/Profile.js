@@ -34,7 +34,8 @@ function Profile() {
   const [about, setAbout] = useState("");
   const [name, setName] = useState("");
   const [profileImage, setProfileImage] = useState("");
-  const [quizzes, setQuizzes] = useState([])
+  const [quizzes, setQuizzes] = useState([]);
+  const [posts, setPosts] = useState([]);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const [featuredQuiz, setFeaturedQuiz] = useState();
@@ -52,6 +53,14 @@ function Profile() {
         setName(query_snapshot.data().display_name);
         setProfileImage(query_snapshot.data().profile_image);
       });
+      const post_snapshot = FirestoreBackend.getUserPagePosts(params.id);
+      post_snapshot.then((doc_snapshot)=>{
+        setPosts([]);
+        for (const doc of doc_snapshot.docs) {
+          console.log(doc.data());
+          setPosts(posts => [...posts, doc.data()]);
+        }
+      })
       //TODO get featued quiz and post
 
     }
@@ -74,17 +83,6 @@ function Profile() {
     });
   };
 
-  let posts = [{
-      title: "First Post",
-      content: "This is my first post",
-      date: "10/28/2021",
-    },
-    {
-      title: "Second Post",
-      content: "This is my second post",
-      date: "10/31/2021",
-    },
-  ];
   let user = {
     id: "1",
     display_name: name,
@@ -97,12 +95,16 @@ function Profile() {
       allowed: userDetails.id === params.id,
     },
     posts: posts,
-    quizzes_created: quizzes,
-    quizzes_taken: quizzes,
+    // quizzes_created: quizzes,
+    // quizzes_taken: quizzes,
     platforms: [],
     medals: [],
     featured_quiz: featuredQuiz,
-    featured_post: posts[0],
+    featured_post: [{
+      post_title: "SAMPLE",
+      post_text: "SAMPLE",
+      post_creator: "SAMPLE"
+    }],
     following: [],
     followers: [],
   };

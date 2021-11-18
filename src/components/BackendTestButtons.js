@@ -149,6 +149,23 @@ function BackendTestButtons() {
         Test search quiz
       </button>
       <br/>
+      <button onClick={()=>{
+        FirestoreBackend.createUserPagePost('117263299673917066121', '117263299673917066121', 'HAHAHA', 'RUN RUN');
+        }}>
+        Test create post
+      </button>
+      <br/>
+      <button onClick={()=>{
+        const posts = FirestoreBackend.getUserPagePosts('117263299673917066121');
+        posts.then((doc_snapshot)=>{
+          for (const doc of doc_snapshot.docs) {
+            console.log(doc.data());
+          }
+        })
+        }}>
+        Test get posts
+      </button>
+      <br/>
       </div>
 
 
