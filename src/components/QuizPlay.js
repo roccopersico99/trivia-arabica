@@ -6,6 +6,7 @@ import { default as defQuestionImage } from "../shark_nose.jpg";
 import { Stack, Image, Button, ListGroup, Spinner } from 'react-bootstrap';
 import * as FirestoreBackend from '../services/Firestore.js'
 import { useAuthState } from '../Context';
+import { TwitterShareButton, TwitterIcon, FacebookIcon, FacebookShareButton, RedditIcon, RedditShareButton } from 'react-share'
 
 function QuizPlay() {
     const userDetails = useAuthState();
@@ -135,7 +136,7 @@ function QuizPlay() {
         )
     }
     else if(currQuestionNum > quizQuestions.length){
-        const earnedMedals = (numCorrect/quizQuestions.length) * 100;
+        const earnedMedals = Math.floor((numCorrect/quizQuestions.length) * 100);
         if(quizFinished) {
             updateMedals(earnedMedals);
             if(userDetails.user !== "") {
@@ -143,7 +144,7 @@ function QuizPlay() {
             }
             setQuizFinished(false)
         }
-
+        console.log(earnedMedals)
         return (
             <Background>
                 <br></br>
@@ -154,6 +155,13 @@ function QuizPlay() {
                 {userDetails.user !== "" && <h3>New Total Medal Count: {userMedals}</h3>}
                 {userDetails.user === "" && <h2>You could've earned {earnedMedals} medals!</h2>}
                 {userDetails.user === "" && <h3>Unfortunately, medals can only be earned when logged in!</h3>}
+                <br></br>
+                <h3>Share your results!</h3> 
+                <Stack direction = "horizontal" gap={5} style={{display:"block"}}>
+                    <TwitterShareButton title={"I just scored " + numCorrect + "/" + quizQuestions.length + " on \"" + quizTitle + "\" and earned " + earnedMedals + " medals!" + "\n\nTry this quiz out yourself on Trivia Arabica!"} url={"https://trivia-arabica.web.app/preview/" + params.id}><TwitterIcon size={52} round /></TwitterShareButton>
+                    <FacebookShareButton title={"I just scored " + numCorrect + "/" + quizQuestions.length + " on \"" + quizTitle + "\" and earned " + earnedMedals + " medals!" + "\n\nTry this quiz out yourself on Trivia Arabica!"} url={"https://trivia-arabica.web.app/preview/" + params.id}><FacebookIcon size={52} round /></FacebookShareButton>
+                    <RedditShareButton title={"I just scored " + numCorrect + "/" + quizQuestions.length + " on \"" + quizTitle + "\" and earned " + earnedMedals + " medals!" + "\n\nTry this quiz out yourself on Trivia Arabica!"} url={"https://trivia-arabica.web.app/preview/" + params.id}><RedditIcon size={52} round /></RedditShareButton>
+                </Stack>
                 <br></br>
                 <Link to="/" className="btn btn-outline-danger">Exit Quiz</Link>
             </Background>
