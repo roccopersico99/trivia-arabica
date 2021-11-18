@@ -1,15 +1,34 @@
 import { Col, Card, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import React from "react";
+import React, { useState } from "react";
 import * as FirestoreBackend from "../../services/Firestore";
 import { useAuthState } from "../../Context/index";
 
 function QuizCard(props) {
 
   const userDetails = useAuthState();
+  const [isLiked, setIsLiked] = useState(async () => {
+    const userquizzes = await FirestoreBackend.getUserRatedQuizzes(userDetails.id)
+    let rated_quizzii = []
+    let quizRatings = []
+    userquizzes.docs.forEach(async (doc) => {
+      rated_quizzii.push(doc.id);
+      quizRatings.push(doc.data())
+    });
+
+    if (rated_quizzii.includes(props.quiz?.id)) {
+      if (quizRatings[rated_quizzii.indexOf(props.quiz?.id)].like === false)
+        setIsLiked(2)
+      else if(quizRatings[rated_quizzii.indexOf(props.quiz?.id)].like === true)
+        setIsLiked(1)
+      else
+        setIsLiked(0)
+    }
+  });
 
   async function handleLike() {
     console.log("like clicked!")
+    setIsLiked(1)
     const userquizzes = await FirestoreBackend.getUserRatedQuizzes(userDetails.id)
     let rated_quizzii = []
     let quizRatings = []
@@ -49,6 +68,7 @@ function QuizCard(props) {
 
   async function handleDislike() {
     console.log("dislike clicked!")
+    setIsLiked(2)
     const userquizzes = await FirestoreBackend.getUserRatedQuizzes(userDetails.id)
     let rated_quizzii = [];
     let quizRatings = [];
@@ -109,8 +129,8 @@ function QuizCard(props) {
         >
           Play
         </Link>
-        {!props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleLike} variant="success">Like</Button>}
-        {!props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleDislike} variant="danger">Dislike</Button>}
+        {!props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleLike} variant="success" disabled={isLiked === 1}>Like</Button>}
+        {!props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleDislike} variant="danger" disabled={isLiked === 2}>Dislike</Button>}
         {props.quiz?.allowed && userDetails.user !== "" && <Button href={"/creator/" + props.quiz?.id} variant="warning">Edit</Button>}
         {props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleDelete} variant="danger">Delete</Button>}
       </Card.Body>
