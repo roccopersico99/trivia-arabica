@@ -14,8 +14,9 @@ function Search(props) {
   const page = window.location.pathname.split("/")[1];
 
   useEffect(() => {
+    console.log(props.userDetails)
     handleSearch()
-  }, [completedFilter, searchFilter, orderBy])
+  }, [props.refreshKey, completedFilter, searchFilter, orderBy])
 
   const handleFilterChange = (e) => {
     setCompletedFilter(e)
@@ -39,100 +40,100 @@ function Search(props) {
     const searchQuery = searchTarget;
     let order = 'desc';
     if (searchFilter === "Ascending")
-        order = 'asc';
+      order = 'asc';
     let orderOn = 'publish_date'
     if (orderBy === "Quiz Name")
-        orderOn = 'search_title'
+      orderOn = 'search_title'
     console.log("searching for: '", searchQuery, "'");
-    if(page === 'discover'){
-        searchDiscover(searchQuery, orderOn, order);
-    } else if(page === 'profile'){
-        searchProfile(searchQuery, orderOn, order);
+    if (page === 'discover') {
+      searchDiscover(searchQuery, orderOn, order);
+    } else if (page === 'profile') {
+      searchProfile(searchQuery, orderOn, order);
     }
   }
 
-    const searchDiscover = async (searchQuery, orderOn, order) => {
-        //TODO: ACTUALLY FILTER COMPLETED/NOT COMPLETED QUIZZES
-        const results = FirestoreBackend.searchQuizzes(searchQuery, 99, orderOn, order);
-        results.then(async (query_snapshot) => {
-            if (query_snapshot.empty) {
-            console.log("nothing found!");
-            }
-            for (const quiz of query_snapshot.docs) {
-                const resolvedQuiz = await FirestoreBackend.resolveQuizRef(quiz.ref);
-                filterCompleted(resolvedQuiz);
-            };
-        });
-    }
+  const searchDiscover = async (searchQuery, orderOn, order) => {
+    //TODO: ACTUALLY FILTER COMPLETED/NOT COMPLETED QUIZZES
+    const results = FirestoreBackend.searchQuizzes(searchQuery, 99, orderOn, order);
+    results.then(async (query_snapshot) => {
+      if (query_snapshot.empty) {
+        console.log("nothing found!");
+      }
+      for (const quiz of query_snapshot.docs) {
+        const resolvedQuiz = await FirestoreBackend.resolveQuizRef(quiz.ref);
+        filterCompleted(resolvedQuiz);
+      };
+    });
+  }
 
-    const searchProfile = async (searchQuery, orderOn, order) => {
-        const yourProfile = props.userDetails.id === params.id
-        const results = FirestoreBackend.searchUserQuizzes(params.id, yourProfile, searchQuery, 99, orderOn, order);
-        results.then(async (query_snapshot) => {
-            if (query_snapshot.empty) {
-                console.log("nothing found!");
-            }
-            for (const quiz of query_snapshot.docs) {
-                const resolvedQuiz = await FirestoreBackend.resolveQuizRef(quiz.ref);
-                if(yourProfile)
-                    filterPublished(resolvedQuiz);
-                else
-                    filterCompleted(resolvedQuiz);
-            };
-        });
-    }
+  const searchProfile = async (searchQuery, orderOn, order) => {
+    const yourProfile = props.userDetails.id === params.id
+    const results = FirestoreBackend.searchUserQuizzes(params.id, yourProfile, searchQuery, 99, orderOn, order);
+    results.then(async (query_snapshot) => {
+      if (query_snapshot.empty) {
+        console.log("nothing found!");
+      }
+      for (const quiz of query_snapshot.docs) {
+        const resolvedQuiz = await FirestoreBackend.resolveQuizRef(quiz.ref);
+        if (yourProfile)
+          filterPublished(resolvedQuiz);
+        else
+          filterCompleted(resolvedQuiz);
+      };
+    });
+  }
 
-    const filterCompleted = async (resolvedQuiz) => {
-        console.log(completedFilter, " | ", resolvedQuiz.completed_state);
-        if(completedFilter === "Completed" && resolvedQuiz.completed_state){
-            setQuizzes(results => [...results, resolvedQuiz]);
-        } else if(completedFilter === "Not Completed" && !resolvedQuiz.completed_state){
-            setQuizzes(results => [...results, resolvedQuiz]);
-        } else if (completedFilter === "All Quizzes") {
-            setQuizzes(results => [...results, resolvedQuiz]);
-        }
+  const filterCompleted = async (resolvedQuiz) => {
+    console.log(completedFilter, " | ", resolvedQuiz.completed_state);
+    if (completedFilter === "Completed" && resolvedQuiz.completed_state) {
+      setQuizzes(results => [...results, resolvedQuiz]);
+    } else if (completedFilter === "Not Completed" && !resolvedQuiz.completed_state) {
+      setQuizzes(results => [...results, resolvedQuiz]);
+    } else if (completedFilter === "All Quizzes") {
+      setQuizzes(results => [...results, resolvedQuiz]);
     }
+  }
 
-    const filterPublished = async (resolvedQuiz) => {
-        if(resolvedQuiz){
-            resolvedQuiz.allowed = true;
-            if (completedFilter === "Published" && resolvedQuiz.publish_state) {
-                setQuizzes(results => [...results, resolvedQuiz]);
-            } else if (completedFilter === "Not Published" && !resolvedQuiz.publish_state) {
-                setQuizzes(results => [...results, resolvedQuiz]);
-            } else if (completedFilter === "All Quizzes") {
-                setQuizzes(results => [...results, resolvedQuiz]);
-            }
-        }
+  const filterPublished = async (resolvedQuiz) => {
+    if (resolvedQuiz) {
+      resolvedQuiz.allowed = true;
+      if (completedFilter === "Published" && resolvedQuiz.publish_state) {
+        setQuizzes(results => [...results, resolvedQuiz]);
+      } else if (completedFilter === "Not Published" && !resolvedQuiz.publish_state) {
+        setQuizzes(results => [...results, resolvedQuiz]);
+      } else if (completedFilter === "All Quizzes") {
+        setQuizzes(results => [...results, resolvedQuiz]);
+      }
     }
+  }
 
-    function sortQuizzes() {
-        if(quizzes.length > 0) {
-            quizzes.sort(function(a, b){
-                let x = a.title.toLowerCase();
-                let y = b.title.toLowerCase();
-                if (x < y) {return -1;}
-                if (x > y) {return 1;}
-                return 0;
-            });
-            console.log(quizzes)
-            setQuizzes(quizzes)
-        }
+  function sortQuizzes() {
+    if (quizzes.length > 0) {
+      quizzes.sort(function(a, b) {
+        let x = a.title.toLowerCase();
+        let y = b.title.toLowerCase();
+        if (x < y) { return -1; }
+        if (x > y) { return 1; }
+        return 0;
+      });
+      console.log(quizzes)
+      setQuizzes(quizzes)
     }
+  }
 
-    const rows = [...Array(Math.ceil(quizzes.length / 3))];
-    const quizRows = rows.map((row, index) => quizzes.slice(index * 3, index * 3 + 3))
-    const content = quizRows.map((row, index) => (
+  const rows = [...Array(Math.ceil(quizzes.length / 3))];
+  const quizRows = rows.map((row, index) => quizzes.slice(index * 3, index * 3 + 3))
+  const content = quizRows.map((row, index) => (
     <Row className="row" key={index}>
             {row.map(quiz => (
                 <QuizCard quiz={quiz} key={quiz.id}></QuizCard>
             ))}
     </Row>
-    ));
-    let profile = false;
-    if(props.userDetails){
-        profile = (props.userDetails.id === params.id);
-    }
+  ));
+  let profile = false;
+  if (props.userDetails) {
+    profile = (props.userDetails.id === params.id);
+  }
 
   return (
     <div>

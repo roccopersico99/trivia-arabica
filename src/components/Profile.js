@@ -59,7 +59,7 @@ function Profile() {
   }, [userDetails, refreshKey])
 
   const handleTabChange = (e) => {
-    if (e === "quizzes") {}
+    if (e === "quizzes") { setRefreshKey(refreshKey + 1) }
   }
 
   const setAboutText = async (val) => {
@@ -160,7 +160,7 @@ function Profile() {
                 ></Home>
               </Tab>
               <Tab eventKey="quizzes" title="Quizzes">
-                <Search userDetails={userDetails}></Search>
+                <Search userDetails={userDetails} refreshKey={refreshKey}></Search>
               </Tab>
               <Tab eventKey="posts" title="Posts">
                 <Posts posts={user.posts}></Posts>
