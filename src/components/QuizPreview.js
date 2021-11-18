@@ -13,6 +13,7 @@ import { Link, useHistory, useParams } from "react-router-dom";
 import * as FirestoreBackend from "../services/Firestore";
 import { Timestamp } from "@firebase/firestore";
 import { useAuthState } from "../Context/index";
+import ReportPopup from "./ReportPopup.js"
 
 function QuizPreview() {
   const history = useHistory();
@@ -20,23 +21,25 @@ function QuizPreview() {
   const params = useParams();
   const quiz = history.location.state;
 
-  function handleReport() {
-    console.log("clicked report...")
+  const [modalShow, setModalShow] = useState(false);
+
+  function handleReport(res) {
     let sentBy = ""
     userDetails.user === "" ? sentBy = "Guest" : sentBy = userDetails.id
     try {
     window.Email.send({
-      SecureToken : "63471289-57ce-4b8d-a62a-fc08d4430e06",
-      To : 'roccopersico99@gmail.com',
+      SecureToken : "36297ca5-2675-43a0-82be-c6640938db00",
+      To : 'rocco.persico@stonybrook.edu',
       From : "roccopersico99@gmail.com",
       Subject : "Quiz Reported: " + params.id,
       Body : "A quiz has been reported on Trivia Arabica...\n"
       + "Reported Quiz: " + params.id + "\n"
       + "Reported by User: " + sentBy + "\n"
-      + "Time of Report: " + Timestamp.now()
+      + "Time of Report: " + Timestamp.now() + "\n"
+      + "User Response: " + res
     }).then(
-      message => alert(message)
-    );
+      message => message=="OK" ? alert("Report Submitted. Thank you!") : alert(message)
+    ).then(setModalShow(false));
     } catch(e){
       console.log(e)
     }
@@ -97,6 +100,7 @@ function QuizPreview() {
   // }
   return (
     <Background>
+      <ReportPopup show={modalShow} onHide={() => setModalShow(false)} onSubmit={(res) => handleReport(res)}></ReportPopup>
       <Container>
         <Stack direction="horizontal" gap={3}>
           <Stack gap={3} style={{ width: "48%" }}>
@@ -138,7 +142,7 @@ function QuizPreview() {
             <Stack direction="horizontal" gap={3}>
               {userDetails.user !== "" && <Link to={{ pathname: "/play/" + quiz?.id, state: quiz }} className="btn btn-success w-100 p-3">Play!</Link>}
               {userDetails.user === "" && <Link to={{ pathname: "/play/" + quiz?.id, state: quiz }} className="btn btn-success w-50 p-3">Play!</Link>}
-              {userDetails.user !== "" && <Button onClick={handleReport} variant="danger" className="w-50 p-3">Report</Button>}
+              {userDetails.user !== "" && <Button onClick={() => setModalShow(true)} variant="danger" className="w-50 p-3">Report</Button>}
             </Stack>
           </Stack>
           <Stack gap={3} style={{ width: "48%" }}>
