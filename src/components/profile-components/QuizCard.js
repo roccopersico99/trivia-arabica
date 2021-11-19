@@ -1,8 +1,9 @@
-import { Col, Card, Button } from "react-bootstrap";
+import { Col, Card, Button, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import React, { useState } from "react";
 import * as FirestoreBackend from "../../services/Firestore";
 import { useAuthState } from "../../Context/index";
+import { FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
 
 function QuizCard(props) {
 
@@ -125,14 +126,17 @@ function QuizCard(props) {
           src={props.quiz?.image}
         ></Card.Img>
         <Card.Text>{props.quiz?.description}</Card.Text>
-        <Link
-          to={{ pathname: "/preview/" + props.quiz?.id, state: props.quiz }}
-          className="btn btn-primary"
-        >
-          Play
-        </Link>
-        {!props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleLike} variant="success" disabled={isLiked === 1}>Like</Button>}
-        {!props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleDislike} variant="danger" disabled={isLiked === 2}>Dislike</Button>}
+        <Row>
+          <Link
+            to={{ pathname: "/preview/" + props.quiz?.id, state: props.quiz }}
+            className="btn btn-primary mx-auto"
+            style={{width: '100px'}}
+          >
+            Preview
+          </Link>
+        </Row>
+        {!props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleLike} variant="light" disabled={isLiked === 1}><FaThumbsUp /></Button>}
+        {!props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleDislike} variant="light" disabled={isLiked === 2}><FaThumbsDown /></Button>}
         {props.quiz?.allowed && userDetails.user !== "" && <Button href={"/creator/" + props.quiz?.id} variant="warning">Edit</Button>}
         {props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleDelete} variant="danger">Delete</Button>}
       </Card.Body>

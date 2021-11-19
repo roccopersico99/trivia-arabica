@@ -1,4 +1,5 @@
 import { Container, ListGroup, Card, Button, Form } from "react-bootstrap";
+import { FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
 import { useRef, useState, useEffect } from 'react'
 import { useParams } from "react-router-dom";
 import * as FirestoreBackend from "../../services/Firestore.js";
@@ -59,11 +60,12 @@ function Posts(props) {
             <br></br>
           </div>
         </Form>
-        {(!editing) && <Button variant="info" onClick={editingClicked}>Add Post</Button>}
+        {(!editing) && <Button  className="my-3" onClick={editingClicked}>Add Post</Button>}
       </div>
       <br></br>
       <ListGroup>
-        {posts.map((post)=>(
+      {posts.length > 0 ?
+        (posts.map((post)=>(
           <Card>
             <Card.Body>
               <Card.Title>{post.post_title + " by userID: " + post.post_creator}</Card.Title>
@@ -72,7 +74,7 @@ function Posts(props) {
               <Button variant="danger">Dislike</Button>
             </Card.Body>
           </Card>
-        ))}
+        ))) : <div>Make your first post!</div>}
       </ListGroup>
     </Container>
   );

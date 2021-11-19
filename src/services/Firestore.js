@@ -35,6 +35,10 @@ export const createUser = (userName, userId, imageURL) => {
     profile_image: imageURL,
     user_bio: "",
     featured_quiz: "",
+    youtubeURL: "",
+    facebookURL: "",
+    twitterURL: "",
+    redditURL: ""
   });
 };
 
@@ -91,6 +95,34 @@ export const getQuizRatings = async (quizID) => {
   ratings[0] = retreivedDoc.data().quiz_likes;
   ratings[1] = retreivedDoc.data().quiz_dislikes;
   return ratings;
+}
+
+export const setUserYoutube = async (userid, yturl) => {
+  const docSnap = await updateDoc(doc(db, "users", userid), {
+    youtubeURL: yturl,
+  });
+  return docSnap
+}
+
+export const setUserFacebook = async (userid, fburl) => {
+  const docSnap = await updateDoc(doc(db, "users", userid), {
+    facebookURL: fburl,
+  });
+  return docSnap
+}
+
+export const setUserTwitter = async (userid, twitterurl) => {
+  const docSnap = await updateDoc(doc(db, "users", userid), {
+    twitterURL: twitterurl,
+  });
+  return docSnap
+}
+
+export const setUserReddit = async (userid, redditurl) => {
+  const docSnap = await updateDoc(doc(db, "users", userid), {
+    redditURL: redditurl,
+  });
+  return docSnap
 }
 
 export const updateQuizRatings = async (quizID, likes, dislikes) => {
