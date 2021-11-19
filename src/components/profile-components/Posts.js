@@ -1,6 +1,11 @@
 import { Container, ListGroup, Card, Button } from "react-bootstrap";
+import { FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
+import { useState } from 'react';
+import * as FirestoreBackend from '../../services/Firestore';
+import { useAuthState } from "../../Context/index";
 
 function Posts(props) {
+  const userDetails = useAuthState();
   return (
     <Container>
       {props.allowed ?
@@ -13,8 +18,7 @@ function Posts(props) {
               <Card.Body>
                 <Card.Title>{post.post_title + " by userID: " + post.post_creator}</Card.Title>
                 <Card.Text>{post.publish_date.toDate().toString() + "\n" + post.post_text}</Card.Text>
-                <Button variant="success">Like</Button>
-                <Button variant="danger">Dislike</Button>
+                <Button variant="light"><FaThumbsUp /></Button>
               </Card.Body>
             </Card>
           ))) : <div>Make your first post!</div>}
