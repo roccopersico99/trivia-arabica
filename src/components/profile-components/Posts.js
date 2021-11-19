@@ -3,7 +3,9 @@ import { Container, ListGroup, Card, Button } from "react-bootstrap";
 function Posts(props) {
   return (
     <Container>
-      <Button className="my-3">Add Post</Button>
+      {props.allowed ?
+        <Button className="my-3">Add Post</Button> : () => { }
+      }
       <ListGroup>
         {props.posts?.length > 0 ?
           (props.posts?.map((post) => (
