@@ -65,7 +65,7 @@ function Profile() {
         setReddit(query_snapshot.data().redditURL);
       });
       const post_snapshot = FirestoreBackend.getUserPagePosts(params.id);
-      post_snapshot.then((doc_snapshot)=>{
+      post_snapshot.then((doc_snapshot) => {
         setPosts([]);
         for (const doc of doc_snapshot.docs) {
           console.log(doc.data());
@@ -94,8 +94,6 @@ function Profile() {
     });
   };
 
-<<<<<<< Updated upstream
-=======
   const setYoutubeLink = async (val) => {
     const res = FirestoreBackend.setUserYoutube(userDetails.id, val)
   }
@@ -109,18 +107,6 @@ function Profile() {
     const res = FirestoreBackend.setUserReddit(userDetails.id, val)
   }
 
-  let posts = [{
-      title: "First Post",
-      content: "This is my first post",
-      date: "10/28/2021",
-    },
-    {
-      title: "Second Post",
-      content: "This is my second post",
-      date: "10/31/2021",
-    },
-  ];
->>>>>>> Stashed changes
   let user = {
     id: "1",
     display_name: name,
