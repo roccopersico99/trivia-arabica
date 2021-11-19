@@ -165,7 +165,7 @@ function Profile() {
                 <Search userDetails={userDetails} refreshKey={refreshKey}></Search>
               </Tab>
               <Tab eventKey="posts" title="Posts">
-                <Posts posts={user.posts}></Posts>
+                <Posts profile={userDetails.id}></Posts>
               </Tab>
               <Tab eventKey="about" title="About">
                 <About helper={setAboutText} about={user.about}></About>
