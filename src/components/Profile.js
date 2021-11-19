@@ -2,6 +2,7 @@ import "../App.css";
 import Background from "./Background.js";
 import { useAuthState } from "../Context/index";
 import "bootstrap/dist/css/bootstrap.css";
+import { SocialIcon } from 'react-social-icons';
 import * as FirestoreBackend from "../services/Firestore.js";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
@@ -38,6 +39,11 @@ function Profile() {
   const [posts, setPosts] = useState([]);
   const [refreshKey, setRefreshKey] = useState(0);
 
+  const [youtube, setYoutube] = useState("")
+  const [facebook, setFacebook] = useState("")
+  const [twitter, setTwitter] = useState("")
+  const [reddit, setReddit] = useState("")
+
   const [featuredQuiz, setFeaturedQuiz] = useState();
   const [featuredPost, setFeaturedPost] = useState();
 
@@ -49,9 +55,14 @@ function Profile() {
     async function getData() {
       const usr_query = FirestoreBackend.getUser(params.id);
       usr_query.then((query_snapshot) => {
+        console.log(query_snapshot.data())
         setAbout(query_snapshot.data().user_bio);
         setName(query_snapshot.data().display_name);
         setProfileImage(query_snapshot.data().profile_image);
+        setYoutube(query_snapshot.data().youtubeURL);
+        setFacebook(query_snapshot.data().facebookURL);
+        setTwitter(query_snapshot.data().twitterURL);
+        setReddit(query_snapshot.data().redditURL);
       });
       const post_snapshot = FirestoreBackend.getUserPagePosts(params.id);
       post_snapshot.then((doc_snapshot)=>{
@@ -83,6 +94,33 @@ function Profile() {
     });
   };
 
+<<<<<<< Updated upstream
+=======
+  const setYoutubeLink = async (val) => {
+    const res = FirestoreBackend.setUserYoutube(userDetails.id, val)
+  }
+  const setFacebookLink = async (val) => {
+    const res = FirestoreBackend.setUserFacebook(userDetails.id, val)
+  }
+  const setTwitterLink = async (val) => {
+    const res = FirestoreBackend.setUserTwitter(userDetails.id, val)
+  }
+  const setRedditLink = async (val) => {
+    const res = FirestoreBackend.setUserReddit(userDetails.id, val)
+  }
+
+  let posts = [{
+      title: "First Post",
+      content: "This is my first post",
+      date: "10/28/2021",
+    },
+    {
+      title: "Second Post",
+      content: "This is my second post",
+      date: "10/31/2021",
+    },
+  ];
+>>>>>>> Stashed changes
   let user = {
     id: "1",
     display_name: name,
@@ -124,12 +162,19 @@ function Profile() {
   }
   return (
     <Background>
-      <Image
+      <div style={{position: "relative"}}>
+        <Image
         style={{ width: "100%", height: "200px", objectFit: "cover" }}
         src={user.banner_image}
         alt="Banner"
-      ></Image>
-
+        ></Image>
+        <div style={{position: 'absolute', right: "5px", bottom:"5px"}}>
+          {youtube!=="" && <Button style={{background: "transparent", border:"none"}}><SocialIcon url={youtube}/></Button>}
+          {facebook!=="" && <Button style={{background: "transparent", border:"none"}}><SocialIcon url={facebook}/></Button>}
+          {twitter!=="" && <Button style={{background: "transparent", border:"none"}}><SocialIcon url={twitter}/></Button>}
+          {reddit!=="" && <Button style={{background: "transparent", border:"none"}}><SocialIcon url={reddit}/></Button>}
+        </div>
+      </div>
       <Container>
         <Row>
           <Col lg="3" style={{ position: "relative", top: "-25px" }}>
@@ -168,7 +213,11 @@ function Profile() {
                 <Posts posts={user.posts}></Posts>
               </Tab>
               <Tab eventKey="about" title="About">
-                <About helper={setAboutText} about={user.about}></About>
+                <About setAboutText={setAboutText}
+                  setYoutubeLink={setYoutubeLink} setFacebookLink={setFacebookLink} setTwitterLink={setTwitterLink} setRedditLink={setRedditLink}
+                  youtube={youtube} facebook={facebook} twitter={twitter} reddit={reddit}
+                  setYoutube={setYoutube} setFacebook={setFacebook} setTwitter={setTwitter} setReddit={setReddit}
+                  about={user.about}></About>
               </Tab>
             </Tabs>
           </Col>
