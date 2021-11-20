@@ -70,7 +70,13 @@ function Profile() {
     getData()
   }, [userDetails, refreshKey])
 
+  const [previousTab, setPreviousTab] = useState();
   const handleTabChange = (e) => {
+    if (e === previousTab) {
+      return
+    }
+    setPreviousTab(e)
+    console.log(e)
     setRefreshKey(refreshKey + 1)
   }
 
