@@ -5,6 +5,13 @@ function About(props) {
 
   const [editing, setEditing] = useState(false)
 
+  const [youtubeInvalid, setYoutubeInvalid] = useState(false)
+  const [facebookInvalid, setFacebookInvalid] = useState(false)
+  const [twitterInvalid, setTwitterInvalid] = useState(false)
+  const [redditInvalid, setRedditInvalid] = useState(false)
+
+
+
   const textAreaRef = useRef();
 
   const savePressed = () => {
@@ -23,18 +30,22 @@ function About(props) {
 
   const onYTChanged = (e) => {
     props.setYoutube(e.target.value)
+    setYoutubeInvalid(false)
   }
 
   const onFBChanged = (e) => {
     props.setFacebook(e.target.value)
+    setFacebookInvalid(false)
   }
 
   const onTwitterChanged = (e) => {
     props.setTwitter(e.target.value)
+    setTwitterInvalid(false)
   }
 
   const onRedditChanged = (e) => {
     props.setReddit(e.target.value)
+    setRedditInvalid(false)
   }
 
   const saveSocialsClicked = () => {
@@ -45,6 +56,8 @@ function About(props) {
       props.setYoutubeLink("https://" + props.youtube)
     } else if (props.youtube === "") {
       props.setYoutubeLink(props.youtube)
+    } else {
+      setYoutubeInvalid(true)
     }
 
     if (props.facebook.startsWith("https://www.facebook.com/") || props.facebook.startsWith("https://facebook.com/")) {
@@ -53,6 +66,8 @@ function About(props) {
       props.setFacebookLink("https://" + props.facebook)
     } else if (props.facebook === "") {
       props.setFacebookLink(props.facebook)
+    } else {
+      setFacebookInvalid(true)
     }
 
     if (props.twitter.startsWith("https://www.twitter.com/") || props.twitter.startsWith("https://twitter.com/")) {
@@ -61,6 +76,8 @@ function About(props) {
       props.setTwitterLink("https://" + props.twitter)
     } else if (props.twitter === "") {
       props.setTwitterLink(props.twitter)
+    } else {
+      setTwitterInvalid(true)
     }
 
     if (props.reddit.startsWith("https://www.reddit.com/user/") || props.reddit.startsWith("https://reddit.com/user/")) {
@@ -69,6 +86,8 @@ function About(props) {
       props.setRedditLink("https://" + props.reddit)
     } else if (props.reddit === "") {
       props.setRedditLink(props.reddit)
+    } else {
+      setRedditInvalid(true)
     }
   }
 
@@ -88,23 +107,25 @@ function About(props) {
         <div style={{width: "60%", margin:"auto"}}>
           <br></br>
           <br></br>
-          <InputGroup className="mb-3">
-            <InputGroup.Text id="inputGroup-sizing-default"> YouTube </InputGroup.Text>
-            <FormControl aria-label="Default" onChange={onYTChanged} value={props.youtube} placeholder="https://www.youtube.com/channel/"/>
-          </InputGroup>
-          <InputGroup className="mb-3">
-            <InputGroup.Text id="inputGroup-sizing-default"> Facebook </InputGroup.Text>
-            <FormControl aria-label="Default" onChange={onFBChanged} value={props.facebook} placeholder="https://www.facebook.com/"/>
-          </InputGroup>
-          <InputGroup className="mb-3">
-            <InputGroup.Text id="inputGroup-sizing-default"> Twitter </InputGroup.Text>
-            <FormControl aria-label="Default" onChange={onTwitterChanged} value={props.twitter} placeholder="https://twitter.com/"/>
-          </InputGroup>
-          <InputGroup className="mb-3">
-            <InputGroup.Text id="inputGroup-sizing-default"> Reddit </InputGroup.Text>
-            <FormControl aria-label="Default" onChange={onRedditChanged} value={props.reddit} placeholder="https://www.reddit.com/user/"/>
-          </InputGroup>
-          <Button variant="success" onClick={saveSocialsClicked}>Save Social Media</Button>
+          <Form>
+            <InputGroup className="mb-3">
+              <InputGroup.Text id="inputGroup-sizing-default"> YouTube </InputGroup.Text>
+              <Form.Control isInvalid={youtubeInvalid} aria-label="Default" onChange={onYTChanged} value={props.youtube} placeholder="https://www.youtube.com/channel/"/>
+            </InputGroup>
+            <InputGroup hasValidation className="mb-3">
+              <InputGroup.Text id="inputGroup-sizing-default"> Facebook </InputGroup.Text>
+              <Form.Control isInvalid={facebookInvalid} aria-label="Default" onChange={onFBChanged} value={props.facebook} placeholder="https://www.facebook.com/"/>
+            </InputGroup>
+            <InputGroup hasValidation className="mb-3">
+              <InputGroup.Text id="inputGroup-sizing-default"> Twitter </InputGroup.Text>
+              <Form.Control isInvalid={twitterInvalid} aria-label="Default" onChange={onTwitterChanged} value={props.twitter} placeholder="https://twitter.com/"/>
+            </InputGroup>
+            <InputGroup hasValidation className="mb-3">
+              <InputGroup.Text id="inputGroup-sizing-default"> Reddit </InputGroup.Text>
+              <Form.Control isInvalid={redditInvalid} aria-label="Default" onChange={onRedditChanged} value={props.reddit} placeholder="https://www.reddit.com/user/"/>
+            </InputGroup>
+            <Button variant="success" onClick={saveSocialsClicked}>Save Social Media</Button>
+        </Form>
         </div>
       )}
 
