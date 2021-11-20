@@ -20,11 +20,15 @@ function Posts(props) {
   const getPosts = async () => {
     setPosts([]);
     const post_snapshot = FirestoreBackend.getUserPagePosts(params.id);
-      post_snapshot.then((doc_snapshot)=>{
+      post_snapshot.then(async (doc_snapshot)=>{
         setPosts([]);
         for (const doc of doc_snapshot.docs) {
-          console.log(doc.data());
-          setPosts(posts => [...posts, doc.data()]);
+          // console.log(doc.data());
+          const poster_name = await FirestoreBackend.getUser(doc.data().post_creator);
+          const postdata = doc.data();
+          postdata.name = poster_name.data().display_name;
+          console.log(postdata);
+          setPosts(posts => [...posts, postdata]);
         }
       })
   }
@@ -65,11 +69,15 @@ function Posts(props) {
       <br></br>
       <ListGroup>
       {posts.length > 0 ?
-        (posts.map((post)=>(
+        (posts.map((post) =>(
           <Card>
-            <Card.Body>
-              <Card.Title>{post.post_title + " by userID: " + post.post_creator}</Card.Title>
-              <Card.Text>{post.publish_date.toDate().toString() + "\n" + post.post_text}</Card.Text>
+            <Card.Body className="post">
+              <Card.Title>{post.post_title}</Card.Title>
+              <Card.Subtitle className="post mb-2 text-muted">
+                {"posted by: " + post.name}<br></br>
+                {post.publish_date.toDate().toLocaleDateString() + " at " + post.publish_date.toDate().toLocaleTimeString()}
+              </Card.Subtitle>
+              <Card.Text className="post">{post.post_text}</Card.Text>
               <Button variant="success">Like</Button>
               <Button variant="danger">Dislike</Button>
             </Card.Body>

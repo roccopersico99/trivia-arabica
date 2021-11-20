@@ -36,7 +36,6 @@ function Profile() {
   const [name, setName] = useState("");
   const [profileImage, setProfileImage] = useState("");
   const [quizzes, setQuizzes] = useState([]);
-  const [posts, setPosts] = useState([]);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const [youtube, setYoutube] = useState("")
@@ -64,14 +63,6 @@ function Profile() {
         setTwitter(query_snapshot.data().twitterURL);
         setReddit(query_snapshot.data().redditURL);
       });
-      const post_snapshot = FirestoreBackend.getUserPagePosts(params.id);
-      post_snapshot.then((doc_snapshot) => {
-        setPosts([]);
-        for (const doc of doc_snapshot.docs) {
-          console.log(doc.data());
-          setPosts(posts => [...posts, doc.data()]);
-        }
-      })
       //TODO get featued quiz and post
 
     }
@@ -122,7 +113,6 @@ function Profile() {
       description: about,
       allowed: userDetails.id === params.id,
     },
-    posts: posts,
     // quizzes_created: quizzes,
     // quizzes_taken: quizzes,
     platforms: [],
