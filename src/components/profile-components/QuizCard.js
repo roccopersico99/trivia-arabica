@@ -8,6 +8,7 @@ import { FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
 function QuizCard(props) {
 
   const userDetails = useAuthState();
+
   const [isLiked, setIsLiked] = useState(async () => {
     const userquizzes = await FirestoreBackend.getUserRatedQuizzes(userDetails.id)
     if (userquizzes !== undefined) {
@@ -115,6 +116,17 @@ function QuizCard(props) {
     props.handleSearch()
   }
 
+  const handleFeatured = () => {
+    if (userDetails.id === null || userDetails.id === undefined) {
+      console.log("attempted with id \"", userDetails.id, "\"")
+      return
+    }
+    if (!props.quiz?.allowed) {
+      console.log("user attempted to feature not their own quiz")
+      return
+    }
+    FirestoreBackend.setUserFeaturedQuiz(userDetails.id, props.quiz.id)
+  }
 
   return (
     <Card as={Col} style={{ margin: "10px" }}>
@@ -139,6 +151,7 @@ function QuizCard(props) {
         {!props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleDislike} variant="light" disabled={isLiked === 2}><FaThumbsDown /></Button>}
         {props.quiz?.allowed && userDetails.user !== "" && <Button href={"/creator/" + props.quiz?.id} variant="warning">Edit</Button>}
         {props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleDelete} variant="danger">Delete</Button>}
+        {props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleFeatured} >Set Featured</Button>}
       </Card.Body>
     </Card>
   );

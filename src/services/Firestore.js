@@ -68,6 +68,13 @@ export const updateUserMedals = async (userid, addedMedals) => {
   return newMedals;
 }
 
+export const setUserFeaturedQuiz = async (userid, quizID) => {
+  const docSnap = await updateDoc(doc(db, "users", userid), {
+    featured_quiz: quizID,
+  });
+  return docSnap
+}
+
 export const addUserRatedQuiz = async (userid, quizID, rating) => {
   const docSnap = await db.collection('users').doc(userid);
   return setDoc(doc(docSnap, "rated_quizzes", quizID), {
@@ -146,6 +153,33 @@ export const getQuiz = async (quizPath) => {
   return docSnap
 };
 
+export const getQuizFromString = async (quizID) => {
+  //exports quiz in resolveQuizRef format however can be done on an empty quizPath
+  if (quizID === "" || quizID === undefined || quizID === null) {
+    return undefined
+  }
+  const docSnap = await db.collection('quizzes').doc(quizID).get();
+  if (docSnap.data() === undefined) {
+    return undefined
+  }
+  const imageUrl = await getImageURL(docSnap.data().quiz_image);
+
+  return {
+    id: docSnap.id,
+    allowed: false,
+    platform: "unset",
+    title: docSnap.data().quiz_title,
+    description: docSnap.data().quiz_desc,
+    image: imageUrl,
+    creator: docSnap.data().quiz_creator,
+    likes: docSnap.data().quiz_likes,
+    dislikes: docSnap.data().quiz_dislikes,
+    ratings: docSnap.data().quiz_ratings,
+    publish_date: docSnap.data().publish_date,
+    publish_state: docSnap.data().publish_state
+  }
+}
+
 export const getAllQuizzes = async () => {
   const quizzes = [];
   let id = 0;
@@ -218,7 +252,7 @@ export const createUserPagePost = async (posterId, userpageId, postTitle, postTe
     post_text: postText,
     post_likes: 0,
     post_dislikes: 0,
-    publish_date: Timestamp.now(), 
+    publish_date: Timestamp.now(),
   });
   return docSnap;
 };

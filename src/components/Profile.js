@@ -53,8 +53,7 @@ function Profile() {
 
     async function getData() {
       const usr_query = FirestoreBackend.getUser(params.id);
-      usr_query.then((query_snapshot) => {
-        console.log(query_snapshot.data())
+      usr_query.then(async (query_snapshot) => {
         setAbout(query_snapshot.data().user_bio);
         setName(query_snapshot.data().display_name);
         setProfileImage(query_snapshot.data().profile_image);
@@ -62,8 +61,10 @@ function Profile() {
         setFacebook(query_snapshot.data().facebookURL);
         setTwitter(query_snapshot.data().twitterURL);
         setReddit(query_snapshot.data().redditURL);
+
+        const resolvedQuiz = await FirestoreBackend.getQuizFromString(query_snapshot.data().featured_quiz);
+        setFeaturedQuiz(resolvedQuiz)
       });
-      //TODO get featued quiz and post
 
     }
     getData()
@@ -182,7 +183,7 @@ function Profile() {
             <Tabs onSelect={handleTabChange}>
               <Tab eventKey="home" title="Home">
                 <Home
-                  featured_quiz={user.featured_quiz}
+                  featuredQuiz={featuredQuiz}
                   featured_post={user.featured_post}
                 ></Home>
               </Tab>

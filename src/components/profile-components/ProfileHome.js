@@ -2,13 +2,15 @@ import { Button, Container, Col, Row, Card } from "react-bootstrap";
 import QuizCard from "./QuizCard.js";
 
 function ProfileHome(props) {
+
+  console.log(props.featuredQuiz)
+
   return (
     <Container>
       <Row>
         <QuizCard
           as={Col}
-          sytle={{ margin: "10px" }}
-          quiz={props.featured_quiz}
+          quiz={props.featuredQuiz}
         ></QuizCard>
 
         <Card
