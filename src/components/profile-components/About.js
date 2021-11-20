@@ -53,6 +53,7 @@ function About(props) {
     if (props.youtube.startsWith("https://www.youtube.com/") || props.youtube.startsWith("https://youtube.com/")) {
       props.setYoutubeLink(props.youtube)
     } else if (props.youtube.startsWith("youtube.com/") || props.youtube.startsWith("www.youtube.com/")) {
+      props.setYoutube("https://" + props.youtube)
       props.setYoutubeLink("https://" + props.youtube)
     } else if (props.youtube === "") {
       props.setYoutubeLink(props.youtube)
@@ -63,6 +64,7 @@ function About(props) {
     if (props.facebook.startsWith("https://www.facebook.com/") || props.facebook.startsWith("https://facebook.com/")) {
       props.setFacebookLink(props.facebook)
     } else if (props.facebook.startsWith("facebook.com/") || props.facebook.startsWith("www.facebook.com/")) {
+      props.setFacebook("https://" + props.facebook)
       props.setFacebookLink("https://" + props.facebook)
     } else if (props.facebook === "") {
       props.setFacebookLink(props.facebook)
@@ -73,6 +75,7 @@ function About(props) {
     if (props.twitter.startsWith("https://www.twitter.com/") || props.twitter.startsWith("https://twitter.com/")) {
       props.setTwitterLink(props.twitter)
     } else if (props.twitter.startsWith("twitter.com/") || props.twitter.startsWith("www.twitter.com/")) {
+      props.setTwitter("https://" + props.twitter)
       props.setTwitterLink("https://" + props.twitter)
     } else if (props.twitter === "") {
       props.setTwitterLink(props.twitter)
@@ -83,6 +86,7 @@ function About(props) {
     if (props.reddit.startsWith("https://www.reddit.com/user/") || props.reddit.startsWith("https://reddit.com/user/")) {
       props.setRedditLink(props.reddit)
     } else if (props.reddit.startsWith("reddit.com/user/") || props.reddit.startsWith("www.reddit.com/user/")) {
+      props.setReddit("https://" + props.reddit)
       props.setRedditLink("https://" + props.reddit)
     } else if (props.reddit === "") {
       props.setRedditLink(props.reddit)

@@ -79,7 +79,7 @@ function Profile() {
   }, [userDetails, refreshKey])
 
   const handleTabChange = (e) => {
-    if (e === "quizzes") { setRefreshKey(refreshKey + 1) }
+    setRefreshKey(refreshKey + 1)
   }
 
   const setAboutText = async (val) => {
@@ -105,6 +105,10 @@ function Profile() {
   }
   const setRedditLink = async (val) => {
     const res = FirestoreBackend.setUserReddit(userDetails.id, val)
+  }
+
+  const giveCorrectedYoutubeLink = (val) => {
+
   }
 
   let user = {
@@ -155,10 +159,10 @@ function Profile() {
         alt="Banner"
         ></Image>
         <div style={{position: 'absolute', right: "5px", bottom:"5px"}}>
-          {youtube!=="" && <Button style={{background: "transparent", border:"none"}}><SocialIcon url={youtube}/></Button>}
-          {facebook!=="" && <Button style={{background: "transparent", border:"none"}}><SocialIcon url={facebook}/></Button>}
-          {twitter!=="" && <Button style={{background: "transparent", border:"none"}}><SocialIcon url={twitter}/></Button>}
-          {reddit!=="" && <Button style={{background: "transparent", border:"none"}}><SocialIcon url={reddit}/></Button>}
+          {(youtube.includes("https://youtube.com/") || youtube.includes("https://www.youtube.com/")) && <Button style={{background: "transparent", border:"none"}}><SocialIcon url={youtube}/></Button>}
+          {(facebook.includes("https://facebook.com/") || facebook.includes("https://www.facebook.com/")) && <Button style={{background: "transparent", border:"none"}}><SocialIcon url={facebook}/></Button>}
+          {(twitter.includes("https://twitter.com/") || twitter.includes("https://www.twitter.com/")) && <Button style={{background: "transparent", border:"none"}}><SocialIcon url={twitter}/></Button>}
+          {(reddit.includes("https://reddit.com/user/") || reddit.includes("https://www.reddit.com/user/")) && <Button style={{background: "transparent", border:"none"}}><SocialIcon url={reddit}/></Button>}
         </div>
       </div>
       <Container>
