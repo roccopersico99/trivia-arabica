@@ -52,19 +52,24 @@ function Search(props) {
     }
   }
 
-  const searchDiscover = async (searchQuery, orderOn, order) => {
-    //TODO: ACTUALLY FILTER COMPLETED/NOT COMPLETED QUIZZES
-    const results = FirestoreBackend.searchQuizzes(searchQuery, 99, orderOn, order);
-    results.then(async (query_snapshot) => {
-      if (query_snapshot.empty) {
-        console.log("nothing found!");
-      }
-      for (const quiz of query_snapshot.docs) {
-        const resolvedQuiz = await FirestoreBackend.resolveQuizRef(quiz.ref);
-        filterCompleted(resolvedQuiz);
-      };
-    });
+  const blankQuiz = {
+
   }
+
+    const searchDiscover = async (searchQuery, orderOn, order) => {
+        //TODO: ACTUALLY FILTER COMPLETED/NOT COMPLETED QUIZZES
+        const results = FirestoreBackend.searchQuizzes(searchQuery, 99, orderOn, order);
+        results.then(async (query_snapshot) => {
+            if (query_snapshot.empty) {
+                console.log("nothing found!");
+                setQuizzes(results => [...results, blankQuiz]);
+            }
+            for (const quiz of query_snapshot.docs) {
+                const resolvedQuiz = await FirestoreBackend.resolveQuizRef(quiz.ref);
+                filterCompleted(resolvedQuiz);
+            };
+        });
+    }
 
   const searchProfile = async (searchQuery, orderOn, order) => {
     const yourProfile = props.userDetails.id === params.id

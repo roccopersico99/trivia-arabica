@@ -8,6 +8,7 @@ function Posts(props) {
 
   const [editing, setEditing] = useState(false)
   const [posts, setPosts] = useState([]);
+  const [isLiked, setIsLiked] = useState(0);
 
   useEffect(() => {
     getPosts()
@@ -16,6 +17,21 @@ function Posts(props) {
   const params = useParams();
   const titleAreaRef = useRef();
   const textAreaRef = useRef();
+  
+  async function handleLike(){
+
+  }
+
+  async function handleDislike(){
+
+  }
+
+  function handleDelete(index){
+    console.log(index);
+    console.log(posts[index].ref);
+    FirestoreBackend.deleteUserPagePost(params.id, posts[index].ref);
+    getPosts();
+  }
 
   const getPosts = async () => {
     setPosts([]);
@@ -27,6 +43,7 @@ function Posts(props) {
           const poster_name = await FirestoreBackend.getUser(doc.data().post_creator);
           const postdata = doc.data();
           postdata.name = poster_name.data().display_name;
+          postdata.ref = doc.ref.id;
           console.log(postdata);
           setPosts(posts => [...posts, postdata]);
         }
@@ -64,22 +81,24 @@ function Posts(props) {
             <br></br>
           </div>
         </Form>
-        {(!editing) && <Button  className="my-3" onClick={editingClicked}>Add Post</Button>}
+        {(!editing && props.profile !== '') && <Button  className="my-3" onClick={editingClicked}>Add Post</Button>}
       </div>
       <br></br>
       <ListGroup>
       {posts.length > 0 ?
-        (posts.map((post) =>(
+        (posts.map((post, index) =>(
           <Card>
             <Card.Body className="post">
-              <Card.Title>{post.post_title}</Card.Title>
+              {((!post.post_deleted) && (params.id === props.profile || post.post_creator === props.profile)) && <Button onClick={()=>{handleDelete(index)}} className="float-right" variant="danger">Delete</Button>}
+              {(post.post_deleted !== true) && <Card.Title>{post.post_title}</Card.Title>}
               <Card.Subtitle className="post mb-2 text-muted">
                 {"posted by: " + post.name}<br></br>
                 {post.publish_date.toDate().toLocaleDateString() + " at " + post.publish_date.toDate().toLocaleTimeString()}
               </Card.Subtitle>
-              <Card.Text className="post">{post.post_text}</Card.Text>
-              <Button variant="success">Like</Button>
-              <Button variant="danger">Dislike</Button>
+              {(post.post_deleted !== true) && <Card.Text className="post">{post.post_text}</Card.Text>}
+              {(post.post_deleted === true) && <Card.Text className="post font-italic font-weight-lighter">{"This post has been deleted"}</Card.Text>}
+              {/* {props.profile !== "" && <Button onClick={handleLike} variant="light" disabled={isLiked === 1}><FaThumbsUp /></Button>}
+              {props.profile !== "" && <Button onClick={handleDislike} variant="light" disabled={isLiked === 2}><FaThumbsDown /></Button>} */}
             </Card.Body>
           </Card>
         ))) : <div>Make your first post!</div>}

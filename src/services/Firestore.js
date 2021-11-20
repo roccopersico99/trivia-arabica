@@ -252,7 +252,8 @@ export const createUserPagePost = async (posterId, userpageId, postTitle, postTe
     post_text: postText,
     post_likes: 0,
     post_dislikes: 0,
-    publish_date: Timestamp.now(),
+    publish_date: Timestamp.now(), 
+    post_deleted: false
   });
   return docSnap;
 };
@@ -260,6 +261,14 @@ export const createUserPagePost = async (posterId, userpageId, postTitle, postTe
 export const getUserPagePosts = (userPageId) => {
   const docSnap = db.collection('users').doc(userPageId).collection('user_posts').orderBy('publish_date', 'desc').get()
   return docSnap
+}
+
+export const deleteUserPagePost = (userPageId, postId) => {
+  updateData(db.collection('users').doc(userPageId).collection('user_posts').doc(postId), {
+    post_deleted: true,
+    post_title: "",
+    post_text: ""
+  })
 }
 
 export const resolveUserRef = async (userRef) => {
