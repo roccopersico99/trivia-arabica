@@ -1,7 +1,7 @@
 import { Modal, Form, Button } from "react-bootstrap"
 import { useState } from "react"
 
-function ReportPopup(props) {
+function UserReportPopup(props) {
     const [response, setResponse] = useState("")
 
     function handleResponse(e) {
@@ -21,13 +21,13 @@ function ReportPopup(props) {
       >
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
-            Report this Quiz 
+            Report this User 
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <h5>Thank you for helping keep our site clean!</h5>
           <br></br>
-          <h6>Our moderation team will futher review this quiz to determine if it should belong on the Trivia Arabica platform.</h6>
+          <h6>Our moderation team will futher review this user to determine if they should belong on the Trivia Arabica platform.</h6>
           <br></br>
           <Form.Group >
               <Form.Label>Please add anything else you think we should know:</Form.Label>
@@ -42,4 +42,4 @@ function ReportPopup(props) {
     );
 }
 
-export default ReportPopup;
+export default UserReportPopup;

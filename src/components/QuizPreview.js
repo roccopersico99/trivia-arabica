@@ -12,7 +12,7 @@ import {
 import { Link, useHistory, useParams } from "react-router-dom";
 import * as FirestoreBackend from "../services/Firestore";
 import { useAuthState } from "../Context/index";
-import ReportPopup from "./ReportPopup.js"
+import QuizReportPopup from "./QuizReportPopup.js"
 
 function QuizPreview() {
   const history = useHistory();
@@ -101,7 +101,7 @@ function QuizPreview() {
   // }
   return (
     <Background>
-      <ReportPopup show={modalShow} onHide={() => setModalShow(false)} onSubmit={(res) => handleReport(res)}></ReportPopup>
+      <QuizReportPopup show={modalShow} onHide={() => setModalShow(false)} onSubmit={(res) => handleReport(res)}></QuizReportPopup>
       <Container>
         <Stack direction="horizontal" gap={3}>
           <Stack gap={3} style={{ width: "48%" }}>

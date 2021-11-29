@@ -26,6 +26,7 @@ import Quizzes from "./profile-components/Quizzes";
 import Posts from "./profile-components/Posts";
 import About from "./profile-components/About";
 import Search from "./Search";
+import UserReportPopup from "./UserReportPopup";
 
 function Profile() {
   const userDetails = useAuthState();
@@ -45,6 +46,8 @@ function Profile() {
 
   const [featuredQuiz, setFeaturedQuiz] = useState();
   const [featuredPost, setFeaturedPost] = useState();
+
+  const [modalShow, setModalShow] = useState(false);
 
   const params = useParams();
 
@@ -109,6 +112,29 @@ function Profile() {
 
   }
 
+  function handleReport(res) {
+    let sentBy = ""
+    userDetails.user === "" ? sentBy = "Guest" : sentBy = userDetails.id
+    let currentTime = new Date()
+    try {
+    window.Email.send({
+      SecureToken : "36297ca5-2675-43a0-82be-c6640938db00",
+      To : 'rocco.persico@stonybrook.edu',
+      From : "roccopersico99@gmail.com",
+      Subject : "User Reported: " + params.id,
+      Body : "A user has been reported on Trivia Arabica...<br />"
+      + "Reported User: " + params.id + "<br />"
+      + "Reported by User: " + sentBy + "<br />"
+      + "Time of Report: " + currentTime.toString() + "<br />"
+      + "User Response: " + res
+    }).then(
+      message => message==="OK" ? alert("Report Submitted. Thank you!") : alert(message)
+    ).then(setModalShow(false));
+    } catch(e){
+      console.log(e)
+    }
+  }
+
   let user = {
     id: "1",
     display_name: name,
@@ -149,6 +175,7 @@ function Profile() {
   }
   return (
     <Background>
+      <UserReportPopup show={modalShow} onHide={() => setModalShow(false)} onSubmit={(res) => handleReport(res)}></UserReportPopup>
       <div style={{position: "relative"}}>
         <Image
         style={{ width: "100%", height: "200px", objectFit: "cover" }}
@@ -175,11 +202,8 @@ function Profile() {
             ></Image>
             <Stack>
               <div>{user.display_name}</div>
-              <Button
-                style={{ width: "100px", margin: "auto", position: "relative" }}
-              >
-                Follow
-              </Button>
+              <Button style={{ width: "100px", margin: "auto", position: "relative" }}>Follow</Button>
+              {userDetails.id !== params.id && <Button variant="danger" onClick={() => setModalShow(true)} style={{ width: "100px", margin: "auto", position: "relative" }}>Report</Button>}
             </Stack>
           </Col>
         </Row>
