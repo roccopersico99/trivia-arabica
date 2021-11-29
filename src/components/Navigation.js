@@ -8,6 +8,8 @@ import { useAuthState } from "../Context/index";
 import { useHistory } from "react-router-dom";
 import { useState } from "react"
 import SettingsPopup from "./SettingsPopup";
+import * as FirestoreBackend from "../services/Firestore.js";
+
 
 function Navigation() {
   const userDetails = useAuthState();
@@ -23,12 +25,20 @@ function Navigation() {
   };
 
   function saveSettings() {
+    // TODO
     console.log("saving settings...")
   }
 
   function resetSettings() {
+    // TODO
     console.log("resetting all settings...")
   }
+
+  const handleRandom = async () => {
+    console.log("clicked random...")
+    const random_quiz = FirestoreBackend.getRandomQuiz()
+    console.log(random_quiz)
+  };
 
   return (
     <div>
@@ -54,6 +64,7 @@ function Navigation() {
                   userDetails.user === "" ? "/" : "/creator/"
                 }>Creator</Nav.Link>
               <Nav.Link href="/discover">Discover</Nav.Link>
+              <Nav.Link onClick={handleRandom}>Random</Nav.Link>
             </Nav>
             <Nav className="ml-auto">
               <LoginLogout />
