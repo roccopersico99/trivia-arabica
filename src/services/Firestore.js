@@ -199,6 +199,7 @@ export const getQuizzes = async (quizIDs) => {
   return quizzes
 }
 
+// TODO: gets random quiz ID, but not in time for Nav component to use
 export const getRandomQuiz = async () => {
   let quizId = ""
   let quizzes = []
