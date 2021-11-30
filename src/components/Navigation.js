@@ -36,8 +36,12 @@ function Navigation() {
 
   // TODO: Firebase backend gets random quiz ID, but not in time for Nav component to use
   const handleRandom = async () => {
-    const random_quiz = await FirestoreBackend.getRandomQuiz()
+    const random_quiz = await FirestoreBackend.getRandomQuiz();
     console.log("random quiz id: ", random_quiz)
+    history.push({
+      pathname: "/preview/" + random_quiz,
+      state: userDetails
+    });
   };
 
   return (
