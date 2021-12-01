@@ -223,6 +223,8 @@ function QuizCreator() {
     //todo check there is at least one(maybe more for minimum?) question
     //todo check that all questions have question text and choices filled in
     FirestoreBackend.publishQuiz(params.id);
+    console.log(window.location.href);
+    window.location.href = ('/preview/' + params.id);
   }
 
   if (quizQuestions.length === 0) {

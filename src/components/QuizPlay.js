@@ -12,7 +12,8 @@ function QuizPlay() {
     const userDetails = useAuthState();
     const params = useParams();
 
-    const [userMedals, setUserMedals] = useState(0)
+    const [userMedals, setUserMedals] = useState(0);
+    const [prevEarnedMedals, setPrevEarnedMedals] = useState(0);
     const [quizFinished, setQuizFinished] = useState(false)
 
     const [currQuestionNum, setCurrQuestionNum] = useState(1);
@@ -38,7 +39,12 @@ function QuizPlay() {
     const updateMedals = async (addedMedals) => {
         if(userDetails.user !== "") {
             const newMedals = await FirestoreBackend.updateUserMedals(userDetails.id, addedMedals);
-            setUserMedals(newMedals)
+        }
+    }
+
+    const updateCompletion = async (addedMedals) => {
+        if(userDetails.user !== "" && addedMedals >= 0) {
+            await FirestoreBackend.addUserCompletedQuiz(userDetails.id, params.id, addedMedals+prevEarnedMedals);
         }
     }
 
@@ -73,6 +79,18 @@ function QuizPlay() {
         setChoices(chs)
         let ans = [qz.question_choices.choice1.correct, qz.question_choices.choice2.correct, qz.question_choices.choice3.correct, qz.question_choices.choice4.correct]
         setAnswers(ans)
+
+        let prevMedals = await FirestoreBackend.getUserCompletedQuizMedals(userDetails.id, params.id);
+        if(prevMedals.exists){
+            setPrevEarnedMedals(prevMedals.data().earnedMedals);
+        }
+        let medals = FirestoreBackend.getUserMedalCount(userDetails.id);
+        medals.then((count)=>{
+            setUserMedals(count);
+        })
+        
+        
+
         setLoading(false)
       }
 
@@ -136,12 +154,16 @@ function QuizPlay() {
         )
     }
     else if(currQuestionNum > quizQuestions.length){
-        const earnedMedals = Math.floor((numCorrect/quizQuestions.length) * 100);
+        let earnedMedals = (Math.floor((numCorrect/quizQuestions.length) * 100) - prevEarnedMedals);
+        if(earnedMedals < 0){
+            earnedMedals = 0;
+        }
         if(quizFinished) {
             updateMedals(earnedMedals);
-            if(userDetails.user !== "") {
-                userDetails.medals = userMedals
-            }
+            updateCompletion(earnedMedals);
+            // if(userDetails.user !== "") {
+            //     userDetails.medals = userMedals
+            // }
             setQuizFinished(false)
         }
         console.log(earnedMedals)
@@ -151,8 +173,10 @@ function QuizPlay() {
                 <h1>Quiz Completed!</h1>
                 <h2>You scored {numCorrect}/{quizQuestions.length}</h2>
                 <br></br>
-                {userDetails.user !== "" && <h2>You gained {earnedMedals} medals!</h2>}
-                {userDetails.user !== "" && <h3>New Total Medal Count: {userMedals}</h3>}
+                {(userDetails.user !== "" && prevEarnedMedals === 0) && <h2>You gained {earnedMedals}/100 medals!</h2>}
+                {(userDetails.user !== "" && prevEarnedMedals !== 0) && <h2>You have taken this quiz before and earned gained {prevEarnedMedals} medals before, so now you have earned {earnedMedals} medals for a total of {earnedMedals+prevEarnedMedals}/100 medals from this quiz.</h2>}
+                {userDetails.user !== "" && <h3>New Total Medal Count: {userMedals + earnedMedals}</h3>}
+                
                 {userDetails.user === "" && <h2>You could've earned {earnedMedals} medals!</h2>}
                 {userDetails.user === "" && <h3>Unfortunately, medals can only be earned when logged in!</h3>}
                 <br></br>

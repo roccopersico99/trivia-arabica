@@ -3,13 +3,18 @@ import QuizCard from "./profile-components/QuizCard";
 import { useState, useEffect } from 'react'
 import * as FirestoreBackend from "../services/Firestore";
 import { useParams } from "react-router-dom";
+import { useAuthState } from "../Context";
 
 function Search(props) {
+
+  const userDetails = useAuthState();
+
   const [completedFilter, setCompletedFilter] = useState("All Quizzes");
   const [orderBy, setOrderBy] = useState("Publish Date")
   const [searchFilter, setSearchFilter] = useState("Descending");
   const [searchTarget, setSearchTarget] = useState("")
   const [quizzes, setQuizzes] = useState([]);
+  const [emptySearch, setEmptySearch] = useState(false);
   const params = useParams();
   const page = window.location.pathname.split("/")[1];
 
@@ -37,6 +42,7 @@ function Search(props) {
   const handleSearch = async () => {
     console.log(page);
     setQuizzes([]);
+    setEmptySearch(false);
     const searchQuery = searchTarget;
     let order = 'desc';
     if (searchFilter === "Ascending")
@@ -52,24 +58,20 @@ function Search(props) {
     }
   }
 
-  const blankQuiz = {
-
+  const searchDiscover = async (searchQuery, orderOn, order) => {
+      //TODO: ACTUALLY FILTER COMPLETED/NOT COMPLETED QUIZZES
+      const results = FirestoreBackend.searchQuizzes(searchQuery, 99, orderOn, order);
+      results.then(async (query_snapshot) => {
+          if (query_snapshot.empty) {
+              console.log("nothing found!");
+              setEmptySearch(true);
+          }
+          for (const quiz of query_snapshot.docs) {
+              const resolvedQuiz = await FirestoreBackend.resolveQuizRef(quiz.ref);
+              filterCompleted(resolvedQuiz);
+          };
+      });
   }
-
-    const searchDiscover = async (searchQuery, orderOn, order) => {
-        //TODO: ACTUALLY FILTER COMPLETED/NOT COMPLETED QUIZZES
-        const results = FirestoreBackend.searchQuizzes(searchQuery, 99, orderOn, order);
-        results.then(async (query_snapshot) => {
-            if (query_snapshot.empty) {
-                console.log("nothing found!");
-                setQuizzes(results => [...results, blankQuiz]);
-            }
-            for (const quiz of query_snapshot.docs) {
-                const resolvedQuiz = await FirestoreBackend.resolveQuizRef(quiz.ref);
-                filterCompleted(resolvedQuiz);
-            };
-        });
-    }
 
   const searchProfile = async (searchQuery, orderOn, order) => {
     const yourProfile = props.userDetails.id === params.id
@@ -77,6 +79,7 @@ function Search(props) {
     results.then(async (query_snapshot) => {
       if (query_snapshot.empty) {
         console.log("nothing found!");
+        setEmptySearch(true);
       }
       for (const quiz of query_snapshot.docs) {
         const resolvedQuiz = await FirestoreBackend.resolveQuizRef(quiz.ref);
@@ -89,10 +92,11 @@ function Search(props) {
   }
 
   const filterCompleted = async (resolvedQuiz) => {
-    console.log(completedFilter, " | ", resolvedQuiz.completed_state);
-    if (completedFilter === "Completed" && resolvedQuiz.completed_state) {
+    const completed_state = await FirestoreBackend.checkQuizCompletedOnUser(userDetails.id, resolvedQuiz.id);
+    console.log(completedFilter, " | ", completed_state);
+    if (completedFilter === "Completed" && completed_state) {
       setQuizzes(results => [...results, resolvedQuiz]);
-    } else if (completedFilter === "Not Completed" && !resolvedQuiz.completed_state) {
+    } else if (completedFilter === "Not Completed" && !completed_state) {
       setQuizzes(results => [...results, resolvedQuiz]);
     } else if (completedFilter === "All Quizzes") {
       setQuizzes(results => [...results, resolvedQuiz]);
@@ -167,7 +171,8 @@ function Search(props) {
             </DropdownButton>
         </Stack>
         <br></br>
-        {quizzes.length===0 && <Spinner style={{ marginTop: "100px" }} animation="border" role="status"></Spinner>}
+        {(quizzes.length===0 && emptySearch===false) && <Spinner style={{ marginTop: "100px" }} animation="border" role="status"></Spinner>}
+        {(quizzes.length===0 && emptySearch===true) && <div>no quizzes found</div>}
         {quizzes.length>0 && <Container>{content}</Container>}
     </div>
   );

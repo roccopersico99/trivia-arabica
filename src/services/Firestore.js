@@ -55,6 +55,23 @@ export const getUserQuizzes = async (userid) => {
   return docSnap;
 }
 
+export const addUserCompletedQuiz = async (userid, quizID, addedMedals) => {
+  const docSnap = await db.collection('users').doc(userid);
+  return setDoc(doc(docSnap, "completed_quizzes", quizID), {
+    earnedMedals : addedMedals
+  });
+}
+
+export const getUserCompletedQuizMedals = async (userID, quizID) => {
+  const docSnap = db.collection('users').doc(userID).collection('completed_quizzes').doc(quizID).get();
+  return docSnap;
+}
+
+export const getUserMedalCount = async (userID) => {
+  let medals = await (await db.collection('users').doc(userID).get()).data().medals;
+  return medals
+}
+
 export const updateUserMedals = async (userid, addedMedals) => {
   let newMedals = await (await db.collection('users').doc(userid).get()).data().medals;
   if (isNaN(newMedals)) {
@@ -203,13 +220,23 @@ export const getQuizzes = async (quizIDs) => {
 export const getRandomQuiz = async () => {
   let quizId = ""
   let quizzes = []
-  return await db.collection('quizzes').get().then((snapshot) => {
+  db.collection('quizzes').get().then((snapshot) => {
     snapshot.forEach((doc) => {
       quizId = doc.id;
       quizzes.push(quizId)
     })
     return quizzes[Math.floor(Math.random() * quizzes.length)];
   });
+  return undefined
+}
+
+export const checkQuizCompletedOnUser = async (userid, quizid) => {
+  if (userid === undefined || userid === null || userid === "") {
+    return
+  }
+  const docRef = db.collection('users').doc(userid).collection("completed_quizzes").doc(quizid);
+  const docSnap = await getDoc(docRef);
+  return docSnap.exists();
 }
 
 export const createQuiz = async (userId, quizTitle, quizDesc, imgPath) => {
