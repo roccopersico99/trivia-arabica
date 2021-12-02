@@ -22,7 +22,7 @@ function PlatformCard(props) {
       <Card.Body>
         <Card.Title>{props.platform?.data().name}</Card.Title>
         <Card.Img
-          style={{ maxHeight: "125px", maxWidth: "100%", width: "250px", backgroundSize: "contain" }}
+          style={{maxHeight: "100%", height: "150px", maxWidth: "100%", width: "250px", backgroundSize: "contain" }}
           variant="top"
           src={platImg}
         ></Card.Img>

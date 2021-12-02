@@ -134,7 +134,7 @@ function QuizCard(props) {
       <Card.Body>
         <Card.Title>{props.quiz?.title}</Card.Title>
         <Card.Img
-          style={{height: "175px", width: "250px", backgroundSize: "contain" }}
+          style={{maxHeight: "100%", height: "150px", maxWidth: "100%", width: "250px", backgroundSize: "contain" }}
           variant="top"
           src={props.quiz?.image === "" ? logo : props.quiz?.image}
         ></Card.Img>
