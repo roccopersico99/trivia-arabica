@@ -26,6 +26,7 @@ import Quizzes from "./profile-components/Quizzes";
 import Posts from "./profile-components/Posts";
 import About from "./profile-components/About";
 import Search from "./Search";
+import ProfilePlatforms from "./profile-components/ProfilePlatforms";
 
 function Profile() {
   const userDetails = useAuthState();
@@ -36,6 +37,7 @@ function Profile() {
   const [name, setName] = useState("");
   const [profileImage, setProfileImage] = useState("");
   const [quizzes, setQuizzes] = useState([]);
+  const [platforms, setPlatforms] = useState([]);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const [youtube, setYoutube] = useState("")
@@ -48,27 +50,15 @@ function Profile() {
 
   const params = useParams();
 
+  const [owner, setOwner] = useState()
+
   useEffect(() => {
-    //get user
-
-    async function getData() {
-      const usr_query = FirestoreBackend.getUser(params.id);
-      usr_query.then(async (query_snapshot) => {
-        setAbout(query_snapshot.data().user_bio);
-        setName(query_snapshot.data().display_name);
-        setProfileImage(query_snapshot.data().profile_image);
-        setYoutube(query_snapshot.data().youtubeURL);
-        setFacebook(query_snapshot.data().facebookURL);
-        setTwitter(query_snapshot.data().twitterURL);
-        setReddit(query_snapshot.data().redditURL);
-
-        const resolvedQuiz = await FirestoreBackend.getQuizFromString(query_snapshot.data().featured_quiz);
-        setFeaturedQuiz(resolvedQuiz)
-      });
-
+    if (params.id === userDetails.id) {
+      setOwner(true)
+    } else {
+      setOwner(false)
     }
-    getData()
-  }, [userDetails, refreshKey])
+  }, [userDetails])
 
   const [previousTab, setPreviousTab] = useState();
   const handleTabChange = (e) => {
@@ -105,9 +95,6 @@ function Profile() {
     const res = FirestoreBackend.setUserReddit(userDetails.id, val)
   }
 
-  const giveCorrectedYoutubeLink = (val) => {
-
-  }
 
   let user = {
     id: "1",
@@ -133,6 +120,28 @@ function Profile() {
     following: [],
     followers: [],
   };
+
+  if (owner === undefined) {
+    const usr_query = FirestoreBackend.getUser(params.id);
+    usr_query.then(async (query_snapshot) => {
+
+      setAbout(query_snapshot.data().user_bio);
+      setName(query_snapshot.data().display_name);
+      setProfileImage(query_snapshot.data().profile_image);
+      setYoutube(query_snapshot.data().youtubeURL);
+      setFacebook(query_snapshot.data().facebookURL);
+      setTwitter(query_snapshot.data().twitterURL);
+      setReddit(query_snapshot.data().redditURL);
+
+      const plats = await FirestoreBackend.getUserPlatforms(query_snapshot.id)
+      plats.forEach(pform => {
+        console.log(pform.data().name, " ", pform.id)
+        setPlatforms(platforms => [...platforms, pform])
+      })
+      const resolvedQuiz = await FirestoreBackend.getQuizFromString(query_snapshot.data().featured_quiz);
+      setFeaturedQuiz(resolvedQuiz)
+    });
+  }
 
   if (name === "") {
     return (
@@ -194,10 +203,13 @@ function Profile() {
                 ></Home>
               </Tab>
               <Tab eventKey="quizzes" title="Quizzes">
-                <Search userDetails={userDetails} refreshKey={refreshKey}></Search>
+                <Search setFeaturedQuiz={setFeaturedQuiz} userDetails={userDetails} refreshKey={refreshKey}></Search>
               </Tab>
               <Tab eventKey="posts" title="Posts">
                 <Posts profile={userDetails.id}></Posts>
+              </Tab>
+              <Tab eventKey="platforms" title="Platforms">
+                <ProfilePlatforms platforms={platforms}></ProfilePlatforms>
               </Tab>
               <Tab eventKey="about" title="About">
                 <About setAboutText={setAboutText}

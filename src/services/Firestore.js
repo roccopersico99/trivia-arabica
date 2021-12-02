@@ -1,6 +1,6 @@
 import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
-import { collection, query, where, getDocs, getDoc, limit, updateDoc, orderBy, doc, setDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, getDoc, limit, updateDoc, orderBy, doc, setDoc, addDoc } from "firebase/firestore";
 import { Timestamp } from "@firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import "firebase/firestore";
@@ -252,7 +252,7 @@ export const createUserPagePost = async (posterId, userpageId, postTitle, postTe
     post_text: postText,
     post_likes: 0,
     post_dislikes: 0,
-    publish_date: Timestamp.now(), 
+    publish_date: Timestamp.now(),
     post_deleted: false
   });
   return docSnap;
@@ -382,6 +382,44 @@ export const searchUserQuizzes = (userid, isowner, search = "", limitResults = 3
   }
 }
 
+
+export const getPlatform = async (id) => {
+  const docSnap = await db.collection('platforms').doc(id).get();
+  return docSnap
+}
+
+export const createPlatform = async (name, owner_id, owner_name) => {
+  //attempt to find the platform first
+  const q = query(collection(db, "platforms"), where("name", "==", name))
+  const doc = await getDocs(q)
+  if (!doc.empty) {
+    //platform already exists
+    return false
+  } else {
+    //platform does not exist, create it!
+    const docRef = await addDoc(collection(db, "platforms"), {
+      name: name,
+      owner_id: owner_id,
+      owner_name: owner_name,
+      imageURL: "",
+      description: ""
+    });
+    return docRef
+  }
+}
+
+export const addPlatformToUser = async (userid, platformid, name, ownership) => {
+  const docSnap = await db.collection('users').doc(userid).collection("userplatforms").doc(platformid).set({
+    owner: ownership,
+    name: name
+  });
+  return docSnap;
+}
+
+export const getUserPlatforms = async (userid) => {
+  const docSnap = await db.collection('users').doc(userid).collection("userplatforms").get();
+  return docSnap;
+}
 // FIREBASE STORAGE
 
 const storage = getStorage(firebaseApp)
@@ -413,6 +451,7 @@ export const deleteFile = async (filepath) => {
     console.log("error deleting file");
   });
 }
+
 
 // to update search_index in every quiz, for reference when collections need to be updated as a whole
 

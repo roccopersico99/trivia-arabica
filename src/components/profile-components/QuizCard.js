@@ -126,6 +126,7 @@ function QuizCard(props) {
       return
     }
     FirestoreBackend.setUserFeaturedQuiz(userDetails.id, props.quiz.id)
+    props.setFeaturedQuiz(props.quiz)
   }
 
   return (

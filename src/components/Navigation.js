@@ -40,6 +40,7 @@ function Navigation() {
                   userDetails.user === "" ? "/" : "/creator/"
                 }>Creator</Nav.Link>
               <Nav.Link href="/discover">Discover</Nav.Link>
+              <Nav.Link href="/platforms">Platforms</Nav.Link>
             </Nav>
             <Nav className="ml-auto">
               <LoginLogout />
