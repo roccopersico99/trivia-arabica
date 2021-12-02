@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import * as FirestoreBackend from "../../services/Firestore";
 import { useAuthState } from "../../Context/index";
 import { FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
+import { default as logo } from "../../logo.svg";
 
 function QuizCard(props) {
 
@@ -133,9 +134,9 @@ function QuizCard(props) {
       <Card.Body>
         <Card.Title>{props.quiz?.title}</Card.Title>
         <Card.Img
-          style={{ maxHeight: "125px", maxWidth: "100%", width: "250px", backgroundSize: "contain" }}
+          style={{height: "175px", width: "250px", backgroundSize: "contain" }}
           variant="top"
-          src={props.quiz?.image}
+          src={props.quiz?.image === "" ? logo : props.quiz?.image}
         ></Card.Img>
         <Card.Text>{props.quiz?.description}</Card.Text>
         <Row>
@@ -151,7 +152,7 @@ function QuizCard(props) {
         {!props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleDislike} variant="light" disabled={isLiked === 2}><FaThumbsDown /></Button>}
         {props.quiz?.allowed && userDetails.user !== "" && <Button href={"/creator/" + props.quiz?.id} variant="warning">Edit</Button>}
         {props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleDelete} variant="danger">Delete</Button>}
-        {props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleFeatured} >Set Featured</Button>}
+        {props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleFeatured} variant="info" >Set Featured</Button>}
       </Card.Body>
     </Card>
   );
