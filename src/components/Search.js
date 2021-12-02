@@ -15,6 +15,7 @@ function Search(props) {
   const [searchTarget, setSearchTarget] = useState("")
   const [quizzes, setQuizzes] = useState([]);
   const [emptySearch, setEmptySearch] = useState(false);
+  const [loading, setLoading] = useState(false)
   const params = useParams();
   const page = window.location.pathname.split("/")[1];
 
@@ -22,6 +23,11 @@ function Search(props) {
     console.log(props.userDetails)
     handleSearch()
   }, [props.refreshKey, completedFilter, searchFilter, orderBy])
+
+  const handleKeyDown = (e) => {
+    if(e.key === 'Enter')
+      handleSearch();
+  }
 
   const handleFilterChange = (e) => {
     setCompletedFilter(e)
@@ -40,6 +46,7 @@ function Search(props) {
   }
 
   const handleSearch = async () => {
+    setLoading(true)
     console.log(page);
     setQuizzes([]);
     setEmptySearch(false);
@@ -56,6 +63,7 @@ function Search(props) {
     } else if (page === 'profile') {
       searchProfile(searchQuery, orderOn, order);
     }
+    setLoading(true)
   }
 
   const searchDiscover = async (searchQuery, orderOn, order) => {
@@ -149,7 +157,7 @@ function Search(props) {
         <Stack direction="horizontal" gap={2} style={{ margin: "10px" }}>
             <InputGroup>
                 <Button onClick={handleSearch} variant="secondary" id="button-addon1">🔍</Button>
-                <FormControl onChange={searchChanged} aria-label="Example text with button addon" placeholder="Enter search terms..." aria-describedby="basic-addon1" />
+                <FormControl onKeyDown={handleKeyDown} onChange={searchChanged} aria-label="Example text with button addon" placeholder="Enter search terms..." aria-describedby="basic-addon1" />
             </InputGroup>
             {profile && <DropdownButton variant="outline-secondary" onSelect={handleFilterChange} title={completedFilter + " "} id="input-group-dropdown-1">
                 <Dropdown.Item eventKey="All Quizzes">All Quizzes</Dropdown.Item>
@@ -171,8 +179,9 @@ function Search(props) {
             </DropdownButton>
         </Stack>
         <br></br>
-        {(quizzes.length===0 && emptySearch===false) && <Spinner style={{ marginTop: "100px" }} animation="border" role="status"></Spinner>}
+        {(quizzes.length===0 && emptySearch===false && completedFilter !== "Completed") && <Spinner style={{ marginTop: "100px" }} animation="border" role="status"></Spinner>}
         {(quizzes.length===0 && emptySearch===true) && <div>no quizzes found</div>}
+        {(quizzes.length===0 && emptySearch===false && completedFilter === "Completed") && <div>no quizzes found</div>}
         {quizzes.length>0 && <Container>{content}</Container>}
     </div>
   );
