@@ -18,6 +18,7 @@ function Platform() {
   const [platformName, setPlatformName] = useState("")
   const [ownerName, setOwnerName] = useState("")
   const [ownerID, setOwnerID] = useState("")
+  const [isAContributor, setIsAContributor] = useState(false)
   const [platformImage, setPlatformImage] = useState()
   const [platformDescription, setPlatformDescription] = useState("")
 
@@ -105,7 +106,7 @@ function Platform() {
       <Background>
       <br/>
       <h1>{platformName}</h1>
-      <h4> Owner: {ownerName}</h4>
+      <h4 style={{cursor:"pointer"}} onClick={() => history.push("/profile/"+ownerID)}> Owner: {ownerName}</h4>
       <br/>
       {platformImage!==undefined && <Image
         style={{ width: "250px", backgroundSize: "cover" }}
