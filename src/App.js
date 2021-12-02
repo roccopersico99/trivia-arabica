@@ -9,6 +9,8 @@ import QuizPreview from "./components/QuizPreview";
 import QuizPlay from "./components/QuizPlay";
 import QuizInitiator from "./components/QuizInitiator";
 import Discover from "./components/Discover";
+import Platforms from "./components/Platforms";
+import Platform from "./components/Platform";
 
 export default function App() {
   return (
@@ -21,6 +23,9 @@ export default function App() {
         <Route path="/preview/:id" exact component={QuizPreview} />
         <Route path="/profile/:id" exact component={Profile} />
         <Route path="/discover" exact component={Discover} />
+        <Route path="/platforms" exact component={Platforms} />
+        <Route path="/platform" exact component={Platform} />
+        <Route path="/platform/:id" exact component={Platform} />
         <Route path="/" exact component={Home} />
       </Switch>
     </div>
