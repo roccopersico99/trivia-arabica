@@ -57,6 +57,7 @@ background: linear-gradient(90deg, rgba(0,167,225,1) 0%, rgba(0,126,167,1) 5%, r
   height: 100%;
   min-height: 100vh;
   margin: auto;
+  isolation: isolate
 }
 
 .background-inner-div {
