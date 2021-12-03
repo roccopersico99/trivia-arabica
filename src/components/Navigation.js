@@ -24,12 +24,41 @@ function Navigation() {
   const [modalShow, setModalShow] = useState(false);
 
   const history = useHistory();
-  const handleOnClick = (event) => {
+
+  const handleHomeClick = (event) => {
+    history.push({
+      pathname: "/",
+      state: userDetails,
+    });
+  }
+
+  const handleCreatorClick = (event) => {
+    history.push({
+      pathname: userDetails.user === "" ? "/" : "/creator/",
+      state: userDetails,
+    });
+  }
+
+  const handleProfileClick = (event) => {
     history.push({
       pathname: "/profile/" + userDetails.id,
       state: userDetails,
     });
   };
+
+  const handleDiscoverClick = (event) => {
+    history.push({
+      pathname: "/discover",
+      state: userDetails,
+    });
+  }
+
+  const handlePlatformClick = (event) => {
+    history.push({
+      pathname: "/platforms",
+      state: userDetails,
+    });
+  }
 
   function saveSettings() {
     // TODO
@@ -44,11 +73,11 @@ function Navigation() {
   // TODO: Firebase backend gets random quiz ID, but not in time for Nav component to use
   const handleRandom = async () => {
     let randomQuizId = await FirestoreBackend.getRandomQuiz();
-    
+
     history.push({
       pathname: "/preview/" + randomQuizId,
       state: randomQuizId,
-    }); 
+    });
   };
 
   return (
@@ -61,36 +90,33 @@ function Navigation() {
       ></SettingsPopup>
       <Navbar collapseOnSelect expand="sm" bg="dark" variant="dark">
         <Container>
-          <Navbar.Brand href="/">
+          <Navbar.Brand style={{cursor:"pointer"}} onClick={handleHomeClick}>
             <img src={logo} width="50" height="50" alt="Trivia Arabica" />
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav>
-              <Nav.Link href="/">Home</Nav.Link>
+              <Nav.Link onClick={handleHomeClick} >Home</Nav.Link>
               <Nav.Link
-                onClick={handleOnClick}
-                href={
-                  userDetails.user === "" ? "/" : "/profile/" + userDetails.id
-                }
+                onClick={handleProfileClick}
               >
                 Profile
               </Nav.Link>
-              <Nav.Link href={userDetails.user === "" ? "/" : "/creator/"}>
+              <Nav.Link onClick={handleCreatorClick}>
                 Creator
               </Nav.Link>
-              <Nav.Link href="/discover">Discover</Nav.Link>
-              <Nav.Link href="/platforms">Platforms</Nav.Link>
+              <Nav.Link onClick={handleDiscoverClick}>Discover</Nav.Link>
+              <Nav.Link onClick={handlePlatformClick}>Platforms</Nav.Link>
               <Nav.Link onClick={handleRandom}>Random</Nav.Link>
             </Nav>
             <Nav className="ml-auto">
               <LoginLogout />
               <Navbar.Brand
-                href={
-                  userDetails.user === "" ? "/" : "/profile/" + userDetails.id
-                }
+                onClick={handleProfileClick}
+                style={{cursor:"pointer"}}
               >
                 <img
+
                   src={userIcon}
                   width="50"
                   height="50"
@@ -98,7 +124,7 @@ function Navigation() {
                   style={userIconStyle}
                 />
               </Navbar.Brand>
-              <Navbar.Brand onClick={() => setModalShow(true)}>
+              <Navbar.Brand style={{cursor:"pointer"}} onClick={() => setModalShow(true)}>
                 <img
                   src={settingsIcon}
                   width="50"
