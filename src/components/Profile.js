@@ -208,6 +208,7 @@ function Profile() {
               style={{
                 height: "150px",
                 width: "150px",
+                borderRadius: "50%"
               }}
               src={user.profile_picture}
               alt="Profile"

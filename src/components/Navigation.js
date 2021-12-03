@@ -15,10 +15,10 @@ function Navigation() {
   const loggedIn = userDetails.id !== "";
 
   let userIcon = defaultUserIcon;
-  let userIconStyle = { filter: "invert(1)" };
+  let userIconStyle = { filter: "invert(1)", borderRadius: "50%" };
   if (loggedIn) {
     userIcon = userDetails.imageUrl;
-    userIconStyle = {};
+    userIconStyle = { borderRadius: "50%" };
   }
 
   const [modalShow, setModalShow] = useState(false);
@@ -95,7 +95,7 @@ function Navigation() {
                   width="50"
                   height="50"
                   alt="user icon"
-                  style={ userIconStyle }
+                  style={userIconStyle}
                 />
               </Navbar.Brand>
               <Navbar.Brand onClick={() => setModalShow(true)}>
