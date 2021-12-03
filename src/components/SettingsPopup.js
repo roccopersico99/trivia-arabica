@@ -1,7 +1,20 @@
 import { Modal, Form, Button } from "react-bootstrap"
 import { useState } from "react"
+import Darkmode from 'darkmode-js';
 
 function SettingsPopup(props) {
+
+  const options = {
+    bottom: '64px',
+    right: 'unset',
+    left: '32px',
+    saveInCookies: false,
+    label: '🌓',
+    autoMatchOsTheme: true
+  }
+  
+  const darkmode = new Darkmode(options);
+  darkmode.showWidget();
 
     return (
       <Modal
@@ -17,19 +30,10 @@ function SettingsPopup(props) {
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <h5>Appearance</h5>
-            <Form.Check type="radio" label="Light"></Form.Check>
-            <Form.Check type="radio" label="Dark"></Form.Check>
-            <br></br>
-            <h5>Colorblind Filter</h5>
-            <Form.Check type="radio" label="None"></Form.Check>
-            <Form.Check type="radio" label="Protanopia"></Form.Check>
-            <Form.Check type="radio" label="Deuteranopia"></Form.Check>
-            <Form.Check type="radio" label="Tritanopia"></Form.Check>
-            <br></br>
             <h5>Content Discovery</h5>
             <Form.Check type="radio" label="Under 18"></Form.Check>
             <Form.Check type="radio" label="18+"></Form.Check>
+            
           </Form>
         </Modal.Body>
         <Modal.Footer>
