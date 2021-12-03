@@ -1,6 +1,6 @@
 import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
-import { collection, query, where, getDocs, getDoc, limit, updateDoc, orderBy, doc, setDoc, addDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, getDoc, limit, updateDoc, orderBy, doc, setDoc, addDoc, startAt } from "firebase/firestore";
 import { Timestamp } from "@firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import "firebase/firestore";
@@ -374,15 +374,13 @@ export const deleteQuestions = (quizPath) => {
   });
 }
 
-export const publishQuiz = (quizPath) => {
+export const publishQuiz = async (quizPath) => {
   const batch = db.batch();
-  const quiz_query = getQuiz(quizPath);
-  quiz_query.then((query_snapshot) => {
-    const quizref = query_snapshot.ref;
-    batch.update(quizref, { publish_state: true });
-    batch.update(quizref, { publish_date: Timestamp.now() });
-    batch.commit();
-  });
+  const quiz_query = await getQuiz(quizPath);
+  const quizref = quiz_query.ref;
+  batch.update(quizref, { publish_state: true });
+  batch.update(quizref, { publish_date: Timestamp.now() });
+  await batch.commit();
 }
 
 export const recentQuizzes = (limitResults = 10) => {
@@ -390,7 +388,7 @@ export const recentQuizzes = (limitResults = 10) => {
   return getDocs(q)
 }
 
-export const searchQuizzes = (search = "", limitResults = 30, orderOn = "publish_date", order = "desc") => {
+export const searchQuizzes = (search = "", limitResults=99, orderOn = "publish_date", order = "desc") => {
   search = search.toLowerCase();
   const q = query(quizRef,
     where('search_index', 'array-contains', search),
@@ -400,7 +398,7 @@ export const searchQuizzes = (search = "", limitResults = 30, orderOn = "publish
   return getDocs(q);
 }
 
-export const searchUserQuizzes = (userid, isowner, search = "", limitResults = 30, orderOn = "publish_date", order = "desc") => {
+export const searchUserQuizzes = (userid, isowner, search = "", limitResults=99, orderOn = "publish_date", order = "desc") => {
   search = search.toLowerCase();
 
   if (isowner) {

@@ -1,4 +1,4 @@
-import { Container, Row, Stack, InputGroup, FormControl, Spinner, Button, Dropdown, DropdownButton } from "react-bootstrap";
+import { Container, Row, Stack, InputGroup, FormControl, Spinner, Button, Dropdown, DropdownButton, Pagination } from "react-bootstrap";
 import QuizCard from "./profile-components/QuizCard";
 import { useState, useEffect } from 'react'
 import * as FirestoreBackend from "../services/Firestore";
@@ -16,6 +16,7 @@ function Search(props) {
   const [quizzes, setQuizzes] = useState([]);
   const [emptySearch, setEmptySearch] = useState(false);
   const [loading, setLoading] = useState(false)
+  const [pageNum, setPageNum] = useState(1);
   const params = useParams();
   const page = window.location.pathname.split("/")[1];
 
@@ -47,6 +48,28 @@ function Search(props) {
     setSearchTarget(e.target.value)
   }
 
+  const handleFirst = () => {
+    setPageNum(1);
+  }
+
+  const handleLast = () => {
+    setPageNum(quizChunks.length);
+  }
+
+  const handlePrev = () => {
+    const num = pageNum-1;
+    setPageNum(num);
+  }
+
+  const handleNext = () => {
+    const num = pageNum+1;
+    setPageNum(num);
+  }
+
+  const handlePageNum = (e) => {
+    setPageNum(Number(e.target.text));
+  }
+
   const handleSearch = async () => {
     setLoading(true)
     console.log(page);
@@ -68,9 +91,9 @@ function Search(props) {
     setLoading(true)
   }
 
-  const searchDiscover = async (searchQuery, orderOn, order) => {
+  const searchDiscover = async (searchQuery, orderOn, order, startOn = "") => {
       //TODO: ACTUALLY FILTER COMPLETED/NOT COMPLETED QUIZZES
-      const results = FirestoreBackend.searchQuizzes(searchQuery, 99, orderOn, order);
+      const results = FirestoreBackend.searchQuizzes(searchQuery, 30, orderOn, order, startOn);
       results.then(async (query_snapshot) => {
           if (query_snapshot.empty) {
               console.log("nothing found!");
@@ -89,7 +112,7 @@ function Search(props) {
 
   const searchProfile = async (searchQuery, orderOn, order) => {
     const yourProfile = props.userDetails.id === params.id
-    const results = FirestoreBackend.searchUserQuizzes(params.id, yourProfile, searchQuery, 99, orderOn, order);
+    const results = FirestoreBackend.searchUserQuizzes(params.id, yourProfile, searchQuery, 30, orderOn, order);
     results.then(async (query_snapshot) => {
       if (query_snapshot.empty) {
         console.log("nothing found!");
@@ -164,9 +187,23 @@ function Search(props) {
       setQuizzes(quizzes)
     }
   }
+
+  // trim out empty spots in quizzes array created from filtering
   const trimQuizzes = quizzes.filter(n => n);
-  const rows = [...Array(Math.ceil(trimQuizzes.length / 3))];
-  const quizRows = rows.map((row, index) => trimQuizzes.slice(index * 3, index * 3 + 3))
+  // chunk quizzes into arrays of 6 elements
+  const quizChunks = trimQuizzes.reduce((all,one,i) => {
+    const ch = Math.floor(i/6); 
+    all[ch] = [].concat((all[ch]||[]),one); 
+    return all
+  }, [])
+  const quizChunk = quizChunks[pageNum-1];
+  // prevent undefined error on quizzes being empty
+  let rows;
+  if(quizChunk)
+    rows = [...Array(Math.ceil(quizChunk.length / 3))];
+  else
+    rows = [];
+  const quizRows = rows.map((row, index) => quizChunk.slice(index * 3, index * 3 + 3))
   const content = quizRows.map((row, index) => (
     <Row className="row" key={index}>
             {row.map(quiz => (
@@ -174,6 +211,17 @@ function Search(props) {
             ))}
     </Row>
   ));
+  let paginationItems = [
+      <Pagination.First onClick={handleFirst} disabled={(pageNum <= 1)}/>,
+      <Pagination.Prev onClick={handlePrev} disabled={(pageNum <= 1)}/>]
+  for (let index = 1; index <= quizChunks.length; index++){
+    paginationItems.push(
+      <Pagination.Item key={index} active={index === pageNum} onClick={handlePageNum}> {index} </Pagination.Item>
+    )
+  }
+  paginationItems.push(<Pagination.Next onClick={handleNext} disabled={(pageNum >= quizChunks.length)}/>)
+  paginationItems.push(<Pagination.Last onClick={handleLast} disabled={(pageNum >= quizChunks.length)}/>)
+
   let profile = false;
   if (props.userDetails) {
     profile = (props.userDetails.id === params.id);
@@ -208,7 +256,13 @@ function Search(props) {
         <br></br>
         {(quizzes.length===0 && emptySearch===false) && <Spinner style={{ marginTop: "100px" }} animation="border" role="status"></Spinner>}
         {(quizzes.length===0 && emptySearch===true) && <div>no quizzes found</div>}
-        {quizzes.length>0 && <Container>{content}</Container>}
+        {quizzes.length>0 && 
+          <Container>
+            {content}
+            <Pagination>
+              {paginationItems}
+            </Pagination>
+          </Container>}
     </div>
   );
 }

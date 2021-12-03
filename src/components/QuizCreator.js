@@ -219,11 +219,10 @@ function QuizCreator() {
     setupCreator(false)
   }
 
-  function publish(){
+  async function publish(){
     //todo check there is at least one(maybe more for minimum?) question
     //todo check that all questions have question text and choices filled in
-    FirestoreBackend.publishQuiz(params.id);
-    console.log(window.location.href);
+    await FirestoreBackend.publishQuiz(params.id);
     window.location.href = ('/preview/' + params.id);
   }
 
