@@ -19,6 +19,8 @@ function Search(props) {
   const params = useParams();
   const page = window.location.pathname.split("/")[1];
 
+  let counter = 0;
+
   useEffect(() => {
     console.log(props.userDetails)
     handleSearch()
@@ -74,10 +76,14 @@ function Search(props) {
               console.log("nothing found!");
               setEmptySearch(true);
           }
-          for (const quiz of query_snapshot.docs) {
-              const resolvedQuiz = await FirestoreBackend.resolveQuizRef(quiz.ref);
-              filterCompleted(resolvedQuiz);
-          };
+          counter = query_snapshot.docs.length;
+          console.log("counter : " + counter);
+          let newResults = [];
+
+          query_snapshot.docs.forEach(async (quiz, index) => {
+            const resolvedQuiz = await FirestoreBackend.resolveQuizRef(quiz.ref);
+            filterCompleted(resolvedQuiz, index, newResults);
+          });
       });
   }
 
@@ -89,40 +95,61 @@ function Search(props) {
         console.log("nothing found!");
         setEmptySearch(true);
       }
-      for (const quiz of query_snapshot.docs) {
+      counter = query_snapshot.docs.length;
+      console.log("counter : " + counter);
+      let newResults = [];
+      query_snapshot.docs.forEach(async (quiz, index) => {
         const resolvedQuiz = await FirestoreBackend.resolveQuizRef(quiz.ref);
         if (yourProfile)
-          filterPublished(resolvedQuiz);
+          filterPublished(resolvedQuiz, index, newResults);
         else
-          filterCompleted(resolvedQuiz);
-      };
+          filterCompleted(resolvedQuiz, index, newResults);
+      });
     });
   }
 
-  const filterCompleted = async (resolvedQuiz) => {
+  const filterCompleted = async (resolvedQuiz, index, newResults) => {
     const completed_state = await FirestoreBackend.checkQuizCompletedOnUser(userDetails.id, resolvedQuiz.id);
     console.log(completedFilter, " | ", completed_state);
     if (completedFilter === "Completed" && completed_state) {
-      setQuizzes(results => [...results, resolvedQuiz]);
+      newResults[index] = resolvedQuiz;
+      console.log(newResults);
     } else if (completedFilter === "Not Completed" && !completed_state) {
-      setQuizzes(results => [...results, resolvedQuiz]);
+      newResults[index] = resolvedQuiz;
+      console.log(newResults);
     } else if (completedFilter === "All Quizzes") {
-      setQuizzes(results => [...results, resolvedQuiz]);
+      newResults[index] = resolvedQuiz;
+      console.log(newResults);
     }
+    counter -= 1;
+    console.log("counter : " + counter);
+    if(counter === 0)
+      setQuizzes(newResults);
   }
 
-  const filterPublished = async (resolvedQuiz) => {
+  const filterPublished = async (resolvedQuiz, index, newResults) => {
     if (resolvedQuiz) {
       resolvedQuiz.allowed = true;
       if (completedFilter === "Published" && resolvedQuiz.publish_state) {
-        setQuizzes(results => [...results, resolvedQuiz]);
+        newResults[index] = resolvedQuiz;
+        console.log(newResults);
       } else if (completedFilter === "Not Published" && !resolvedQuiz.publish_state) {
-        setQuizzes(results => [...results, resolvedQuiz]);
+        newResults[index] = resolvedQuiz;
+        console.log(newResults);
+        if(counter === 0)
+          setQuizzes(newResults);
       } else if (completedFilter === "All Quizzes") {
-        setQuizzes(results => [...results, resolvedQuiz]);
+        newResults[index] = resolvedQuiz;
+        console.log(newResults);
       }
+      counter -= 1;
+      console.log("counter : " + counter);
+      if(counter === 0)
+        setQuizzes(newResults);
     }
   }
+
+
 
   function sortQuizzes() {
     if (quizzes.length > 0) {
@@ -137,9 +164,9 @@ function Search(props) {
       setQuizzes(quizzes)
     }
   }
-
-  const rows = [...Array(Math.ceil(quizzes.length / 3))];
-  const quizRows = rows.map((row, index) => quizzes.slice(index * 3, index * 3 + 3))
+  const trimQuizzes = quizzes.filter(n => n);
+  const rows = [...Array(Math.ceil(trimQuizzes.length / 3))];
+  const quizRows = rows.map((row, index) => trimQuizzes.slice(index * 3, index * 3 + 3))
   const content = quizRows.map((row, index) => (
     <Row className="row" key={index}>
             {row.map(quiz => (
@@ -179,9 +206,8 @@ function Search(props) {
             </DropdownButton>
         </Stack>
         <br></br>
-        {(quizzes.length===0 && emptySearch===false && completedFilter !== "Completed") && <Spinner style={{ marginTop: "100px" }} animation="border" role="status"></Spinner>}
+        {(quizzes.length===0 && emptySearch===false) && <Spinner style={{ marginTop: "100px" }} animation="border" role="status"></Spinner>}
         {(quizzes.length===0 && emptySearch===true) && <div>no quizzes found</div>}
-        {(quizzes.length===0 && emptySearch===false && completedFilter === "Completed") && <div>no quizzes found</div>}
         {quizzes.length>0 && <Container>{content}</Container>}
     </div>
   );
