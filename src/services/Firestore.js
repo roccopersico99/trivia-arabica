@@ -220,14 +220,13 @@ export const getQuizzes = async (quizIDs) => {
 export const getRandomQuiz = async () => {
   let quizId = ""
   let quizzes = []
-  db.collection('quizzes').get().then((snapshot) => {
+  return await db.collection('quizzes').get().then((snapshot) => {
     snapshot.forEach((doc) => {
       quizId = doc.id;
       quizzes.push(quizId)
     })
     return quizzes[Math.floor(Math.random() * quizzes.length)];
   });
-  return undefined
 }
 
 export const checkQuizCompletedOnUser = async (userid, quizid) => {

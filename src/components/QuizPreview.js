@@ -1,5 +1,5 @@
 import "../App.css";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Background from "./Background.js";
 import {
   Container,
@@ -9,83 +9,94 @@ import {
   ProgressBar,
   Spinner,
 } from "react-bootstrap";
-import { Link, useHistory, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import * as FirestoreBackend from "../services/Firestore";
 import { useAuthState } from "../Context/index";
-import QuizReportPopup from "./QuizReportPopup.js"
+import QuizReportPopup from "./QuizReportPopup.js";
 
 function QuizPreview() {
-  const history = useHistory();
   const userDetails = useAuthState();
   const params = useParams();
-  const quiz = history.location.state;
 
   const [modalShow, setModalShow] = useState(false);
 
-
   function handleReport(res) {
-    let sentBy = ""
-    userDetails.user === "" ? sentBy = "Guest" : sentBy = userDetails.id
-    let currentTime = new Date()
+    let sentBy = "";
+    userDetails.user === "" ? (sentBy = "Guest") : (sentBy = userDetails.id);
+    let currentTime = new Date();
     try {
-    window.Email.send({
-      SecureToken : "36297ca5-2675-43a0-82be-c6640938db00",
-      To : 'rocco.persico@stonybrook.edu',
-      From : "roccopersico99@gmail.com",
-      Subject : "Quiz Reported: " + params.id,
-      Body : "A quiz has been reported on Trivia Arabica...<br />"
-      + "Reported Quiz: " + params.id + "<br />"
-      + "Reported by User: " + sentBy + "<br />"
-      + "Time of Report: " + currentTime.toString() + "<br />"
-      + "User Response: " + res
-    }).then(
-      message => message==="OK" ? alert("Report Submitted. Thank you!") : alert(message)
-    ).then(setModalShow(false));
-    } catch(e){
-      console.log(e)
+      window.Email.send({
+        SecureToken: "36297ca5-2675-43a0-82be-c6640938db00",
+        To: "rocco.persico@stonybrook.edu",
+        From: "roccopersico99@gmail.com",
+        Subject: "Quiz Reported: " + params.id,
+        Body:
+          "A quiz has been reported on Trivia Arabica...<br />" +
+          "Reported Quiz: " +
+          params.id +
+          "<br />" +
+          "Reported by User: " +
+          sentBy +
+          "<br />" +
+          "Time of Report: " +
+          currentTime.toString() +
+          "<br />" +
+          "User Response: " +
+          res,
+      })
+        .then((message) =>
+          message === "OK"
+            ? alert("Report Submitted. Thank you!")
+            : alert(message)
+        )
+        .then(setModalShow(false));
+    } catch (e) {
+      console.log(e);
     }
   }
 
-  const [currQuiz, setCurrQuiz] = useState(async () => {
-    await FirestoreBackend.getQuiz(params.id).then((quiz) => {
-      setCurrQuiz(quiz.data());
-    }).catch((error)=>{
-      setCurrQuiz(null);
-      console.log("quiz does not exist or was deleted1");
-    });
-  }); 
+  const [quiz, setQuiz] = useState({});
+  const [quizCreator, setQuizCreator] = useState({});
 
-  const [quizCreator, setQuizCreator] = useState(async () => {
-    if(!quiz){
-      console.log("quiz does not exist or was deleted2");
-      return null;
-    }
-    await FirestoreBackend.resolveUserRef(quiz.creator).then((user) => {
-      setQuizCreator(user);
-    }).catch((error)=>{
-      console.log("quiz does not exist or was deleted3");
-    })
-  });
-  
-  if(!currQuiz){
-    return (
-      <Background>
-        quiz does not exist or was deleted
-      </Background>
-    );
+  function resolveQuizRef() {
+    FirestoreBackend.getQuizFromString(params.id).then(async (result) => {
+      setQuiz(result);
+    }).catch(err => {console.log(err)});
   }
 
-  const likes = currQuiz.quiz_likes;
-  const dislikes = currQuiz.quiz_dislikes;
+  function resolveQuizCreatorRef() {
+    FirestoreBackend.resolveUserRef(quiz?.creator).then(async (result) => {
+      setQuizCreator(result);
+    }).catch(err => {console.log(err)});
+  }
+
+  useEffect(() => {
+    resolveQuizRef();
+  }, [params]);
+
+  useEffect(() => {
+    resolveQuizCreatorRef();
+  }, [quiz]);
+
+  if (!quiz) {
+    return <Background>quiz does not exist or was deleted</Background>;
+  }
+
+  const likes = quiz?.quiz_likes;
+  const dislikes = quiz?.quiz_dislikes;
   let noRatings = false;
-  let totalRatings = likes+dislikes;
-  if(totalRatings <= 0) {
+  let totalRatings = likes + dislikes;
+  if (totalRatings <= 0) {
     totalRatings = 1;
     noRatings = true;
   }
-  const likePercent = Math.floor((likes/totalRatings)*100)
-  const dislikePercent = Math.floor((dislikes/totalRatings)*100)
+  const likePercent = Math.floor((likes / totalRatings) * 100);
+  const dislikePercent = Math.floor((dislikes / totalRatings) * 100);
 
+  let date = new Date(1970,0,1);
+  date.setSeconds(quiz?.publish_date?.seconds);
+  
+  const publishDate = date.toLocaleDateString();
   // if (userDetails.user === "") {
   //   return (
   //     <Background>
@@ -101,7 +112,11 @@ function QuizPreview() {
   // }
   return (
     <Background>
-      <QuizReportPopup show={modalShow} onHide={() => setModalShow(false)} onSubmit={(res) => handleReport(res)}></QuizReportPopup>
+      <QuizReportPopup
+        show={modalShow}
+        onHide={() => setModalShow(false)}
+        onSubmit={(res) => handleReport(res)}
+      ></QuizReportPopup>
       <Container>
         <Stack direction="horizontal" gap={3}>
           <Stack gap={3} style={{ width: "48%" }}>
@@ -124,8 +139,8 @@ function QuizPreview() {
                 <h1>{quizCreator?.display_name}</h1>
               </Stack>
             </Link>
-            <h2>Quiz Created: 10/29/2021</h2>
-            <h2>Community Rating:</h2>
+            <h2>Uploaded: {publishDate}</h2>
+            <h2>Rating</h2>
             <ProgressBar>
               <ProgressBar
                 variant="success"
@@ -141,9 +156,31 @@ function QuizPreview() {
               />
             </ProgressBar>
             <Stack direction="horizontal" gap={3}>
-              {userDetails.user !== "" && <Link to={{ pathname: "/play/" + quiz?.id, state: quiz }} className="btn btn-success w-100 p-3">Play!</Link>}
-              {userDetails.user === "" && <Link to={{ pathname: "/play/" + quiz?.id, state: quiz }} className="btn btn-success w-50 p-3">Play!</Link>}
-              {userDetails.user !== "" && <Button onClick={() => setModalShow(true)} variant="danger" className="w-50 p-3">Report</Button>}
+              {userDetails.user !== "" && (
+                <Link
+                  to={{ pathname: "/play/" + quiz?.id, state: quiz }}
+                  className="btn btn-success w-100 p-3"
+                >
+                  Play!
+                </Link>
+              )}
+              {userDetails.user === "" && (
+                <Link
+                  to={{ pathname: "/play/" + quiz?.id, state: quiz }}
+                  className="btn btn-success w-50 p-3"
+                >
+                  Play!
+                </Link>
+              )}
+              {userDetails.user !== "" && (
+                <Button
+                  onClick={() => setModalShow(true)}
+                  variant="danger"
+                  className="w-50 p-3"
+                >
+                  Report
+                </Button>
+              )}
             </Stack>
           </Stack>
           <Stack gap={3} style={{ width: "48%" }}>
@@ -158,12 +195,14 @@ function QuizPreview() {
             ></Image>
             <h1 className="block-example border border-dark">{quiz?.title}</h1>
             <p className="block-example border border-dark">
-              {quiz?.description === "" ? "This is where the quiz description would go, IF IT EXISTED!" : quiz?.description}
+              {quiz?.description === ""
+                ? "This is where the quiz description would go, IF IT EXISTED!"
+                : quiz?.description}
             </p>
           </Stack>
         </Stack>
       </Container>
-    </Background >
+    </Background>
   );
 }
 
