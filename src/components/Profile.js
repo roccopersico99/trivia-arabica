@@ -37,6 +37,7 @@ function Profile() {
   const [about, setAbout] = useState("");
   const [name, setName] = useState("");
   const [profileImage, setProfileImage] = useState("");
+  const [profileId, setProfileID] = useState("")
   const [quizzes, setQuizzes] = useState([]);
   const [platforms, setPlatforms] = useState([]);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -150,10 +151,13 @@ function Profile() {
     followers: [],
   };
 
-  if (owner === undefined) {
+
+
+  if (owner === undefined || params.id !== profileId) {
     const usr_query = FirestoreBackend.getUser(params.id);
     usr_query.then(async (query_snapshot) => {
 
+      setProfileID(params.id)
       setAbout(query_snapshot.data().user_bio);
       setName(query_snapshot.data().display_name);
       setProfileImage(query_snapshot.data().profile_image);
@@ -169,10 +173,12 @@ function Profile() {
       })
       const resolvedQuiz = await FirestoreBackend.getQuizFromString(query_snapshot.data().featured_quiz);
       setFeaturedQuiz(resolvedQuiz)
+
     });
   }
 
-  if (name === "") {
+
+  if (params.id !== profileId) {
     return (
       <Background>
         <Spinner

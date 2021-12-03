@@ -12,6 +12,7 @@ import * as FirestoreBackend from "../services/Firestore.js";
 
 function Navigation() {
   const userDetails = useAuthState();
+  const featuredQuiz = undefined;
   const loggedIn = userDetails.id !== "";
 
   let userIcon = defaultUserIcon;
@@ -40,10 +41,21 @@ function Navigation() {
   }
 
   const handleProfileClick = (event) => {
-    history.push({
-      pathname: "/profile/" + userDetails.id,
-      state: userDetails,
-    });
+    if (userDetails.id === "") {
+      history.push({
+        pathname: "/",
+        state: userDetails,
+      });
+    } else {
+      history.push({
+        pathname: "/profile/" + userDetails.id,
+        state: {
+          userDetails: userDetails,
+          featuredQuiz: null
+        },
+      });
+    }
+
   };
 
   const handleDiscoverClick = (event) => {

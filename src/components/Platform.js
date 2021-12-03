@@ -40,6 +40,10 @@ function Platform() {
     }
   }, [userDetails, ownerID])
 
+
+  useEffect(() => {
+    console.log("hi")
+  }, [params.id])
   //000000000 functions
   const onImgUpld = async (event) => {
     setPlatformImage(URL.createObjectURL(event.target.files[0]))

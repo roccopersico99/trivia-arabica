@@ -13,7 +13,6 @@ function ProfilePlatforms({ platforms }) {
         <PlatformCard platform={platform} key={keys++}></PlatformCard>
       ))}
     </Row>));
-  console.log(platforms.length)
   return (
     <Container>
       {content}
