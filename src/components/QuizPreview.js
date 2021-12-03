@@ -82,8 +82,8 @@ function QuizPreview() {
     return <Background>quiz does not exist or was deleted</Background>;
   }
 
-  const likes = quiz?.quiz_likes;
-  const dislikes = quiz?.quiz_dislikes;
+  const likes = quiz?.likes;
+  const dislikes = quiz?.dislikes;
   let noRatings = false;
   let totalRatings = likes + dislikes;
   if (totalRatings <= 0) {
@@ -110,6 +110,7 @@ function QuizPreview() {
   //     </Background>
   //   );
   // }
+  console.log(publishDate)
   return (
     <Background>
       <QuizReportPopup
@@ -139,7 +140,7 @@ function QuizPreview() {
                 <h1>{quizCreator?.display_name}</h1>
               </Stack>
             </Link>
-            <h2>Uploaded: {publishDate}</h2>
+            <h2>Uploaded: {publishDate === "Invalid Date" ? "Date Unknown" : publishDate}</h2>
             <h2>Rating</h2>
             <ProgressBar>
               <ProgressBar
