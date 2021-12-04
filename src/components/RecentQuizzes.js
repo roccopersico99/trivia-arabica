@@ -12,7 +12,7 @@ function RecentQuizzes() {
     if (loading) {
       return;
     }
-    FirestoreBackend.searchQuizzes().then(async (query_snapshot) => {
+    FirestoreBackend.searchQuizzes("", 12).then(async (query_snapshot) => {
       for (const quiz of query_snapshot.docs) {
         const data = await FirestoreBackend.resolveQuizRef(quiz.ref)
         quizzes.push(data);

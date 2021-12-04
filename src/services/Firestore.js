@@ -219,14 +219,14 @@ export const getQuizzes = async (quizIDs) => {
 // TODO: gets random quiz ID, but not in time for Nav component to use
 export const getRandomQuiz = async () => {
   let quizId = ""
-  let quizzes = []
-  return await db.collection('quizzes').get().then((snapshot) => {
-    snapshot.forEach((doc) => {
-      quizId = doc.id;
-      quizzes.push(quizId)
-    })
-    return quizzes[Math.floor(Math.random() * quizzes.length)];
-  });
+  let quizzes = [];
+  let key = db.collection('quizzes').doc().id;
+  console.log(key);
+  let random = await getDocs(query(quizRef, where('publish_state', '==', true), where('__name__', '>=', key), orderBy('__name__'), limit(1)));
+  while(!random.docs[0])
+    key = db.collection('quizzes').doc().id;
+    random = await getDocs(query(quizRef, where('publish_state', '==', true), where('__name__', '>=', key), orderBy('__name__'), limit(1)));
+  return(random.docs[0].id);
 }
 
 export const checkQuizCompletedOnUser = async (userid, quizid) => {
