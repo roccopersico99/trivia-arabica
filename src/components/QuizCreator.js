@@ -23,17 +23,9 @@ function QuizCreator() {
 
   const [loading, setLoading] = useState(false) //janky: while loading elements, setting state will retrigger loading of the elements again... so we use this state to stop that
 
-  const [choices, setChoices] = useState([]);
-  const [answers, setAnswers] = useState([]); //boolean values for if a choice is correct or not
-
-  const [questionNames, setQuestionNames] = useState([]); //non-updating array to hold question names as to not dynamically update them before saving
-
+  const [numChoices, setNumChoices] = useState(4);
+  
   const [max, setMax] = useState(0) //keep track of max doc id
-
-  const setupQuestionNames = (quests) => { //specifically grabs question names from the quizQuestions array and updates them.
-    let names = Array.from(quests, x => x.question_title)
-    setQuestionNames(names)
-  }
 
   const getQuiz = async (removed) => {
     if (loading) {
@@ -57,18 +49,15 @@ function QuizCreator() {
       }
 
     });
+    console.log("kjfdshjkgdshjkgsjkhd")
+    console.log(quizQuests);
     setQuizQuestions(quizQuests);
-    setupQuestionNames(quizQuests);
     let qz;
     if (removed) {
       qz = quizQuests[activeQuestion - 1]
     } else {
       qz = quizQuests[activeQuestion]
     }
-    let chs = [qz.question_choices.choice1.text, qz.question_choices.choice2.text, qz.question_choices.choice3.text, qz.question_choices.choice4.text]
-    setChoices(chs)
-    let ans = [qz.question_choices.choice1.correct, qz.question_choices.choice2.correct, qz.question_choices.choice3.correct, qz.question_choices.choice4.correct]
-    setAnswers(ans)
     setLoading(false)
   }
 
@@ -78,11 +67,6 @@ function QuizCreator() {
 
   function setActive(index) {
     setActiveQuestion(index)
-    let qz = quizQuestions[index]
-    let chs = [qz.question_choices.choice1.text, qz.question_choices.choice2.text, qz.question_choices.choice3.text, qz.question_choices.choice4.text]
-    setChoices(chs)
-    let ans = [qz.question_choices.choice1.correct, qz.question_choices.choice2.correct, qz.question_choices.choice3.correct, qz.question_choices.choice4.correct]
-    setAnswers(ans)
   }
 
   function isActive(n) {
@@ -94,31 +78,17 @@ function QuizCreator() {
   function handleAddQuestion() {
     console.log("user clicked add question..." + activeQuestion)
     let qz = quizQuestions
+    let choices = [{text: "", correct: true}]; //preload first question to be true
+    for (let i = 1; i < numChoices; i++){
+      choices.push({text: "", correct: false});
+    }
     qz.push({
       question_title: "",
       number: max,
-      question_choices: {
-        choice1: {
-          text: "",
-          correct: true
-        },
-        choice2: {
-          text: "",
-          correct: false
-        },
-        choice3: {
-          text: "",
-          correct: false
-        },
-        choice4: {
-          text: "",
-          correct: false
-        }
-      }
+      question_choices: choices
     })
     setMax(max + 1)
     setQuizQuestions(qz)
-    setupQuestionNames(qz)
     setRefreshKey(refreshKey + 1)
   }
 
@@ -136,47 +106,27 @@ function QuizCreator() {
   const onChangeQuestionText = (event) => {
     let updated = [...quizQuestions]
     updated[activeQuestion].question_title = event.target.value;
+    console.log(updated)
     setQuizQuestions(updated)
   }
 
-  function onChangeQuestionChoice1(event) {
-    setChoices([
-      event.target.value, choices[1], choices[2], choices[3]
-    ])
+  function onChangeQuestionChoice(event) {
+    let updated = [...quizQuestions]
+    updated[activeQuestion].question_choices[event.target.id-1].text = event.target.value;
+    console.log(updated)
+    setQuizQuestions(updated)
   }
 
-  function onChangeQuestionChoice2(event) {
-    setChoices([choices[0],
-    event.target.value, choices[2], choices[3]
-    ])
-  }
-
-  function onChangeQuestionChoice3(event) {
-    setChoices([choices[0], choices[1],
-    event.target.value, choices[3]
-    ])
-  }
-
-  function onChangeQuestionChoice4(event) {
-    setChoices([choices[0], choices[1], choices[2],
-    event.target.value
-    ])
-  }
-
-  function onChangeAnswer1(event) {
-    setAnswers([true, false, false, false])
-  }
-
-  function onChangeAnswer2(event) {
-    setAnswers([false, true, false, false])
-  }
-
-  function onChangeAnswer3(event) {
-    setAnswers([false, false, true, false])
-  }
-
-  function onChangeAnswer4(event) {
-    setAnswers([false, false, false, true])
+  function onChangeAnswer(event) {
+    let updated = [...quizQuestions]
+    for (let i = 0; i<numChoices; i++){
+      if(i == event.target.id-1)
+        updated[activeQuestion].question_choices[i].correct = true;
+      else
+        updated[activeQuestion].question_choices[i].correct = false;
+    }
+    console.log(updated)
+    setQuizQuestions(updated)
   }
 
   const onImgUpld = async (event) => {
@@ -186,36 +136,27 @@ function QuizCreator() {
 
   async function saveClicked() {
     //re-build question from choices state, answers state, and questionText state
-    let chs = {
-      choice1: {
-        correct: answers[0],
-        text: choices[0],
-      },
-      choice2: {
-        correct: answers[1],
-        text: choices[1],
-      },
-      choice3: {
-        correct: answers[2],
-        text: choices[2],
-      },
-      choice4: {
-        correct: answers[3],
-        text: choices[3],
+    for (let x = 0; x < quizQuestions.length; x++) {
+      let chs = [];
+      for(let i = 0; i < quizQuestions[x].question_choices.length; i++){
+        chs[i] = {
+          correct: quizQuestions[x].question_choices[i].correct,
+          text: quizQuestions[x].question_choices[i].text
+        }
       }
-    }
 
-    let imgPath = ""
-    if (imgFile !== null && imgFile !== undefined) {
-      const imgSnap = await FirestoreBackend.uploadFile(userDetails.id, imgFile)
-      imgPath = imgSnap.ref.fullPath
-    }
+      let imgPath = ""
+      if (imgFile !== null && imgFile !== undefined) {
+        const imgSnap = await FirestoreBackend.uploadFile(userDetails.id, imgFile)
+        imgPath = imgSnap.ref.fullPath
+      }
 
-    if (quizImageChanged) {
-      await FirestoreBackend.updateData(quizRef, {quiz_image: imgPath});
-    }
+      if (quizImageChanged) {
+        await FirestoreBackend.updateData(quizRef, {quiz_image: imgPath});
+      }
 
-    FirestoreBackend.setQuizQuestion(params.id, "" + (quizQuestions[activeQuestion].number), "", quizQuestions[activeQuestion].question_title, chs)
+      FirestoreBackend.setQuizQuestion(params.id, "" + (quizQuestions[x].number), "", quizQuestions[x].question_title, chs)
+    }
     setupCreator(false)
   }
 
@@ -235,6 +176,24 @@ function QuizCreator() {
         </Spinner>
       </Background>
     )
+  }
+  let inputgroup = [];
+  inputgroup.push((
+    <InputGroup className="mb-3">
+      <InputGroup.Text id="inputGroup-sizing-default"> Question Text </InputGroup.Text>
+      <FormControl aria-label="Default" onChange={onChangeQuestionText} value={quizQuestions[activeQuestion].question_title} placeholder="Question Text" />
+    </InputGroup>
+  ))
+  console.log('bye')
+  for(let i = 0; i < numChoices; i++){
+    inputgroup.push((
+      <InputGroup className="mb-3">
+        <InputGroup.Text id="inputGroup-sizing-default"> Choice {i+1} </InputGroup.Text>
+        <FormControl id={i+1} aria-label="Default" onChange={onChangeQuestionChoice} value={quizQuestions[activeQuestion].question_choices[i].text} placeholder={"Choice " + (i+1)} />
+        <InputGroup.Text id="inputGroup-sizing-default"> Answer </InputGroup.Text>
+        <InputGroup.Radio id={i+1} name="answer" onChange={onChangeAnswer} checked={quizQuestions[activeQuestion].question_choices[i].correct} aria-label="Text input with radio button" />
+      </InputGroup>
+    ))
   }
   return (
     <Background>
@@ -263,41 +222,14 @@ function QuizCreator() {
             </Stack>
             <br></br>
             <ListGroup as="ol" numbered>
-              {questionNames.map((quest, index) => {
-                return (<ListGroup.Item key={index} className="list-group-item" as="li" active={isActive(index)} action onClick={() => setActive(index)}>{quest}</ListGroup.Item>)
+              {quizQuestions.map((question, index) => {
+                return (<ListGroup.Item key={index} className="list-group-item" as="li" active={isActive(index)} action onClick={() => setActive(index)}>{question.question_title}</ListGroup.Item>)
               })}
             </ListGroup>
           </Stack>
           <Stack style={{ width: "2%" }}></Stack>
           <Stack gap={3} style={{ width: "70%" }}>
-            <InputGroup className="mb-3">
-              <InputGroup.Text id="inputGroup-sizing-default"> Question Text </InputGroup.Text>
-              <FormControl aria-label="Default" onChange={onChangeQuestionText} value={quizQuestions[activeQuestion].question_title} placeholder="Question Text" />
-            </InputGroup>
-            <InputGroup className="mb-3">
-              <InputGroup.Text id="inputGroup-sizing-default"> Choice 1 </InputGroup.Text>
-              <FormControl aria-label="Default" onChange={onChangeQuestionChoice1} value={choices[0]} placeholder="Choice 1" />
-              <InputGroup.Text id="inputGroup-sizing-default"> Answer </InputGroup.Text>
-              <InputGroup.Radio name="answer" onChange={onChangeAnswer1} checked={answers[0]} aria-label="Text input with radio button" />
-            </InputGroup>
-            <InputGroup className="mb-3">
-              <InputGroup.Text id="inputGroup-sizing-default"> Choice 2 </InputGroup.Text>
-              <FormControl aria-label="Default" onChange={onChangeQuestionChoice2} value={choices[1]} placeholder="Choice 2" />
-              <InputGroup.Text id="inputGroup-sizing-default"> Answer </InputGroup.Text>
-              <InputGroup.Radio name="answer" onChange={onChangeAnswer2} checked={answers[1]} aria-label="Text input with radio button" />
-            </InputGroup>
-            <InputGroup className="mb-3">
-              <InputGroup.Text id="inputGroup-sizing-default"> Choice 3 </InputGroup.Text>
-              <FormControl aria-label="Default" onChange={onChangeQuestionChoice3} value={choices[2]} placeholder="Choice 3" />
-              <InputGroup.Text id="inputGroup-sizing-default"> Answer </InputGroup.Text>
-              <InputGroup.Radio name="answer" onChange={onChangeAnswer3} checked={answers[2]} aria-label="Text input with radio button" />
-            </InputGroup>
-            <InputGroup className="mb-3">
-              <InputGroup.Text id="inputGroup-sizing-default"> Choice 4 </InputGroup.Text>
-              <FormControl aria-label="Default" onChange={onChangeQuestionChoice4} value={choices[3]} placeholder="Choice 4" />
-              <InputGroup.Text id="inputGroup-sizing-default"> Answer </InputGroup.Text>
-              <InputGroup.Radio name="answer" onChange={onChangeAnswer4} checked={answers[3]} aria-label="Text input with radio button" />
-            </InputGroup>
+            {inputgroup}
           </Stack>
         </Stack>
       </Container>

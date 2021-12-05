@@ -528,3 +528,50 @@ export const updateSearchIndex = async () => {
     })
   })
 }
+
+export const updateQuestionChoices = async () => {
+  const thing = getDocs(quizRef)
+  thing.then((snapshot) => {
+    snapshot.forEach((doc) => {
+      let quizid = doc.id;
+      console.log(quizid);
+      let questions = getQuizQuestions(quizid);
+      console.log(questions);
+      questions.then((qcollection)=>{
+        console.log(qcollection.docs);
+        let qarray = [];
+        let questionnum = qcollection.docs.length;
+        // console.log(questionnum)
+        qcollection.forEach(async (element) => {
+          console.log(element.ref)
+          let newchoices = [
+            element.data().question_choices.choice1,
+            element.data().question_choices.choice2,
+            element.data().question_choices.choice3,
+            element.data().question_choices.choice4
+          ]
+          qarray[element.data().number-1]={
+            question_choices: newchoices,
+            question_title: element.data().question_title,
+            question_image: element.data().question_image
+          }
+          questionnum -= 1;
+          if(questionnum === 0){
+            qarray = qarray.filter(n => n);
+            console.log(qarray);
+          }
+          updateDoc(element.ref, {
+            question_choices: newchoices
+          })
+        });
+      })
+
+      updateDoc(doc.ref, {
+        // search_title: title
+        // search_index: searchIndex,
+        // quiz_dislikes: 0,
+        // quiz_likes: 0
+      })
+    })
+  })
+}

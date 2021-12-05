@@ -27,24 +27,24 @@ function QuizInitiator() {
     }
 
     let res = await FirestoreBackend.createQuiz(userDetails.id, name, desc, imgPath);
-    FirestoreBackend.setQuizQuestion(res.id, 1 + "", "", " ", {
-      choice1: {
+    FirestoreBackend.setQuizQuestion(res.id, 1 + "", "", " ", [
+      {
         text: "",
         correct: true
       },
-      choice2: {
+      {
         text: "",
         correct: false
       },
-      choice3: {
+      {
         text: "",
         correct: false
       },
-      choice4: {
+      {
         text: "",
         correct: false
       }
-    })
+    ])
     //after created, use the ref to that quiz to give to the user
     const ref = await FirestoreBackend.getQuiz(res.id)
     FirestoreBackend.assignQuizToUser(userDetails.id, res.id, ref.ref)

@@ -21,6 +21,7 @@ function QuizPlay() {
     const [numCorrect, setNumCorrect] = useState(0);
 
     const [quizTitle, setQuizTitle] = useState("");
+    const [quizCreator, setQuizCreator] = useState("");
     const [quizQuestions, setQuizQuestions] = useState([]);
 
     const [questionNames, setQuestionNames] = useState([]);
@@ -57,6 +58,7 @@ function QuizPlay() {
         const quiz_query = FirestoreBackend.getQuiz(params.id);
         quiz_query.then((query_snapshot) => {
             setQuizTitle(query_snapshot.data().quiz_title);
+            setQuizCreator(query_snapshot.data().quiz_creator);
         });
     
         const question_query = await FirestoreBackend.getQuizQuestions(params.id);
@@ -73,11 +75,20 @@ function QuizPlay() {
         setQuizQuestions(quizQuests);
         setupQuestionNames(quizQuests);
 
+        console.log('quizQuets');
+        console.log(quizQuests);
+
         quizQuests[0].question_image = "" ? setQuestionImage(defQuestionImage) : setQuestionImage(quizQuests[0].question_image);
         let qz = quizQuests[0]
-        let chs = [qz.question_choices.choice1.text, qz.question_choices.choice2.text, qz.question_choices.choice3.text, qz.question_choices.choice4.text]
+        let chs = [];
+        let ans = [];
+        for (let i = 0; i < qz.question_choices.length; i++){
+            chs[i] = qz.question_choices[i].text;
+            ans[i] = qz.question_choices[i].correct;
+        }
+        // let chs = [qz.question_choices.choice1.text, qz.question_choices.choice2.text, qz.question_choices.choice3.text, qz.question_choices.choice4.text]
         setChoices(chs)
-        let ans = [qz.question_choices.choice1.correct, qz.question_choices.choice2.correct, qz.question_choices.choice3.correct, qz.question_choices.choice4.correct]
+        // let ans = [qz.question_choices.choice1.correct, qz.question_choices.choice2.correct, qz.question_choices.choice3.correct, qz.question_choices.choice4.correct]
         setAnswers(ans)
 
         let prevMedals = await FirestoreBackend.getUserCompletedQuizMedals(userDetails.id, params.id);
@@ -130,9 +141,13 @@ function QuizPlay() {
             console.log("now on question #", currQuestionNum)
             setQuestionImage(quizQuestions[currQuestionNum].questionImage);
             let qz = quizQuestions[currQuestionNum];
-            let chs = [qz.question_choices.choice1.text, qz.question_choices.choice2.text, qz.question_choices.choice3.text, qz.question_choices.choice4.text]
+            let chs = [];
+            let ans = [];
+            for (let i = 0; i < qz.question_choices.length; i++){
+                chs[i] = qz.question_choices[i].text;
+                ans[i] = qz.question_choices[i].correct;
+            }
             setChoices(chs)
-            let ans = [qz.question_choices.choice1.correct, qz.question_choices.choice2.correct, qz.question_choices.choice3.correct, qz.question_choices.choice4.correct]
             setAnswers(ans)
             setLoading(false)
         }
@@ -155,15 +170,14 @@ function QuizPlay() {
     }
     else if(currQuestionNum > quizQuestions.length){
         let earnedMedals = (Math.floor((numCorrect/quizQuestions.length) * 100) - prevEarnedMedals);
-        if(earnedMedals < 0){
+        if(earnedMedals < 0 || userDetails.id === quizCreator){
             earnedMedals = 0;
         }
         if(quizFinished) {
-            updateMedals(earnedMedals);
-            updateCompletion(earnedMedals);
-            // if(userDetails.user !== "") {
-            //     userDetails.medals = userMedals
-            // }
+            if (userDetails.id !== quizCreator){
+                updateMedals(earnedMedals);
+                updateCompletion(earnedMedals);
+            }
             setQuizFinished(false)
         }
         console.log(earnedMedals)
@@ -173,9 +187,10 @@ function QuizPlay() {
                 <h1>Quiz Completed!</h1>
                 <h2>You scored {numCorrect}/{quizQuestions.length}</h2>
                 <br></br>
-                {(userDetails.user !== "" && prevEarnedMedals === 0) && <h2>You gained {earnedMedals}/100 medals!</h2>}
-                {(userDetails.user !== "" && prevEarnedMedals !== 0) && <h2>You have taken this quiz before and earned gained {prevEarnedMedals} medals before, so now you have earned {earnedMedals} medals for a total of {earnedMedals+prevEarnedMedals}/100 medals from this quiz.</h2>}
-                {userDetails.user !== "" && <h3>New Total Medal Count: {userMedals + earnedMedals}</h3>}
+                {(userDetails.id === quizCreator) && <h2>This is your own quiz, so no medals are earned.</h2>}
+                {(userDetails.id !== quizCreator && userDetails.user !== "" && prevEarnedMedals === 0) && <h2>You gained {earnedMedals}/100 medals!</h2>}
+                {(userDetails.id !== quizCreator && userDetails.user !== "" && prevEarnedMedals !== 0) && <h2>You have taken this quiz before and earned gained {prevEarnedMedals} medals before, so now you have earned {earnedMedals} medals for a total of {earnedMedals+prevEarnedMedals}/100 medals from this quiz.</h2>}
+                {userDetails.user !== "" && <h3>Total Medal Count: {userMedals + earnedMedals}</h3>}
                 
                 {userDetails.user === "" && <h2>You could've earned {earnedMedals} medals!</h2>}
                 {userDetails.user === "" && <h3>Unfortunately, medals can only be earned when logged in!</h3>}
@@ -191,6 +206,10 @@ function QuizPlay() {
             </Background>
         )
     }
+    const listchoices = choices.map((thing, index)=>(
+        <ListGroup.Item key={index} as="li" active={isActive(index)} action onClick={() => setSelectedChoice(index)}>{thing}</ListGroup.Item>
+    ))
+    console.log(listchoices);
     return (
         <Background>
         <Stack>
@@ -215,10 +234,7 @@ function QuizPlay() {
                 <p style={{color: "gray", fontSize: "14px"}}>Multiple Choice (Select One)</p>
                 <Stack>
                     <ListGroup as="ol" style={{width:"75%", margin:"auto"}}>
-                        <ListGroup.Item as="li" active={isActive(0)} action onClick={() => setSelectedChoice(0)}>{choices[0]}</ListGroup.Item>
-                        <ListGroup.Item as="li" active={isActive(1)} action onClick={() => setSelectedChoice(1)}>{choices[1]}</ListGroup.Item>
-                        <ListGroup.Item as="li" active={isActive(2)} action onClick={() => setSelectedChoice(2)}>{choices[2]}</ListGroup.Item>
-                        <ListGroup.Item as="li" active={isActive(3)} action onClick={() => setSelectedChoice(3)}>{choices[3]}</ListGroup.Item>
+                        {listchoices}
                     </ListGroup>
                 </Stack>
                 <br></br>
