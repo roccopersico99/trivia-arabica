@@ -15,6 +15,7 @@ function Search(props) {
   const [searchTarget, setSearchTarget] = useState("")
   const [quizzes, setQuizzes] = useState([]);
   const [emptySearch, setEmptySearch] = useState(false);
+  const [noSearch, setNoSearch] = useState(true);
   const [loading, setLoading] = useState(false)
   const [pageNum, setPageNum] = useState(1);
   const params = useParams();
@@ -83,16 +84,18 @@ function Search(props) {
     if (orderBy === "Quiz Name")
       orderOn = 'search_title'
     console.log("searching for: '", searchQuery, "'");
-    if (page === 'discover') {
+    if (page === 'discover' && searchQuery !== "") {
       searchDiscover(searchQuery, orderOn, order);
     } else if (page === 'profile') {
       searchProfile(searchQuery, orderOn, order);
+    } else {
+      setEmptySearch(true);
     }
-    setLoading(true)
   }
 
   const searchDiscover = async (searchQuery, orderOn, order, startOn = "") => {
       //TODO: ACTUALLY FILTER COMPLETED/NOT COMPLETED QUIZZES
+      setNoSearch(false);
       const results = FirestoreBackend.searchQuizzes(searchQuery, 30, orderOn, order, startOn);
       results.then(async (query_snapshot) => {
           if (query_snapshot.empty) {
@@ -206,9 +209,9 @@ function Search(props) {
   const quizRows = rows.map((row, index) => quizChunk.slice(index * 3, index * 3 + 3))
   const content = quizRows.map((row, index) => (
     <Row className="row" key={index}>
-            {row.map(quiz => (
-                <QuizCard quiz={quiz} key={quiz.id}></QuizCard>
-            ))}
+      {row.map(quiz => (
+        <QuizCard onDelete={handleSearch} quiz={quiz} key={quiz.id}></QuizCard>
+      ))}
     </Row>
   ));
   let paginationItems = [
@@ -255,7 +258,7 @@ function Search(props) {
         </Stack>
         <br></br>
         {(quizzes.length===0 && emptySearch===false) && <Spinner style={{ marginTop: "100px" }} animation="border" role="status"></Spinner>}
-        {(quizzes.length===0 && emptySearch===true) && <div>no quizzes found</div>}
+        {(quizzes.length===0 && emptySearch===true && noSearch===false) && <div>no quizzes found</div>}
         {quizzes.length>0 && 
           <Container>
             {content}

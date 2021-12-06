@@ -27,7 +27,7 @@ function QuizInitiator() {
     }
 
     let res = await FirestoreBackend.createQuiz(userDetails.id, name, desc, imgPath);
-    FirestoreBackend.setQuizQuestion(res.id, 1 + "", "", " ", [
+    FirestoreBackend.setQuizQuestion(res.id, 1 + "", "", "", [
       {
         text: "",
         correct: true

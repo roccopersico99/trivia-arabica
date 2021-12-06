@@ -5,6 +5,7 @@ import { useAuthState } from "../Context/index";
 import { Container, Button, ListGroup, Stack, Spinner, InputGroup, Form, FormControl, Image } from 'react-bootstrap';
 import * as FirestoreBackend from '../services/Firestore.js'
 import Background from './Background.js'
+import { text } from 'dom-helpers';
 
 function QuizCreator() {
   const params = useParams();
@@ -22,8 +23,6 @@ function QuizCreator() {
   const [quizQuestions, setQuizQuestions] = useState([]);
 
   const [loading, setLoading] = useState(false) //janky: while loading elements, setting state will retrigger loading of the elements again... so we use this state to stop that
-
-  const [numChoices, setNumChoices] = useState(4);
   
   const [max, setMax] = useState(0) //keep track of max doc id
 
@@ -47,10 +46,7 @@ function QuizCreator() {
       if (max < parseInt(doc.id)) {
         setMax(parseInt(doc.id) + 1)
       }
-
     });
-    console.log("kjfdshjkgdshjkgsjkhd")
-    console.log(quizQuests);
     setQuizQuestions(quizQuests);
     let qz;
     if (removed) {
@@ -79,13 +75,14 @@ function QuizCreator() {
     console.log("user clicked add question..." + activeQuestion)
     let qz = quizQuestions
     let choices = [{text: "", correct: true}]; //preload first question to be true
-    for (let i = 1; i < numChoices; i++){
+    for (let i = 1; i < 4; i++){
       choices.push({text: "", correct: false});
     }
     qz.push({
       question_title: "",
       number: max,
-      question_choices: choices
+      question_choices: choices,
+      num_choices: 4
     })
     setMax(max + 1)
     setQuizQuestions(qz)
@@ -101,6 +98,26 @@ function QuizCreator() {
     setActiveQuestion(activeQuestion - 1)
     setupCreator(true)
     setRefreshKey(refreshKey + 1)
+  }
+
+  function handleAddChoice(){
+    let updated = [...quizQuestions]
+    updated[activeQuestion].question_choices[updated[activeQuestion].num_choices] = {
+      correct: false,
+      text: ""
+    };
+    updated[activeQuestion].num_choices += 1;
+    setQuizQuestions(updated)
+  }
+
+  function handleRemoveChoice() {
+    let updated = [...quizQuestions]
+    let choicepopped = updated[activeQuestion].question_choices.pop()
+    if(choicepopped.correct){
+      updated[activeQuestion].question_choices[0].correct = true;
+    }
+    updated[activeQuestion].num_choices -= 1;
+    setQuizQuestions(updated)
   }
 
   const onChangeQuestionText = (event) => {
@@ -119,7 +136,7 @@ function QuizCreator() {
 
   function onChangeAnswer(event) {
     let updated = [...quizQuestions]
-    for (let i = 0; i<numChoices; i++){
+    for (let i = 0; i<updated[activeQuestion].num_choices; i++){
       if(i == event.target.id-1)
         updated[activeQuestion].question_choices[i].correct = true;
       else
@@ -185,7 +202,8 @@ function QuizCreator() {
     </InputGroup>
   ))
   console.log('bye')
-  for(let i = 0; i < numChoices; i++){
+  console.log(quizQuestions);
+  for(let i = 0; i < quizQuestions[activeQuestion].num_choices; i++){
     inputgroup.push((
       <InputGroup className="mb-3">
         <InputGroup.Text id="inputGroup-sizing-default"> Choice {i+1} </InputGroup.Text>
@@ -195,6 +213,12 @@ function QuizCreator() {
       </InputGroup>
     ))
   }
+  inputgroup.push((
+    <Stack direction="horizontal" gap={4} style={{ marginLeft: "auto", marginRight: "auto" }}>
+      <Button variant="outline-success" onClick={handleAddChoice} disabled={quizQuestions[activeQuestion].num_choices === 8}>Add Answer Choice</Button>
+      <Button variant="outline-danger" onClick={handleRemoveChoice} disabled={quizQuestions[activeQuestion].num_choices === 2}>Remove Answer Choice</Button>
+    </Stack>
+  ))
   return (
     <Background>
       <Container>

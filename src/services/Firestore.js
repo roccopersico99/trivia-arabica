@@ -271,7 +271,7 @@ export const createQuiz = async (userId, quizTitle, quizDesc, imgPath) => {
 
 export const deleteQuiz = async (quizPath) => {
   console.log(quizPath);
-  db.collection('quizzes').doc(quizPath).get().then((snapshot) => {
+  return db.collection('quizzes').doc(quizPath).get().then((snapshot) => {
     const userid = snapshot.data().quiz_creator;
     const imgname = snapshot.data().quiz_image;
     const batch = db.batch();
@@ -354,7 +354,8 @@ export const setQuizQuestion = (quizPath, questionNum, imageURL, questionTitle, 
       question_title: questionTitle,
       question_image: imageURL,
       question_choices: choices,
-      number: parseInt(questionNum)
+      number: parseInt(questionNum),
+      num_choices: choices.length
     });
 };
 
@@ -544,24 +545,26 @@ export const updateQuestionChoices = async () => {
         // console.log(questionnum)
         qcollection.forEach(async (element) => {
           console.log(element.ref)
-          let newchoices = [
-            element.data().question_choices.choice1,
-            element.data().question_choices.choice2,
-            element.data().question_choices.choice3,
-            element.data().question_choices.choice4
-          ]
-          qarray[element.data().number-1]={
-            question_choices: newchoices,
-            question_title: element.data().question_title,
-            question_image: element.data().question_image
-          }
-          questionnum -= 1;
-          if(questionnum === 0){
-            qarray = qarray.filter(n => n);
-            console.log(qarray);
-          }
+          console.log(element.data().question_choices.length)
+          // let newchoices = [
+          //   element.data().question_choices.choice1,
+          //   element.data().question_choices.choice2,
+          //   element.data().question_choices.choice3,
+          //   element.data().question_choices.choice4
+          // ]
+          // qarray[element.data().number-1]={
+          //   question_choices: newchoices,
+          //   question_title: element.data().question_title,
+          //   question_image: element.data().question_image
+          // }
+          // questionnum -= 1;
+          // if(questionnum === 0){
+          //   qarray = qarray.filter(n => n);
+          //   console.log(qarray);
+          // }
           updateDoc(element.ref, {
-            question_choices: newchoices
+            // question_choices: newchoices
+            num_choices: element.data().question_choices.length
           })
         });
       })

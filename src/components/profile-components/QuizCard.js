@@ -112,9 +112,9 @@ function QuizCard(props) {
 
   async function handleDelete() {
     console.log("delete clicked");
-    FirestoreBackend.deleteQuiz(props.quiz?.id);
-    props.setQuizzes([])
-    props.handleSearch()
+    await FirestoreBackend.deleteQuiz(props.quiz?.id);
+    console.log(props);
+    props.onDelete()
   }
 
   const handleFeatured = () => {
