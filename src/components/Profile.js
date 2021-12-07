@@ -28,9 +28,11 @@ import About from "./profile-components/About";
 import ProfilePlatforms from "./profile-components/ProfilePlatforms";
 import Search from "./Search";
 import UserReportPopup from "./UserReportPopup";
+import { getAuth } from "@firebase/auth";
 
 function Profile() {
   const userDetails = useAuthState();
+  const auth = getAuth();
 
   const [searchTarget, setSearchTarget] = useState("")
 
@@ -238,10 +240,10 @@ function Profile() {
                 ></Home>
               </Tab>
               <Tab eventKey="quizzes" title="Quizzes">
-                <Search userDetails={userDetails} refreshKey={refreshKey}></Search>
+                <Search userDetails={userDetails} uid={auth.currentUser.uid} refreshKey={refreshKey}></Search>
               </Tab>
               <Tab eventKey="posts" title="Posts">
-                <Posts profile={userDetails.id}></Posts>
+                <Posts profile={userDetails.id} uid={auth.currentUser.uid}></Posts>
               </Tab>
               <Tab eventKey="platforms" title="Platforms">
                 <ProfilePlatforms platforms={platforms}></ProfilePlatforms>

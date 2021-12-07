@@ -4,10 +4,12 @@ import { useState, useEffect } from 'react'
 import * as FirestoreBackend from "../services/Firestore";
 import { useParams } from "react-router-dom";
 import { useAuthState } from "../Context";
+import { getAuth } from "@firebase/auth";
 
 function Search(props) {
 
   const userDetails = useAuthState();
+  const auth = getAuth();
 
   const [completedFilter, setCompletedFilter] = useState("All Quizzes");
   const [orderBy, setOrderBy] = useState("Publish Date")
@@ -114,8 +116,8 @@ function Search(props) {
   }
 
   const searchProfile = async (searchQuery, orderOn, order) => {
-    const yourProfile = props.userDetails.id === params.id
-    const results = FirestoreBackend.searchUserQuizzes(params.id, yourProfile, searchQuery, 30, orderOn, order);
+    const yourProfile = props.userDetails.id === params.id;
+    const results = FirestoreBackend.searchUserQuizzes(params.id, props.uid, yourProfile, searchQuery, 30, orderOn, order);
     results.then(async (query_snapshot) => {
       if (query_snapshot.empty) {
         //console.log("nothing found!");

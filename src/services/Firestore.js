@@ -4,6 +4,7 @@ import { collection, query, where, getDocs, getDoc, limit, updateDoc, orderBy, d
 import { Timestamp } from "@firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import "firebase/firestore";
+import { getAuth } from "@firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBv4itSAtnCyRSbobSEsuk3LnOBs6V0-8g",
@@ -20,6 +21,7 @@ const firebaseApp = firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const userRef = collection(db, 'users')
 const quizRef = collection(db, 'quizzes')
+const auth = getAuth();
 
 //FIREBASE FIRESTORE
 
@@ -27,10 +29,11 @@ export const updateData = (docRef, updatedData) => {
   updateDoc(docRef, updatedData);
 }
 
-export const createUser = (userName, userId, imageURL) => {
+export const createUser = (userName, userId, imageURL, uid) => {
   return setDoc(doc(db, "users", userId), {
     display_name: userName,
     user_id: userId,
+    uid: uid, 
     medals: 0,
     profile_image: imageURL,
     user_bio: "",
@@ -238,7 +241,7 @@ export const checkQuizCompletedOnUser = async (userid, quizid) => {
   return docSnap.exists();
 }
 
-export const createQuiz = async (userId, quizTitle, quizDesc, imgPath) => {
+export const createQuiz = async (userId, quizTitle, quizDesc, imgPath, uid) => {
   let title = quizTitle.toLowerCase()
   let str = '';
   let searchIndex = [''];
@@ -252,6 +255,7 @@ export const createQuiz = async (userId, quizTitle, quizDesc, imgPath) => {
   const docSnap = await db.collection('quizzes')
     .add({
       quiz_creator: userId,
+      uid: uid,
       quiz_title: quizTitle,
       quiz_image: imgPath,
       quiz_desc: quizDesc,
@@ -264,7 +268,8 @@ export const createQuiz = async (userId, quizTitle, quizDesc, imgPath) => {
       },
       publish_state: false,
       publish_date: Timestamp.now(), // for sorting unpublished quizzes, it will be overwritten on publish
-      search_index: searchIndex
+      search_index: searchIndex,
+      search_title: quizTitle.toLowerCase()
     });
   return docSnap;
 };
@@ -284,9 +289,10 @@ export const deleteQuiz = async (quizPath) => {
   });
 }
 
-export const createUserPagePost = async (posterId, userpageId, postTitle, postText) => {
+export const createUserPagePost = async (posterId, userpageId, postTitle, postText, uid) => {
   const docSnap = await db.collection('users').doc(userpageId).collection("user_posts").add({
     post_creator: posterId,
+    uid: uid,
     post_title: postTitle,
     post_text: postText,
     post_likes: 0,
@@ -399,13 +405,14 @@ export const searchQuizzes = (search = "", limitResults = 99, orderOn = "publish
   return getDocs(q);
 }
 
-export const searchUserQuizzes = (userid, isowner, search = "", limitResults = 99, orderOn = "publish_date", order = "desc") => {
+export const searchUserQuizzes = (userid, uid, isowner, search = "", limitResults=99, orderOn = "publish_date", order = "desc") => {
   search = search.toLowerCase();
 
   if (isowner) {
     const q = query(quizRef,
       where('search_index', 'array-contains', search),
       where('quiz_creator', '==', userid),
+      where('uid', '==', uid),
       orderBy(orderOn, order),
       limit(limitResults));
     return getDocs(q);
@@ -425,7 +432,7 @@ export const getPlatform = async (id) => {
   return docSnap
 }
 
-export const createPlatform = async (name, owner_id, owner_name) => {
+export const createPlatform = async (name, owner_id, owner_name, uid) => {
   //attempt to find the platform first
   const q = query(collection(db, "platforms"), where("name", "==", name))
   const doc = await getDocs(q)
@@ -437,6 +444,7 @@ export const createPlatform = async (name, owner_id, owner_name) => {
     const docRef = await addDoc(collection(db, "platforms"), {
       name: name,
       owner_id: owner_id,
+      uid: uid,
       owner_name: owner_name,
       imageURL: "",
       description: ""

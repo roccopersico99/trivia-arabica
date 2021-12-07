@@ -150,7 +150,7 @@ function QuizCard(props) {
         </Row>
         {!props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleLike} variant="light" disabled={isLiked === 1}><FaThumbsUp /></Button>}
         {!props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleDislike} variant="light" disabled={isLiked === 2}><FaThumbsDown /></Button>}
-        {props.quiz?.allowed && userDetails.user !== "" && <Button href={"/creator/" + props.quiz?.id} variant="warning">Edit</Button>}
+        {!props.quiz?.publish_state && props.quiz?.allowed && userDetails.user !== "" && <Button href={"/creator/" + props.quiz?.id} variant="warning">Edit</Button>}
         {props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleDelete} variant="danger">Delete</Button>}
         {props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleFeatured} variant="info" >Set Featured</Button>}
       </Card.Body>

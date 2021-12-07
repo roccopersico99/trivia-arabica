@@ -5,9 +5,11 @@ import { useAuthState } from "../Context/index";
 import { Button, Stack, InputGroup, FormControl, Form } from 'react-bootstrap';
 import * as FirestoreBackend from '../services/Firestore.js'
 import Background from './Background.js'
+import { getAuth } from '@firebase/auth';
 
 function QuizInitiator() {
 
+  const auth = getAuth();
   const userDetails = useAuthState();
   const [name, setName] = useState("")
   const [desc, setDesc] = useState("")
@@ -26,7 +28,7 @@ function QuizInitiator() {
       imgPath = imgSnap.ref.fullPath
     }
 
-    let res = await FirestoreBackend.createQuiz(userDetails.id, name, desc, imgPath);
+    let res = await FirestoreBackend.createQuiz(userDetails.id, name, desc, imgPath, auth.currentUser.uid);
     FirestoreBackend.setQuizQuestion(res.id, 1 + "", "", "", [
       {
         text: "",

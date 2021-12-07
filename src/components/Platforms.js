@@ -8,6 +8,7 @@ import * as FirestoreBackend from "../services/Firestore.js";
 
 import Background from "./Background.js";
 import { Button, Modal, Form, InputGroup, FormControl } from 'react-bootstrap';
+import { getAuth } from "@firebase/auth";
 
 
 // ------------- MODAL Popup for Creation
@@ -18,6 +19,7 @@ import { Button, Modal, Form, InputGroup, FormControl } from 'react-bootstrap';
 function Platforms() {
 
   const userDetails = useAuthState();
+  const auth = getAuth();
 
   const [createPlatformName, setCreatePlatformName] = useState("")
   const [modalShow, setModalShow] = useState(false);
@@ -26,7 +28,7 @@ function Platforms() {
   const history = useHistory();
 
   const createPlatform = () => {
-    const q = FirestoreBackend.createPlatform(createPlatformName, userDetails.id, userDetails.user)
+    const q = FirestoreBackend.createPlatform(createPlatformName, userDetails.id, userDetails.user, auth.currentUser.uid);
     q.then(res => {
       if (!res) {
         setPlatformInvalid(true)

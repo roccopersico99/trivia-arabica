@@ -58,7 +58,7 @@ function Posts(props) {
   }
   const savePressed = () => {
     //console.log(textAreaRef.current.value)
-    FirestoreBackend.createUserPagePost(props.profile, params.id, titleAreaRef.current.value, textAreaRef.current.value)
+    FirestoreBackend.createUserPagePost(props.profile, params.id, titleAreaRef.current.value, textAreaRef.current.value, props.uid)
     setEditing(false)
     titleAreaRef.current.value = ""
     textAreaRef.current.value = ""
