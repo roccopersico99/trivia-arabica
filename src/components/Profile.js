@@ -167,10 +167,11 @@ function Profile() {
       setReddit(query_snapshot.data().redditURL);
 
       const plats = await FirestoreBackend.getUserPlatforms(query_snapshot.id)
+      let platformArray = []
       plats.forEach(pform => {
-        console.log(pform.data().name, " ", pform.id)
-        setPlatforms(platforms => [...platforms, pform])
+        platformArray.push(pform)
       })
+      setPlatforms(platformArray)
       const resolvedQuiz = await FirestoreBackend.getQuizFromString(query_snapshot.data().featured_quiz);
       setFeaturedQuiz(resolvedQuiz)
 
