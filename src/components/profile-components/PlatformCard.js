@@ -26,7 +26,7 @@ function PlatformCard(props) {
           variant="top"
           src={platImg}
         ></Card.Img>
-        {props.platform?.data().owner && <Card.Text>Owner</Card.Text>}
+        <Card.Text>{props.platform?.data().owner ? "Owner" : "Contributor"}</Card.Text>
       </Card.Body>
     </Card>
   </div>

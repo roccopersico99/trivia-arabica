@@ -7,12 +7,17 @@ import { useAuthState } from "../Context/index";
 import * as FirestoreBackend from "../services/Firestore";
 
 import Background from "./Background.js";
-import { Spinner, Image, Form, Stack, Button, Tabs, Tab } from "react-bootstrap";
+import { Spinner, Image, Form, Stack, Button, Tabs, Tab, ListGroup } from "react-bootstrap";
 
 function Platform() {
 
   //000000000 states
   const [owner, setOwner] = useState()
+  const [member, setMember] = useState()
+  const [applied, setApplied] = useState(false) //true if user has already applied, which disables the button
+
+  const [applicants, setApplicants] = useState([])
+  const [members, setMembers] = useState([])
 
   const [platformRef, setPlatformRef] = useState()
   const [platformName, setPlatformName] = useState("")
@@ -32,19 +37,61 @@ function Platform() {
 
 
   //000000000 hooks
-  useEffect(() => {
+  useEffect(async () => {
     if (ownerID === userDetails.id) {
       setOwner(true)
+      populateApplicants()
+      populateMembers()
     } else {
       setOwner(false)
+      if (userDetails.id !== undefined && userDetails.id !== "") {
+        const appReq = FirestoreBackend.isUserAppliedPlatform(userDetails.id, params.id)
+        appReq.then(res => {
+          setApplied(res.exists)
+        })
+        const memReq = FirestoreBackend.isUserInPlatform(userDetails.id, params.id)
+        memReq.then(res => {
+          setMember(res.exists)
+        })
+        populateMembers()
+      }
     }
   }, [userDetails, ownerID])
 
 
   useEffect(() => {
-    console.log("hi")
+    //console.log("hi")
+
   }, [params.id])
+
+
   //000000000 functions
+  const populateMembers = async () => {
+    const memreq = await FirestoreBackend.getMembers(params.id)
+    let memArray = [{ name: (ownerName + " (Owner)"), id: ownerID }]
+    memreq.forEach(member => {
+      let user = {
+        name: member.data().name,
+        id: member.id
+      }
+      memArray.push(user)
+    })
+    setMembers(memArray)
+  }
+
+  const populateApplicants = async () => {
+    const req = await FirestoreBackend.getApplicants(params.id)
+    let tempArray = []
+    req.forEach(applicant => {
+      let user = {
+        name: applicant.data().name,
+        id: applicant.id
+      }
+      tempArray.push(user)
+    })
+    setApplicants(tempArray)
+  }
+
   const onImgUpld = async (event) => {
     setPlatformImage(URL.createObjectURL(event.target.files[0]))
     if (event.target.files[0] !== null && event.target.files[0] !== undefined) {
@@ -73,7 +120,28 @@ function Platform() {
     setEditingDesc(false)
   }
 
+  const attemptApply = () => {
+    const apply = FirestoreBackend.applyForPlatform(userDetails.id, params.id, userDetails.user)
+    apply.then(res => {
+      setApplied(true)
+    })
+  }
 
+  const acceptPressed = async (id, name) => {
+    if (!owner) { return }
+    const app = await FirestoreBackend.acceptUserApplication(id, params.id, name)
+    FirestoreBackend.addPlatformToUser(id, params.id, platformName, false)
+
+    populateApplicants()
+    populateMembers()
+  }
+
+  const denyPressed = async (id) => {
+    if (!owner) { return }
+    FirestoreBackend.denyUserApplication(id, params.id)
+
+    populateApplicants()
+  }
 
   //000000000 setup
   if (params.id === "" || params.id === undefined) {
@@ -83,6 +151,10 @@ function Platform() {
   if (owner === undefined) {
     const req = FirestoreBackend.getPlatform(params.id)
     req.then(async res => {
+      if (!res.exists) { //platform DNE
+        history.push("/");
+        return
+      }
       setPlatformRef(res.ref)
       setPlatformName(res.data().name)
       setOwnerName(res.data().owner_name)
@@ -139,16 +211,33 @@ function Platform() {
         <Button style={{marginLeft:"5px"}} onClick={cancelDescription} variant="secondary">Cancel</Button>
         </>
       }
+      {(!owner && !member) && <Button onClick={attemptApply} disabled={applied}> {!applied ? "Apply to join platform" : "Applied!"} </Button>}
+      <br/>
+      <br/>
       <Tabs>
         <Tab eventKey="quizzes" title="Quizzes">
 
         </Tab>
         <Tab eventKey="users" title="Contributors">
-
+          <ListGroup style={{cursor:"pointer"}}>
+            {members.map((member, index) => (
+              <ListGroup.Item style={{cursor:"pointer"}} onClick={() => history.push("/profile/"+member.id)} key={index} style={{textAlign:'left'}}>
+                {member.name}
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
         </Tab>
         {owner &&
         <Tab eventKey="requests" title="Join Requests">
-
+          <ListGroup>
+            {applicants.map((applicant, index) => (
+              <ListGroup.Item key={index} style={{textAlign:'left'}}>
+                {applicant.name}
+                <Button variant="danger" onClick={() => denyPressed(applicant.id)} style={{float: 'right', marginLeft:"5px"}}>X</Button>
+                <Button variant="success" onClick={() => acceptPressed(applicant.id, applicant.name)} style={{float: 'right'}}>✓</Button>
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
         </Tab>}
       </Tabs>
       </Background>

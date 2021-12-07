@@ -223,10 +223,10 @@ export const getRandomQuiz = async () => {
   let key = db.collection('quizzes').doc().id;
   console.log(key);
   let random = await getDocs(query(quizRef, where('publish_state', '==', true), where('__name__', '>=', key), orderBy('__name__'), limit(1)));
-  while(!random.docs[0])
+  while (!random.docs[0])
     key = db.collection('quizzes').doc().id;
-    random = await getDocs(query(quizRef, where('publish_state', '==', true), where('__name__', '>=', key), orderBy('__name__'), limit(1)));
-  return(random.docs[0].id);
+  random = await getDocs(query(quizRef, where('publish_state', '==', true), where('__name__', '>=', key), orderBy('__name__'), limit(1)));
+  return (random.docs[0].id);
 }
 
 export const checkQuizCompletedOnUser = async (userid, quizid) => {
@@ -389,7 +389,7 @@ export const recentQuizzes = (limitResults = 10) => {
   return getDocs(q)
 }
 
-export const searchQuizzes = (search = "", limitResults=99, orderOn = "publish_date", order = "desc") => {
+export const searchQuizzes = (search = "", limitResults = 99, orderOn = "publish_date", order = "desc") => {
   search = search.toLowerCase();
   const q = query(quizRef,
     where('search_index', 'array-contains', search),
@@ -399,7 +399,7 @@ export const searchQuizzes = (search = "", limitResults=99, orderOn = "publish_d
   return getDocs(q);
 }
 
-export const searchUserQuizzes = (userid, isowner, search = "", limitResults=99, orderOn = "publish_date", order = "desc") => {
+export const searchUserQuizzes = (userid, isowner, search = "", limitResults = 99, orderOn = "publish_date", order = "desc") => {
   search = search.toLowerCase();
 
   if (isowner) {
@@ -457,6 +457,47 @@ export const getUserPlatforms = async (userid) => {
   const docSnap = await db.collection('users').doc(userid).collection("userplatforms").get();
   return docSnap;
 }
+
+export const isUserInPlatform = async (userid, platformid) => {
+  const docSnap = await db.collection('platforms').doc(platformid).collection('members').doc(userid).get();
+  return docSnap
+}
+
+export const isUserAppliedPlatform = async (userid, platformid) => {
+  const docSnap = await db.collection('platforms').doc(platformid).collection('applicants').doc(userid).get();
+  return docSnap
+}
+
+export const getApplicants = async (platformid) => {
+  const docSnap = await db.collection('platforms').doc(platformid).collection("applicants").get();
+  return docSnap;
+}
+
+export const getMembers = async (platformid) => {
+  const docSnap = await db.collection('platforms').doc(platformid).collection("members").get();
+  return docSnap;
+}
+
+export const applyForPlatform = async (userid, platformid, username) => {
+  const docSnap = await db.collection('platforms').doc(platformid).collection("applicants").doc(userid).set({
+    name: username
+  });
+  return docSnap;
+}
+
+export const denyUserApplication = async (userid, platformid) => {
+  const docSnap = await db.collection('platforms').doc(platformid).collection('applicants').doc(userid).delete();
+  return docSnap
+}
+
+export const acceptUserApplication = async (userid, platformid, username) => {
+  const deleteSnap = await db.collection('platforms').doc(platformid).collection('applicants').doc(userid).delete();
+  const docSnap = await db.collection('platforms').doc(platformid).collection("members").doc(userid).set({
+    name: username
+  });
+  return docSnap;
+}
+
 // FIREBASE STORAGE
 
 const storage = getStorage(firebaseApp)
@@ -538,7 +579,7 @@ export const updateQuestionChoices = async () => {
       console.log(quizid);
       let questions = getQuizQuestions(quizid);
       console.log(questions);
-      questions.then((qcollection)=>{
+      questions.then((qcollection) => {
         console.log(qcollection.docs);
         let qarray = [];
         let questionnum = qcollection.docs.length;
