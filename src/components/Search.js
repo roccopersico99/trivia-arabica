@@ -24,12 +24,12 @@ function Search(props) {
   let counter = 0;
 
   useEffect(() => {
-    console.log(props.userDetails)
+    //console.log(props.userDetails)
     handleSearch()
   }, [props.refreshKey, completedFilter, searchFilter, orderBy])
 
   const handleKeyDown = (e) => {
-    if(e.key === 'Enter')
+    if (e.key === 'Enter')
       handleSearch();
   }
 
@@ -58,12 +58,12 @@ function Search(props) {
   }
 
   const handlePrev = () => {
-    const num = pageNum-1;
+    const num = pageNum - 1;
     setPageNum(num);
   }
 
   const handleNext = () => {
-    const num = pageNum+1;
+    const num = pageNum + 1;
     setPageNum(num);
   }
 
@@ -73,7 +73,7 @@ function Search(props) {
 
   const handleSearch = async () => {
     setLoading(true)
-    console.log(page);
+    //console.log(page);
     setQuizzes([]);
     setEmptySearch(false);
     const searchQuery = searchTarget;
@@ -83,7 +83,7 @@ function Search(props) {
     let orderOn = 'publish_date'
     if (orderBy === "Quiz Name")
       orderOn = 'search_title'
-    console.log("searching for: '", searchQuery, "'");
+    //console.log("searching for: '", searchQuery, "'");
     if (page === 'discover' && searchQuery !== "") {
       searchDiscover(searchQuery, orderOn, order);
     } else if (page === 'profile') {
@@ -94,23 +94,23 @@ function Search(props) {
   }
 
   const searchDiscover = async (searchQuery, orderOn, order, startOn = "") => {
-      //TODO: ACTUALLY FILTER COMPLETED/NOT COMPLETED QUIZZES
-      setNoSearch(false);
-      const results = FirestoreBackend.searchQuizzes(searchQuery, 30, orderOn, order, startOn);
-      results.then(async (query_snapshot) => {
-          if (query_snapshot.empty) {
-              console.log("nothing found!");
-              setEmptySearch(true);
-          }
-          counter = query_snapshot.docs.length;
-          console.log("counter : " + counter);
-          let newResults = [];
+    //TODO: ACTUALLY FILTER COMPLETED/NOT COMPLETED QUIZZES
+    setNoSearch(false);
+    const results = FirestoreBackend.searchQuizzes(searchQuery, 30, orderOn, order, startOn);
+    results.then(async (query_snapshot) => {
+      if (query_snapshot.empty) {
+        //console.log("nothing found!");
+        setEmptySearch(true);
+      }
+      counter = query_snapshot.docs.length;
+      //console.log("counter : " + counter);
+      let newResults = [];
 
-          query_snapshot.docs.forEach(async (quiz, index) => {
-            const resolvedQuiz = await FirestoreBackend.resolveQuizRef(quiz.ref);
-            filterCompleted(resolvedQuiz, index, newResults);
-          });
+      query_snapshot.docs.forEach(async (quiz, index) => {
+        const resolvedQuiz = await FirestoreBackend.resolveQuizRef(quiz.ref);
+        filterCompleted(resolvedQuiz, index, newResults);
       });
+    });
   }
 
   const searchProfile = async (searchQuery, orderOn, order) => {
@@ -118,11 +118,11 @@ function Search(props) {
     const results = FirestoreBackend.searchUserQuizzes(params.id, yourProfile, searchQuery, 30, orderOn, order);
     results.then(async (query_snapshot) => {
       if (query_snapshot.empty) {
-        console.log("nothing found!");
+        //console.log("nothing found!");
         setEmptySearch(true);
       }
       counter = query_snapshot.docs.length;
-      console.log("counter : " + counter);
+      //console.log("counter : " + counter);
       let newResults = [];
       query_snapshot.docs.forEach(async (quiz, index) => {
         const resolvedQuiz = await FirestoreBackend.resolveQuizRef(quiz.ref);
@@ -136,20 +136,20 @@ function Search(props) {
 
   const filterCompleted = async (resolvedQuiz, index, newResults) => {
     const completed_state = await FirestoreBackend.checkQuizCompletedOnUser(userDetails.id, resolvedQuiz.id);
-    console.log(completedFilter, " | ", completed_state);
+    //console.log(completedFilter, " | ", completed_state);
     if (completedFilter === "Completed" && completed_state) {
       newResults[index] = resolvedQuiz;
-      console.log(newResults);
+      //console.log(newResults);
     } else if (completedFilter === "Not Completed" && !completed_state) {
       newResults[index] = resolvedQuiz;
-      console.log(newResults);
+      //console.log(newResults);
     } else if (completedFilter === "All Quizzes") {
       newResults[index] = resolvedQuiz;
-      console.log(newResults);
+      //console.log(newResults);
     }
     counter -= 1;
-    console.log("counter : " + counter);
-    if(counter === 0)
+    //console.log("counter : " + counter);
+    if (counter === 0)
       setQuizzes(newResults);
   }
 
@@ -158,19 +158,19 @@ function Search(props) {
       resolvedQuiz.allowed = true;
       if (completedFilter === "Published" && resolvedQuiz.publish_state) {
         newResults[index] = resolvedQuiz;
-        console.log(newResults);
+        //console.log(newResults);
       } else if (completedFilter === "Not Published" && !resolvedQuiz.publish_state) {
         newResults[index] = resolvedQuiz;
-        console.log(newResults);
-        if(counter === 0)
+        //console.log(newResults);
+        if (counter === 0)
           setQuizzes(newResults);
       } else if (completedFilter === "All Quizzes") {
         newResults[index] = resolvedQuiz;
-        console.log(newResults);
+        //console.log(newResults);
       }
       counter -= 1;
-      console.log("counter : " + counter);
-      if(counter === 0)
+      //console.log("counter : " + counter);
+      if (counter === 0)
         setQuizzes(newResults);
     }
   }
@@ -186,7 +186,7 @@ function Search(props) {
         if (x > y) { return 1; }
         return 0;
       });
-      console.log(quizzes)
+      //console.log(quizzes)
       setQuizzes(quizzes)
     }
   }
@@ -194,15 +194,15 @@ function Search(props) {
   // trim out empty spots in quizzes array created from filtering
   const trimQuizzes = quizzes.filter(n => n);
   // chunk quizzes into arrays of 6 elements
-  const quizChunks = trimQuizzes.reduce((all,one,i) => {
-    const ch = Math.floor(i/6); 
-    all[ch] = [].concat((all[ch]||[]),one); 
+  const quizChunks = trimQuizzes.reduce((all, one, i) => {
+    const ch = Math.floor(i / 6);
+    all[ch] = [].concat((all[ch] || []), one);
     return all
   }, [])
-  const quizChunk = quizChunks[pageNum-1];
+  const quizChunk = quizChunks[pageNum - 1];
   // prevent undefined error on quizzes being empty
   let rows;
-  if(quizChunk)
+  if (quizChunk)
     rows = [...Array(Math.ceil(quizChunk.length / 3))];
   else
     rows = [];
@@ -215,9 +215,10 @@ function Search(props) {
     </Row>
   ));
   let paginationItems = [
-      <Pagination.First onClick={handleFirst} disabled={(pageNum <= 1)}/>,
-      <Pagination.Prev onClick={handlePrev} disabled={(pageNum <= 1)}/>]
-  for (let index = 1; index <= quizChunks.length; index++){
+    <Pagination.First onClick={handleFirst} disabled={(pageNum <= 1)}/>,
+    <Pagination.Prev onClick={handlePrev} disabled={(pageNum <= 1)}/>
+  ]
+  for (let index = 1; index <= quizChunks.length; index++) {
     paginationItems.push(
       <Pagination.Item key={index} active={index === pageNum} onClick={handlePageNum}> {index} </Pagination.Item>
     )
@@ -259,7 +260,7 @@ function Search(props) {
         <br></br>
         {(quizzes.length===0 && emptySearch===false) && <Spinner style={{ marginTop: "100px" }} animation="border" role="status"></Spinner>}
         {(quizzes.length===0 && emptySearch===true && noSearch===false) && <div>no quizzes found</div>}
-        {quizzes.length>0 && 
+        {quizzes.length>0 &&
           <Container>
             {content}
             <Pagination>

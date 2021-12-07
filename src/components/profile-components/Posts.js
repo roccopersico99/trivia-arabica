@@ -17,16 +17,16 @@ function Posts(props) {
   const params = useParams();
   const titleAreaRef = useRef();
   const textAreaRef = useRef();
-  
-  async function handleLike(){
+
+  async function handleLike() {
 
   }
 
-  async function handleDislike(){
+  async function handleDislike() {
 
   }
 
-  function handleDelete(index){
+  function handleDelete(index) {
     console.log(index);
     console.log(posts[index].ref);
     FirestoreBackend.deleteUserPagePost(params.id, posts[index].ref);
@@ -36,18 +36,18 @@ function Posts(props) {
   const getPosts = async () => {
     setPosts([]);
     const post_snapshot = FirestoreBackend.getUserPagePosts(params.id);
-      post_snapshot.then(async (doc_snapshot)=>{
-        setPosts([]);
-        for (const doc of doc_snapshot.docs) {
-          // console.log(doc.data());
-          const poster_name = await FirestoreBackend.getUser(doc.data().post_creator);
-          const postdata = doc.data();
-          postdata.name = poster_name.data().display_name;
-          postdata.ref = doc.ref.id;
-          console.log(postdata);
-          setPosts(posts => [...posts, postdata]);
-        }
-      })
+    post_snapshot.then(async (doc_snapshot) => {
+      setPosts([]);
+      for (const doc of doc_snapshot.docs) {
+        // console.log(doc.data());
+        const poster_name = await FirestoreBackend.getUser(doc.data().post_creator);
+        const postdata = doc.data();
+        postdata.name = poster_name.data().display_name;
+        postdata.ref = doc.ref.id;
+        //console.log(postdata);
+        setPosts(posts => [...posts, postdata]);
+      }
+    })
   }
 
   const editingClicked = () => {
@@ -77,7 +77,7 @@ function Posts(props) {
           </div>
           <div class="form-group">
             {editing && <Button className="float-end" variant="success" onClick={savePressed}>Publish</Button>}
-            {editing && <Button className="float-end" variant="danger"onClick={cancelClicked}>Cancel</Button>} 
+            {editing && <Button className="float-end" variant="danger"onClick={cancelClicked}>Cancel</Button>}
             <br></br>
           </div>
         </Form>

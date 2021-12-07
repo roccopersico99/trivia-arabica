@@ -3,9 +3,6 @@ import QuizCard from "./QuizCard.js";
 import { useEffect } from 'react';
 
 function ProfileHome(props) {
-
-  console.log(props.featuredQuiz)
-
   return (
     <Container>
       <Row>
