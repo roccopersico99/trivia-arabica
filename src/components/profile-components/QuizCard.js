@@ -127,6 +127,7 @@ function QuizCard(props) {
       return
     }
     FirestoreBackend.setUserFeaturedQuiz(userDetails.id, props.quiz.id)
+    props.setFeaturedQuiz(props.quiz)
   }
 
   return (
@@ -152,7 +153,7 @@ function QuizCard(props) {
         {!props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleDislike} variant="light" disabled={isLiked === 2}><FaThumbsDown /></Button>}
         {!props.quiz?.publish_state && props.quiz?.allowed && userDetails.user !== "" && <Button href={"/creator/" + props.quiz?.id} variant="warning">Edit</Button>}
         {props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleDelete} variant="danger">Delete</Button>}
-        {props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleFeatured} variant="info" >Set Featured</Button>}
+        {props.quiz?.allowed && userDetails.user !== "" && props.quiz?.publish_state && <Button disabled={props.featuredQuiz?.id === props.quiz?.id} onClick={handleFeatured} variant="info" >Set Featured</Button>}
       </Card.Body>
     </Card>
   );

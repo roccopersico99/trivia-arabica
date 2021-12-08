@@ -240,7 +240,7 @@ function Profile() {
                 ></Home>
               </Tab>
               <Tab eventKey="quizzes" title="Quizzes">
-                <Search userDetails={userDetails} uid={auth.currentUser.uid} refreshKey={refreshKey}></Search>
+                <Search featuredQuiz={featuredQuiz} setFeaturedQuiz={setFeaturedQuiz} userDetails={userDetails} uid={auth.currentUser.uid} refreshKey={refreshKey}></Search>
               </Tab>
               <Tab eventKey="posts" title="Posts">
                 <Posts profile={userDetails.id} uid={auth.currentUser.uid}></Posts>
