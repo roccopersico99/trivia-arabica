@@ -7,6 +7,7 @@ import { useAuthState } from "../Context/index";
 import * as FirestoreBackend from "../services/Firestore";
 
 import Background from "./Background.js";
+import Search from "./Search";
 import { Spinner, Image, Form, Stack, Button, Tabs, Tab, ListGroup } from "react-bootstrap";
 
 function Platform() {
@@ -30,11 +31,12 @@ function Platform() {
   const [tempDescription, setTempDescription] = useState("")
   const [editingDesc, setEditingDesc] = useState(false)
 
+  const [refreshKey, setRefreshKey] = useState(0)
+
   //000000000 misc consts
   const userDetails = useAuthState();
   const params = useParams();
   const history = useHistory();
-
 
   //000000000 hooks
   useEffect(async () => {
@@ -216,7 +218,7 @@ function Platform() {
       <br/>
       <Tabs>
         <Tab eventKey="quizzes" title="Quizzes">
-
+          <Search platformID={params.id} userDetails={userDetails} refreshKey={refreshKey}></Search>
         </Tab>
         <Tab eventKey="users" title="Contributors">
           <ListGroup style={{cursor:"pointer"}}>

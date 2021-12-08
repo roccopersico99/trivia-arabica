@@ -90,6 +90,8 @@ function Search(props) {
       searchDiscover(searchQuery, orderOn, order);
     } else if (page === 'profile') {
       searchProfile(searchQuery, orderOn, order);
+    } else if (page === 'platform') {
+      searchPlatformQuizzes(searchQuery, orderOn, order);
     } else {
       setEmptySearch(true);
     }
@@ -132,6 +134,23 @@ function Search(props) {
           filterPublished(resolvedQuiz, index, newResults);
         else
           filterCompleted(resolvedQuiz, index, newResults);
+      });
+    });
+  }
+
+  const searchPlatformQuizzes = async (searchQuery, orderOn, order) => {
+    const results = FirestoreBackend.searchPlatformQuizzes(params.id, searchQuery, 30, orderOn, order);
+    results.then(async (query_snapshot) => {
+      if (query_snapshot.empty) {
+        //console.log("nothing found!");
+        setEmptySearch(true);
+      }
+      counter = query_snapshot.docs.length;
+      //console.log("counter : " + counter);
+      let newResults = [];
+      query_snapshot.docs.forEach(async (quiz, index) => {
+        const resolvedQuiz = await FirestoreBackend.resolveQuizRef(quiz.ref);
+        filterCompleted(resolvedQuiz, index, newResults);
       });
     });
   }

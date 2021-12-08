@@ -1,8 +1,8 @@
 import '../App.css';
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useParams, useHistory } from "react-router-dom";
 import { useAuthState } from "../Context/index";
-import { Container, Button, ListGroup, Stack, Spinner, InputGroup, Form, FormControl, Image } from 'react-bootstrap';
+import { DropdownButton, Dropdown, Container, Button, ListGroup, Stack, Spinner, InputGroup, Form, FormControl, Image } from 'react-bootstrap';
 import * as FirestoreBackend from '../services/Firestore.js'
 import Background from './Background.js'
 import { text } from 'dom-helpers';
@@ -20,6 +20,9 @@ function QuizCreator() {
   const [quizImage, setQuizImage] = useState("")
   const [quizImageChanged, setQuizImageChanged] = useState(false);
   const [imgFile, setImgFile] = useState(null)
+  const [quizPlatformName, setQuizPlatformName] = useState("None")
+  const [quizPlatformID, setQuizPlatformID] = useState()
+  const [platforms, setPlatforms] = useState([])
 
   const [quizQuestions, setQuizQuestions] = useState([]);
 
@@ -32,11 +35,17 @@ function QuizCreator() {
       return;
     }
     setLoading(true);
-
     const quiz_query = FirestoreBackend.getQuiz(params.id);
     quiz_query.then(async (query_snapshot) => {
       if (query_snapshot.data().publish_state) {
         history.push("/");
+      }
+      if (query_snapshot.data().platform_id === undefined || query_snapshot.data().platform_id === null) {
+        setQuizPlatformID(undefined)
+        setQuizPlatformName("None")
+      } else {
+        setQuizPlatformID(query_snapshot.data().platform_id)
+        setQuizPlatformName(query_snapshot.data().platform_name)
       }
       setQuizRef(query_snapshot.ref);
       setQuizTitle(query_snapshot.data().quiz_title);
@@ -74,6 +83,25 @@ function QuizCreator() {
       return true;
     return false;
   }
+
+  const platformClicked = (id, name) => {
+    setQuizPlatformName(name)
+    setQuizPlatformID(id)
+  }
+
+  useEffect(async () => {
+    if (userDetails.id === undefined || userDetails.id === "") { return }
+    const plats = await FirestoreBackend.getUserPlatforms(userDetails.id)
+    let platformArray = []
+    plats.forEach(pform => {
+      let platform = {
+        name: pform.data().name,
+        id: pform.id
+      }
+      platformArray.push(platform)
+    })
+    setPlatforms(platformArray)
+  }, [userDetails])
 
   function handleAddQuestion() {
     let qz = quizQuestions
@@ -174,6 +202,12 @@ function QuizCreator() {
 
       FirestoreBackend.setQuizQuestion(params.id, "" + (quizQuestions[x].number), "", quizQuestions[x].question_title, chs)
     }
+    if (quizPlatformID === undefined) {
+      await FirestoreBackend.updateData(quizRef, { platform_id: null, platform_name: null });
+    } else {
+      await FirestoreBackend.updateData(quizRef, { platform_id: quizPlatformID, platform_name: quizPlatformName });
+    }
+
     setupCreator(false)
   }
 
@@ -231,6 +265,15 @@ function QuizCreator() {
           Quiz Image
           <Form.Control onChange={onImgUpld} accept=".jpg, .jpeg, .png" type="file" />
         </Form.Group>
+        <br/>
+        <p style={{marginBottom:"0px"}}> Dedicate to platform </p>
+        <DropdownButton variant="secondary" id="dropdown-basic-button" title={quizPlatformName}>
+          <Dropdown.Item onClick={() => platformClicked(undefined, "None")} eventKey={"None"}>None</Dropdown.Item>
+          {platforms.map((platform, index) => (
+            <Dropdown.Item onClick={() => platformClicked(platform.id, platform.name)} eventKey={platform.id}>{platform.name}</Dropdown.Item>
+          ))}
+        </DropdownButton>
+        <br/>
         <div className="mb-2">
           <Button onClick={saveClicked}>Save Changes</Button>
           <Button onClick={publish} variant="success">Publish Quiz</Button>

@@ -33,7 +33,7 @@ export const createUser = (userName, userId, imageURL, uid) => {
   return setDoc(doc(db, "users", userId), {
     display_name: userName,
     user_id: userId,
-    uid: uid, 
+    uid: uid,
     medals: 0,
     profile_image: imageURL,
     user_bio: "",
@@ -405,7 +405,7 @@ export const searchQuizzes = (search = "", limitResults = 99, orderOn = "publish
   return getDocs(q);
 }
 
-export const searchUserQuizzes = (userid, uid, isowner, search = "", limitResults=99, orderOn = "publish_date", order = "desc") => {
+export const searchUserQuizzes = (userid, uid, isowner, search = "", limitResults = 99, orderOn = "publish_date", order = "desc") => {
   search = search.toLowerCase();
 
   if (isowner) {
@@ -425,6 +425,17 @@ export const searchUserQuizzes = (userid, uid, isowner, search = "", limitResult
       limit(limitResults));
     return getDocs(q);
   }
+}
+
+export const searchPlatformQuizzes = (platformid, search = "", limitResults = 99, orderOn = "publish_date", order = "desc") => {
+  search = search.toLowerCase();
+  const q = query(quizRef,
+    where('search_index', 'array-contains', search),
+    where('publish_state', '==', true),
+    where('platform_id', '==', platformid),
+    orderBy(orderOn, order),
+    limit(limitResults));
+  return getDocs(q);
 }
 
 export const getPlatform = async (id) => {
