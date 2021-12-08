@@ -1,6 +1,6 @@
 import '../App.css';
 import React, { useState } from 'react'
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import { useAuthState } from "../Context/index";
 import { Container, Button, ListGroup, Stack, Spinner, InputGroup, Form, FormControl, Image } from 'react-bootstrap';
 import * as FirestoreBackend from '../services/Firestore.js'
@@ -10,6 +10,7 @@ import { text } from 'dom-helpers';
 function QuizCreator() {
   const params = useParams();
   const userDetails = useAuthState();
+  const history = useHistory();
 
   const [refreshKey, setRefreshKey] = useState(0);
   const [activeQuestion, setActiveQuestion] = useState(0);
@@ -23,7 +24,7 @@ function QuizCreator() {
   const [quizQuestions, setQuizQuestions] = useState([]);
 
   const [loading, setLoading] = useState(false) //janky: while loading elements, setting state will retrigger loading of the elements again... so we use this state to stop that
-  
+
   const [max, setMax] = useState(0) //keep track of max doc id
 
   const getQuiz = async (removed) => {
@@ -34,6 +35,9 @@ function QuizCreator() {
 
     const quiz_query = FirestoreBackend.getQuiz(params.id);
     quiz_query.then(async (query_snapshot) => {
+      if (query_snapshot.data().publish_state) {
+        history.push("/");
+      }
       setQuizRef(query_snapshot.ref);
       setQuizTitle(query_snapshot.data().quiz_title);
       setQuizImage(await FirestoreBackend.getImageURL(query_snapshot.data().quiz_image));
@@ -72,11 +76,10 @@ function QuizCreator() {
   }
 
   function handleAddQuestion() {
-    console.log("user clicked add question..." + activeQuestion)
     let qz = quizQuestions
-    let choices = [{text: "", correct: true}]; //preload first question to be true
-    for (let i = 1; i < 4; i++){
-      choices.push({text: "", correct: false});
+    let choices = [{ text: "", correct: true }]; //preload first question to be true
+    for (let i = 1; i < 4; i++) {
+      choices.push({ text: "", correct: false });
     }
     qz.push({
       question_title: "",
@@ -93,14 +96,13 @@ function QuizCreator() {
     if (quizQuestions.length === 1) {
       return
     }
-    console.log("user clicked remove question..." + quizQuestions[activeQuestion].number)
     FirestoreBackend.deleteQuestion(params.id, "" + quizQuestions[activeQuestion].number)
     setActiveQuestion(activeQuestion - 1)
     setupCreator(true)
     setRefreshKey(refreshKey + 1)
   }
 
-  function handleAddChoice(){
+  function handleAddChoice() {
     let updated = [...quizQuestions]
     updated[activeQuestion].question_choices[updated[activeQuestion].num_choices] = {
       correct: false,
@@ -113,7 +115,7 @@ function QuizCreator() {
   function handleRemoveChoice() {
     let updated = [...quizQuestions]
     let choicepopped = updated[activeQuestion].question_choices.pop()
-    if(choicepopped.correct){
+    if (choicepopped.correct) {
       updated[activeQuestion].question_choices[0].correct = true;
     }
     updated[activeQuestion].num_choices -= 1;
@@ -123,21 +125,19 @@ function QuizCreator() {
   const onChangeQuestionText = (event) => {
     let updated = [...quizQuestions]
     updated[activeQuestion].question_title = event.target.value;
-    console.log(updated)
     setQuizQuestions(updated)
   }
 
   function onChangeQuestionChoice(event) {
     let updated = [...quizQuestions]
-    updated[activeQuestion].question_choices[event.target.id-1].text = event.target.value;
-    console.log(updated)
+    updated[activeQuestion].question_choices[event.target.id - 1].text = event.target.value;
     setQuizQuestions(updated)
   }
 
   function onChangeAnswer(event) {
     let updated = [...quizQuestions]
-    for (let i = 0; i<updated[activeQuestion].num_choices; i++){
-      if(i == event.target.id-1)
+    for (let i = 0; i < updated[activeQuestion].num_choices; i++) {
+      if (i == event.target.id - 1)
         updated[activeQuestion].question_choices[i].correct = true;
       else
         updated[activeQuestion].question_choices[i].correct = false;
@@ -155,7 +155,7 @@ function QuizCreator() {
     //re-build question from choices state, answers state, and questionText state
     for (let x = 0; x < quizQuestions.length; x++) {
       let chs = [];
-      for(let i = 0; i < quizQuestions[x].question_choices.length; i++){
+      for (let i = 0; i < quizQuestions[x].question_choices.length; i++) {
         chs[i] = {
           correct: quizQuestions[x].question_choices[i].correct,
           text: quizQuestions[x].question_choices[i].text
@@ -169,7 +169,7 @@ function QuizCreator() {
       }
 
       if (quizImageChanged) {
-        await FirestoreBackend.updateData(quizRef, {quiz_image: imgPath});
+        await FirestoreBackend.updateData(quizRef, { quiz_image: imgPath });
       }
 
       FirestoreBackend.setQuizQuestion(params.id, "" + (quizQuestions[x].number), "", quizQuestions[x].question_title, chs)
@@ -177,7 +177,7 @@ function QuizCreator() {
     setupCreator(false)
   }
 
-  async function publish(){
+  async function publish() {
     //todo check there is at least one(maybe more for minimum?) question
     //todo check that all questions have question text and choices filled in
     await FirestoreBackend.publishQuiz(params.id);
@@ -201,9 +201,7 @@ function QuizCreator() {
       <FormControl aria-label="Default" onChange={onChangeQuestionText} value={quizQuestions[activeQuestion].question_title} placeholder="Question Text" />
     </InputGroup>
   ))
-  console.log('bye')
-  console.log(quizQuestions);
-  for(let i = 0; i < quizQuestions[activeQuestion].num_choices; i++){
+  for (let i = 0; i < quizQuestions[activeQuestion].num_choices; i++) {
     inputgroup.push((
       <InputGroup className="mb-3">
         <InputGroup.Text id="inputGroup-sizing-default"> Choice {i+1} </InputGroup.Text>
