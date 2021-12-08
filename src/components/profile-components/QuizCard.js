@@ -149,11 +149,13 @@ function QuizCard(props) {
             Preview
           </Link>
         </Row>
-        {!props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleLike} variant="light" disabled={isLiked === 1}><FaThumbsUp /></Button>}
-        {!props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleDislike} variant="light" disabled={isLiked === 2}><FaThumbsDown /></Button>}
+        {props.canRemove && userDetails.user !== "" && <Button variant="warning" onClick={() => props.removePlatformQuiz(props.quiz?.id)}>Remove</Button>}
         {!props.quiz?.publish_state && props.quiz?.allowed && userDetails.user !== "" && <Button href={"/creator/" + props.quiz?.id} variant="warning">Edit</Button>}
         {props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleDelete} variant="danger">Delete</Button>}
         {props.quiz?.allowed && userDetails.user !== "" && props.quiz?.publish_state && <Button disabled={props.featuredQuiz?.id === props.quiz?.id} onClick={handleFeatured} variant="info" >Set Featured</Button>}
+        <br/>
+        {!props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleLike} variant="light" disabled={isLiked === 1}><FaThumbsUp /></Button>}
+        {!props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleDislike} variant="light" disabled={isLiked === 2}><FaThumbsDown /></Button>}
       </Card.Body>
     </Card>
   );

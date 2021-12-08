@@ -231,7 +231,7 @@ function Search(props) {
   const content = quizRows.map((row, index) => (
     <Row className="row" key={index}>
       {row.map(quiz => (
-        <QuizCard onDelete={handleSearch} featuredQuiz={props.featuredQuiz} setFeaturedQuiz={props.setFeaturedQuiz} quiz={quiz} key={quiz.id}></QuizCard>
+        <QuizCard canRemove={props.canRemove} removePlatformQuiz={props.removePlatformQuiz} onDelete={handleSearch} featuredQuiz={props.featuredQuiz} setFeaturedQuiz={props.setFeaturedQuiz} quiz={quiz} key={quiz.id}></QuizCard>
       ))}
     </Row>
   ));

@@ -102,6 +102,13 @@ function Platform() {
     }
   }
 
+  const removeQuizFromPlatformClicked = async (quizid) => {
+    const req = await FirestoreBackend.getQuiz(quizid)
+    console.log(req)
+    FirestoreBackend.updateData(req.ref, { platform_id: null, platform_name: null });
+    setRefreshKey(refreshKey + 1)
+  }
+
   const changeDescriptionPressed = () => {
     setTempDescription(platformDescription)
     setEditingDesc(true)
@@ -218,7 +225,7 @@ function Platform() {
       <br/>
       <Tabs>
         <Tab eventKey="quizzes" title="Quizzes">
-          <Search platformID={params.id} userDetails={userDetails} refreshKey={refreshKey}></Search>
+          <Search canRemove={owner} removePlatformQuiz={removeQuizFromPlatformClicked} platformID={params.id} userDetails={userDetails} refreshKey={refreshKey}></Search>
         </Tab>
         <Tab eventKey="users" title="Contributors">
           <ListGroup style={{cursor:"pointer"}}>
