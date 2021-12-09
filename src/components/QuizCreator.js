@@ -192,7 +192,7 @@ function QuizCreator() {
 
       let imgPath = ""
       if (imgFile !== null && imgFile !== undefined) {
-        const imgSnap = await FirestoreBackend.uploadFile(userDetails.id, imgFile)
+        const imgSnap = await FirestoreBackend.uploadFile(userDetails.id, params.id, imgFile)
         imgPath = imgSnap.ref.fullPath
       }
 

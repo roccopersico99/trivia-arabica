@@ -97,7 +97,7 @@ function Platform() {
   const onImgUpld = async (event) => {
     setPlatformImage(URL.createObjectURL(event.target.files[0]))
     if (event.target.files[0] !== null && event.target.files[0] !== undefined) {
-      const imgSnap = await FirestoreBackend.uploadFile(userDetails.id, event.target.files[0])
+      const imgSnap = await FirestoreBackend.uploadFile(userDetails.id, params.id, event.target.files[0])
       FirestoreBackend.updateData(platformRef, { imageURL: imgSnap.ref.fullPath })
     }
   }

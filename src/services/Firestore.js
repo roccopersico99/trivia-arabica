@@ -521,8 +521,8 @@ export const acceptUserApplication = async (userid, platformid, username) => {
 
 const storage = getStorage(firebaseApp)
 
-export const uploadFile = async (userid, file) => {
-  const storageRef = ref(storage, "" + userid + "/" + file.name);
+export const uploadFile = async (userid, subfolder, file) => {
+  const storageRef = ref(storage, "" + userid + "/" + subfolder + "/" + file.name);
   const snap = await uploadBytes(storageRef, file).then(async (snapshot) => {
     return snapshot
   })
