@@ -1,4 +1,4 @@
-import { Col, Card, Button, Row } from "react-bootstrap";
+import { Col, Card, Button, Row, Dropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import React, { useState } from "react";
 import * as FirestoreBackend from "../../services/Firestore";
@@ -130,10 +130,38 @@ function QuizCard(props) {
     props.setFeaturedQuiz(props.quiz)
   }
 
+  const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
+    <p
+      style={{cursor:"pointer"}}
+      ref={ref}
+      onClick={(e) => {
+        e.preventDefault();
+        onClick(e);
+      }}
+    >
+      {children}
+      <span className="threedots" />
+    </p>
+  ));
+
   return (
     <Card as={Col} style={{ margin: "10px", maxWidth:"fit-content" }}>
+
+      <Dropdown style={{position:"absolute", right:"0"}}>
+        <Dropdown.Toggle as={CustomToggle} id="dropdown-custom-components">
+        </Dropdown.Toggle>
+
+        <Dropdown.Menu>
+          {props.canRemove && userDetails.user !== "" && <Dropdown.Item onClick={() => props.removePlatformQuiz(props.quiz?.id)}>Remove from platform</Dropdown.Item>}
+          {!props.quiz?.publish_state && props.quiz?.allowed && userDetails.user !== "" && <Dropdown.Item href={"/creator/" + props.quiz?.id}>Edit</Dropdown.Item>}
+          {props.quiz?.allowed && userDetails.user !== "" && <Dropdown.Item onClick={handleDelete}>Delete</Dropdown.Item>}
+          {props.quiz?.allowed && userDetails.user !== "" && props.quiz?.publish_state && <Dropdown.Item disabled={props.featuredQuiz?.id === props.quiz?.id} onClick={handleFeatured} >Set Featured</Dropdown.Item>}
+        </Dropdown.Menu>
+      </Dropdown>
+
       <Card.Body>
         <Card.Title>{props.quiz?.title}</Card.Title>
+
         <Card.Img
           style={{maxHeight: "100%", height: "150px", maxWidth: "100%", width: "250px", backgroundSize: "contain" }}
           variant="top"
@@ -150,9 +178,8 @@ function QuizCard(props) {
           </Link>
         </Row>
         {props.canRemove && userDetails.user !== "" && <Button variant="warning" onClick={() => props.removePlatformQuiz(props.quiz?.id)}>Remove</Button>}
-        {!props.quiz?.publish_state && props.quiz?.allowed && userDetails.user !== "" && <Button href={"/creator/" + props.quiz?.id} variant="warning">Edit</Button>}
-        {props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleDelete} variant="danger">Delete</Button>}
-        {props.quiz?.allowed && userDetails.user !== "" && props.quiz?.publish_state && <Button disabled={props.featuredQuiz?.id === props.quiz?.id} onClick={handleFeatured} variant="info" >Set Featured</Button>}
+
+
         <br/>
         {!props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleLike} variant="light" disabled={isLiked === 1}><FaThumbsUp /></Button>}
         {!props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleDislike} variant="light" disabled={isLiked === 2}><FaThumbsDown /></Button>}

@@ -11,3 +11,8 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.threedots:after {
+  content: "\2807";
+  font-size: 30px;
+}
