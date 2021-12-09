@@ -159,15 +159,18 @@ function QuizCard(props) {
         </Dropdown.Menu>
       </Dropdown>
     }
-      <Card.Body>
+      <Card.Body style={{paddingBottom:"0px"}}>
         <Card.Title>{props.quiz?.title}</Card.Title>
-        {!props.quiz?.publish_state && <p> (Unpublished) </p>}
         <Card.Img
           style={{maxHeight: "100%", height: "150px", maxWidth: "100%", width: "250px", backgroundSize: "contain" }}
           variant="top"
           src={props.quiz?.image === "" ? logo : props.quiz?.image}
         ></Card.Img>
-        <Card.Text>{props.quiz?.description}</Card.Text>
+        <div style={{minHeight:"100px", height:"100px", maxHeight:"100px", overflow:"hidden"}}>
+          {!props.quiz?.publish_state && <h5> (Unpublished) </h5>}
+          {!props.quiz?.publish_state && <Card.Text >{props.quiz?.description}</Card.Text>}
+          {props.quiz?.publish_state && <Card.Text style={{marginTop:"20px"}}>{props.quiz?.description}</Card.Text>}
+        </div>
         <Row>
           <Link
             to={{ pathname: "/preview/" + props.quiz?.id, state: props.quiz }}
