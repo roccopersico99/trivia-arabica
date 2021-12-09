@@ -180,12 +180,9 @@ function QuizCard(props) {
             Preview
           </Link>
         </Row>
-        {props.canRemove && userDetails.user !== "" && <Button variant="warning" onClick={() => props.removePlatformQuiz(props.quiz?.id)}>Remove</Button>}
-
-
         <br/>
-        {!props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleLike} variant="light" disabled={isLiked === 1}><FaThumbsUp /></Button>}
-        {!props.quiz?.allowed && userDetails.user !== "" && <Button onClick={handleDislike} variant="light" disabled={isLiked === 2}><FaThumbsDown /></Button>}
+        {(!props.canRemove && !props.quiz?.allowed && userDetails.user !== "") && <Button onClick={handleLike} variant="light" disabled={isLiked === 1}><FaThumbsUp /></Button>}
+        {(!props.canRemove && !props.quiz?.allowed && userDetails.user !== "") && <Button onClick={handleDislike} variant="light" disabled={isLiked === 2}><FaThumbsDown /></Button>}
       </Card.Body>
     </Card>
   );
