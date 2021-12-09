@@ -131,7 +131,7 @@ function QuizCard(props) {
   }
 
   return (
-    <Card as={Col} style={{ margin: "10px" }}>
+    <Card as={Col} style={{ margin: "10px", maxWidth:"fit-content" }}>
       <Card.Body>
         <Card.Title>{props.quiz?.title}</Card.Title>
         <Card.Img
