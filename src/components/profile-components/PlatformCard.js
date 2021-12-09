@@ -17,12 +17,12 @@ function PlatformCard(props) {
   }
 
   return (
-    <div onClick={platClicked} style={{cursor:"pointer", width:"fit-content"}} >
+    <div onClick={platClicked} style={{cursor:"pointer", width:"fit-content", margin:"5px"}} >
     <Card as={Col} style={{ margin: "10px" }}>
       <Card.Body>
         <Card.Title>{props.platform?.data().name}</Card.Title>
         <Card.Img
-          style={{maxHeight: "100%", height: "150px", maxWidth: "100%", width: "250px", backgroundSize: "contain" }}
+          style={{maxHeight: "100%", height: "150px", maxWidth: "100%", width: "200px", backgroundSize: "contain" }}
           variant="top"
           src={platImg}
         ></Card.Img>

@@ -9,7 +9,7 @@ import {
   ProgressBar,
   Spinner,
 } from "react-bootstrap";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useHistory } from "react-router-dom";
 import * as FirestoreBackend from "../services/Firestore";
 import { useAuthState } from "../Context/index";
 import QuizReportPopup from "./QuizReportPopup.js";
@@ -17,6 +17,7 @@ import QuizReportPopup from "./QuizReportPopup.js";
 function QuizPreview() {
   const userDetails = useAuthState();
   const params = useParams();
+  const history = useHistory();
 
   const [modalShow, setModalShow] = useState(false);
 
@@ -26,28 +27,27 @@ function QuizPreview() {
     let currentTime = new Date();
     try {
       window.Email.send({
-        SecureToken: "36297ca5-2675-43a0-82be-c6640938db00",
-        To: "rocco.persico@stonybrook.edu",
-        From: "roccopersico99@gmail.com",
-        Subject: "Quiz Reported: " + params.id,
-        Body:
-          "A quiz has been reported on Trivia Arabica...<br />" +
-          "Reported Quiz: " +
-          params.id +
-          "<br />" +
-          "Reported by User: " +
-          sentBy +
-          "<br />" +
-          "Time of Report: " +
-          currentTime.toString() +
-          "<br />" +
-          "User Response: " +
-          res,
-      })
+          SecureToken: "36297ca5-2675-43a0-82be-c6640938db00",
+          To: "rocco.persico@stonybrook.edu",
+          From: "roccopersico99@gmail.com",
+          Subject: "Quiz Reported: " + params.id,
+          Body: "A quiz has been reported on Trivia Arabica...<br />" +
+            "Reported Quiz: " +
+            params.id +
+            "<br />" +
+            "Reported by User: " +
+            sentBy +
+            "<br />" +
+            "Time of Report: " +
+            currentTime.toString() +
+            "<br />" +
+            "User Response: " +
+            res,
+        })
         .then((message) =>
-          message === "OK"
-            ? alert("Report Submitted. Thank you!")
-            : alert(message)
+          message === "OK" ?
+          alert("Report Submitted. Thank you!") :
+          alert(message)
         )
         .then(setModalShow(false));
     } catch (e) {
@@ -61,13 +61,13 @@ function QuizPreview() {
   function resolveQuizRef() {
     FirestoreBackend.getQuizFromString(params.id).then(async (result) => {
       setQuiz(result);
-    }).catch(err => {console.log(err)});
+    }).catch(err => { console.log(err) });
   }
 
   function resolveQuizCreatorRef() {
     FirestoreBackend.resolveUserRef(quiz?.creator).then(async (result) => {
       setQuizCreator(result);
-    }).catch(err => {console.log(err)});
+    }).catch(err => { console.log(err) });
   }
 
   useEffect(() => {
@@ -93,9 +93,9 @@ function QuizPreview() {
   const likePercent = Math.floor((likes / totalRatings) * 100);
   const dislikePercent = Math.floor((dislikes / totalRatings) * 100);
 
-  let date = new Date(1970,0,1);
+  let date = new Date(1970, 0, 1);
   date.setSeconds(quiz?.publish_date?.seconds);
-  
+
   const publishDate = date.toLocaleDateString();
   // if (userDetails.user === "") {
   //   return (
@@ -120,10 +120,10 @@ function QuizPreview() {
       ></QuizReportPopup>
       <Container>
         <Stack direction="horizontal" gap={3}>
-          <Stack gap={3} style={{ width: "48%" }}>
+          <Stack onClick={() => history.push("/profile/"+quizCreator?.user_id)} gap={3} style={{ width: "48%" }}>
             <br></br>
-            <Link to={{ pathname: "/profile/" + quizCreator?.user_id }}>
               <Stack
+                style={{cursor:"pointer"}}
                 gap={5}
                 direction="horizontal"
                 className="block-example border border-dark"
@@ -132,14 +132,14 @@ function QuizPreview() {
                   style={{
                     width: "100px",
                     height: "100px",
+                    cursor:"pointer"
                   }}
                   src={quizCreator?.profile_image}
                   alt="Profile Image"
                   className="block-example border border-dark"
                 ></Image>
-                <h1>{quizCreator?.display_name}</h1>
+                <h1 style={{cursor:"pointer"}}>{quizCreator?.display_name}</h1>
               </Stack>
-            </Link>
             <h2>Uploaded: {publishDate === "Invalid Date" ? "Date Unknown" : publishDate}</h2>
             <h2>Rating</h2>
             <ProgressBar>
