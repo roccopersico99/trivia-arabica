@@ -146,7 +146,7 @@ function QuizCard(props) {
 
   return (
     <Card as={Col} style={{ margin: "10px", maxWidth:"fit-content" }}>
-
+      {(props.canRemove || props.quiz?.allowed) &&
       <Dropdown style={{position:"absolute", right:"0"}}>
         <Dropdown.Toggle as={CustomToggle} id="dropdown-custom-components">
         </Dropdown.Toggle>
@@ -158,10 +158,10 @@ function QuizCard(props) {
           {props.quiz?.allowed && userDetails.user !== "" && props.quiz?.publish_state && <Dropdown.Item disabled={props.featuredQuiz?.id === props.quiz?.id} onClick={handleFeatured} >Set Featured</Dropdown.Item>}
         </Dropdown.Menu>
       </Dropdown>
-
+    }
       <Card.Body>
         <Card.Title>{props.quiz?.title}</Card.Title>
-
+        {!props.quiz?.publish_state && <p> (Unpublished) </p>}
         <Card.Img
           style={{maxHeight: "100%", height: "150px", maxWidth: "100%", width: "250px", backgroundSize: "contain" }}
           variant="top"
