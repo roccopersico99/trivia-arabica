@@ -66,12 +66,9 @@ function Profile() {
     }
   }, [userDetails])
 
-  const [previousTab, setPreviousTab] = useState();
+  const [currentTab, setCurrentTab] = useState("home");
   const handleTabChange = (e) => {
-    if (e === previousTab) {
-      return
-    }
-    setPreviousTab(e)
+    setCurrentTab(e)
     console.log(e)
     setRefreshKey(refreshKey + 1)
   }
@@ -103,6 +100,11 @@ function Profile() {
 
   const giveCorrectedYoutubeLink = (val) => {
 
+  }
+
+  function handleChangeFeatured(q) {
+    setFeaturedQuiz(q);
+    handleTabChange('home');
   }
 
   function handleReport(res) {
@@ -232,7 +234,7 @@ function Profile() {
 
         <Row>
           <Col>
-            <Tabs onSelect={handleTabChange}>
+            <Tabs activeKey={currentTab} onSelect={handleTabChange}>
               <Tab eventKey="home" title="Home">
                 <Home
                   featuredQuiz={featuredQuiz}
@@ -240,7 +242,7 @@ function Profile() {
                 ></Home>
               </Tab>
               <Tab eventKey="quizzes" title="Quizzes">
-                <Search featuredQuiz={featuredQuiz} setFeaturedQuiz={setFeaturedQuiz} userDetails={userDetails} uid={auth.currentUser.uid} refreshKey={refreshKey}></Search>
+                <Search featuredQuiz={featuredQuiz} setFeaturedQuiz={handleChangeFeatured} userDetails={userDetails} uid={auth.currentUser.uid} refreshKey={refreshKey}></Search>
               </Tab>
               <Tab eventKey="posts" title="Posts">
                 <Posts profile={userDetails.id} uid={auth.currentUser.uid}></Posts>
