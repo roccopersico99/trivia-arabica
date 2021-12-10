@@ -120,9 +120,10 @@ function QuizPreview() {
       ></QuizReportPopup>
       <Container>
         <Stack direction="horizontal" gap={3}>
-          <Stack onClick={() => history.push("/profile/"+quizCreator?.user_id)} gap={3} style={{ width: "48%" }}>
+          <Stack gap={3} style={{ width: "48%" }}>
             <br></br>
               <Stack
+                onClick={() => history.push("/profile/"+quizCreator?.user_id)}
                 style={{cursor:"pointer"}}
                 gap={5}
                 direction="horizontal"
