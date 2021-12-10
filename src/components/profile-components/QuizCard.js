@@ -31,6 +31,17 @@ function QuizCard(props) {
     }
   });
 
+  function checkPopular(ratings) {
+    //check if more than 5 votes and at least 80% like/dislike ratio
+    const totalRatings = ratings[0] + ratings[1];
+    if(totalRatings >=5 && ratings[0]/totalRatings >= 0.8){
+      return true
+    }
+    else{
+      return false
+    }
+  }
+
   async function handleLike() {
     console.log("like clicked!")
     setIsLiked(1)
@@ -58,7 +69,8 @@ function QuizCard(props) {
       FirestoreBackend.addUserRatedQuiz(userDetails.id, props.quiz?.id, true);
       // add 1 like to current quiz
       let ratings = await FirestoreBackend.getQuizRatings(props.quiz?.id)
-      FirestoreBackend.updateQuizRatings(props.quiz?.id, ratings[0] + 1, ratings[1])
+      const popular = checkPopular([ratings[0] + 1, ratings[1]])
+      FirestoreBackend.updateQuizRatings(props.quiz?.id, ratings[0] + 1, ratings[1], popular)
     } else {
       // if user is changing rating from like to dislike, then do this. if they already disliked and are clicking dislike again, do nothing
       if (changingRating) {
@@ -66,7 +78,8 @@ function QuizCard(props) {
         FirestoreBackend.updateUserRatedQuizzes(userDetails.id, props.quiz?.id, true);
         // add 1 like and remove 1 dislike from current quiz
         let ratings = await FirestoreBackend.getQuizRatings(props.quiz?.id)
-        FirestoreBackend.updateQuizRatings(props.quiz?.id, ratings[0] + 1, ratings[1] - 1)
+        const popular = checkPopular([ratings[0] + 1, ratings[1] - 1])
+        FirestoreBackend.updateQuizRatings(props.quiz?.id, ratings[0] + 1, ratings[1] - 1, popular)
       }
     }
   }
@@ -98,14 +111,16 @@ function QuizCard(props) {
       FirestoreBackend.addUserRatedQuiz(userDetails.id, props.quiz?.id, false);
       // add 1 dislike to current quiz
       let ratings = await FirestoreBackend.getQuizRatings(props.quiz?.id)
-      FirestoreBackend.updateQuizRatings(props.quiz?.id, ratings[0], ratings[1] + 1)
+      const popular = checkPopular([ratings[0], ratings[1] + 1])
+      FirestoreBackend.updateQuizRatings(props.quiz?.id, ratings[0], ratings[1] + 1, popular)
     } else {
       if (changingRating) {
         console.log("updating user ", userDetails.id, " rating for quiz ", props.quiz?.id, " to FALSE")
         FirestoreBackend.updateUserRatedQuizzes(userDetails.id, props.quiz?.id, false);
         // add 1 dislike and remove 1 like from current quiz
         let ratings = await FirestoreBackend.getQuizRatings(props.quiz?.id)
-        FirestoreBackend.updateQuizRatings(props.quiz?.id, ratings[0] - 1, ratings[1] + 1)
+        const popular = checkPopular([ratings[0] - 1, ratings[1] + 1])
+        FirestoreBackend.updateQuizRatings(props.quiz?.id, ratings[0] - 1, ratings[1] + 1, popular)
       }
     }
   }

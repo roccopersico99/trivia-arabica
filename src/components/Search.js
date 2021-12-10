@@ -236,16 +236,16 @@ function Search(props) {
     </Row>
   ));
   let paginationItems = [
-    <Pagination.First onClick={handleFirst} disabled={(pageNum <= 1)}/>,
-    <Pagination.Prev onClick={handlePrev} disabled={(pageNum <= 1)}/>
+    <Pagination.First key={-4} onClick={handleFirst} disabled={(pageNum <= 1)}/>,
+    <Pagination.Prev key={-3} onClick={handlePrev} disabled={(pageNum <= 1)}/>
   ]
   for (let index = 1; index <= quizChunks.length; index++) {
     paginationItems.push(
       <Pagination.Item key={index} active={index === pageNum} onClick={handlePageNum}> {index} </Pagination.Item>
     )
   }
-  paginationItems.push(<Pagination.Next onClick={handleNext} disabled={(pageNum >= quizChunks.length)}/>)
-  paginationItems.push(<Pagination.Last onClick={handleLast} disabled={(pageNum >= quizChunks.length)}/>)
+  paginationItems.push(<Pagination.Next key={-2} onClick={handleNext} disabled={(pageNum >= quizChunks.length)}/>)
+  paginationItems.push(<Pagination.Last key={-1} onClick={handleLast} disabled={(pageNum >= quizChunks.length)}/>)
 
   let profile = false;
   if (props.userDetails) {

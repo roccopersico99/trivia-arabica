@@ -1,18 +1,16 @@
 import * as FirestoreBackend from '../services/Firestore.js'
-// import { Container, Row } from "react-bootstrap";
-// import QuizCard from './profile-components/QuizCard.js';
 import { useState } from 'react';
 import Quizzes from './profile-components/Quizzes.js'
 import { Container } from 'react-bootstrap';
 
-function RecentQuizzes() {
+function AllTimePopularQuizzes() {
   const [loading, setLoading] = useState(false)
-  const [recent, setRecent] = useState([]);
+  const [popular, setPopular] = useState([]);
   const getRecent = async () => {
     if (loading) {
       return;
     }
-    FirestoreBackend.searchQuizzes("", 6).then(async (query_snapshot) => {
+    FirestoreBackend.mostPopularAllTimeQuizzes(6).then(async (query_snapshot) => {
       let quizzes = [];
       let counter = query_snapshot.docs.length;
       setLoading(true);
@@ -21,7 +19,7 @@ function RecentQuizzes() {
         quizzes[index] = data;
         counter -= 1;
         if(counter === 0)
-          setRecent(quizzes);
+          setPopular(quizzes);
       })
       
     });
@@ -30,15 +28,15 @@ function RecentQuizzes() {
     getRecent();
     return (null);
   } else {
-    console.log(recent)
+    console.log(popular)
     return (
       <Container>
-        <h2 align="left">Recent Quizzes</h2>
-        <Quizzes quizzes={recent}></Quizzes>
+        <h2 align="left">All Time Popular Quizzes</h2>
+        <Quizzes quizzes={popular}></Quizzes>
       </Container>
       
     )
   }
 }
 
-export default RecentQuizzes;
+export default AllTimePopularQuizzes;

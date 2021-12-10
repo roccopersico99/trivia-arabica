@@ -4,7 +4,7 @@ import { refreshTokenSetup } from '../services/refreshToken';
 import * as FirestoreBackend from '../services/Firestore.js'
 import { useAuthState, useAuthDispatch } from '../Context/index'
 import { useHistory } from 'react-router-dom'
-import { getAuth, onAuthStateChanged, signInWithCredential, GoogleAuthProvider, signOut } from "firebase/auth";
+import { getAuth, signInWithCredential, GoogleAuthProvider, signOut } from "firebase/auth";
 
 const clientId = '232679417776-evek906rd0viu2j08vqsciphcrjhttir.apps.googleusercontent.com';
 

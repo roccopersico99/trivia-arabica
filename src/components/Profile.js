@@ -15,14 +15,9 @@ import {
   Stack,
   Tab,
   Tabs,
-  Spinner,
-  InputGroup,
-  FormControl,
-  Dropdown,
-  DropdownButton
+  Spinner
 } from "react-bootstrap";
 import Home from "./profile-components/ProfileHome";
-import Quizzes from "./profile-components/Quizzes";
 import Posts from "./profile-components/Posts";
 import About from "./profile-components/About";
 import ProfilePlatforms from "./profile-components/ProfilePlatforms";
@@ -34,13 +29,10 @@ function Profile() {
   const userDetails = useAuthState();
   const auth = getAuth();
 
-  const [searchTarget, setSearchTarget] = useState("")
-
   const [about, setAbout] = useState("");
   const [name, setName] = useState("");
   const [profileImage, setProfileImage] = useState("");
   const [profileId, setProfileID] = useState("")
-  const [quizzes, setQuizzes] = useState([]);
   const [platforms, setPlatforms] = useState([]);
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -50,7 +42,6 @@ function Profile() {
   const [reddit, setReddit] = useState("")
 
   const [featuredQuiz, setFeaturedQuiz] = useState();
-  const [featuredPost, setFeaturedPost] = useState();
 
   const [modalShow, setModalShow] = useState(false);
 
@@ -80,7 +71,6 @@ function Profile() {
       //const medalCount = user.data().medals;
       const data = { user_bio: val };
       FirestoreBackend.updateData(userRef, data);
-      setQuizzes([])
       setRefreshKey(refreshKey + 1);
     });
   };
@@ -96,10 +86,6 @@ function Profile() {
   }
   const setRedditLink = async (val) => {
     const res = FirestoreBackend.setUserReddit(userDetails.id, val)
-  }
-
-  const giveCorrectedYoutubeLink = (val) => {
-
   }
 
   function handleChangeFeatured(q) {

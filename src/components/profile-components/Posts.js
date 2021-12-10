@@ -71,11 +71,11 @@ function Posts(props) {
         <br>
         </br>
         <Form style={{display: editing ? 'block' : 'none'}}>
-          <div class="form-group">
+          <div className="form-group">
             <Form.Control type="text" ref={titleAreaRef} id="aboutText"></Form.Control>
             <Form.Control as ="textarea" ref={textAreaRef} id="aboutText" rows={3}></Form.Control>
           </div>
-          <div class="form-group">
+          <div className="form-group">
             {editing && <Button className="float-end" variant="success" onClick={savePressed}>Publish</Button>}
             {editing && <Button className="float-end" variant="danger"onClick={cancelClicked}>Cancel</Button>}
             <br></br>
@@ -87,7 +87,7 @@ function Posts(props) {
       <ListGroup>
       {posts.length > 0 ?
         (posts.map((post, index) =>(
-          <Card>
+          <Card key={index}>
             <Card.Body className="post">
               {((!post.post_deleted) && (params.id === props.profile || post.post_creator === props.profile)) && <Button onClick={()=>{handleDelete(index)}} className="float-right" variant="danger">Delete</Button>}
               {(post.post_deleted !== true) && <Card.Title>{post.post_title}</Card.Title>}

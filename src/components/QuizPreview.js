@@ -59,9 +59,7 @@ function QuizPreview() {
   const [quizCreator, setQuizCreator] = useState({});
 
   function resolveQuizRef() {
-    FirestoreBackend.getQuizFromString(params.id).then(async (result) => {
-      setQuiz(result);
-    }).catch(err => { console.log(err) });
+    return FirestoreBackend.getQuizFromString(params.id);
   }
 
   function resolveQuizCreatorRef() {
@@ -71,7 +69,11 @@ function QuizPreview() {
   }
 
   useEffect(() => {
-    resolveQuizRef();
+    let isMounted = true;   
+    resolveQuizRef().then((quiz)=> {
+      if(isMounted) setQuiz(quiz);
+    })
+    return () => {isMounted = false};
   }, [params]);
 
   useEffect(() => {
@@ -84,11 +86,13 @@ function QuizPreview() {
 
   const likes = quiz?.likes;
   const dislikes = quiz?.dislikes;
-  let noRatings = false;
+  let noRatings = true;
   let totalRatings = likes + dislikes;
-  if (totalRatings <= 0) {
+  if (totalRatings > 0) {
+    noRatings = false;
+  }
+  else{
     totalRatings = 1;
-    noRatings = true;
   }
   const likePercent = Math.floor((likes / totalRatings) * 100);
   const dislikePercent = Math.floor((dislikes / totalRatings) * 100);
@@ -110,7 +114,6 @@ function QuizPreview() {
   //     </Background>
   //   );
   // }
-  console.log(publishDate)
   return (
     <Background>
       <QuizReportPopup
@@ -149,12 +152,14 @@ function QuizPreview() {
                 now={likePercent}
                 key={1}
                 label={noRatings ? `` : `${likePercent}%`}
+                hidden={noRatings}
               />
               <ProgressBar
                 variant="danger"
                 now={dislikePercent}
                 key={2}
                 label={`${dislikePercent}%`}
+                hidden={noRatings}
               />
             </ProgressBar>
             <Stack direction="horizontal" gap={3}>

@@ -12,7 +12,6 @@ import * as FirestoreBackend from "../services/Firestore.js";
 
 function Navigation() {
   const userDetails = useAuthState();
-  const featuredQuiz = undefined;
   const loggedIn = userDetails.id !== "";
 
   let userIcon = defaultUserIcon;

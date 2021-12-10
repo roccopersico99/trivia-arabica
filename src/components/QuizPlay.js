@@ -155,7 +155,6 @@ function QuizPlay() {
   }
 
   if (quizQuestions.length === 0) {
-    console.log("hi")
     setupPlay()
     return (
       <Background>
@@ -173,6 +172,9 @@ function QuizPlay() {
       if (userDetails.id !== quizCreator) {
         updateMedals(earnedMedals);
         updateCompletion(earnedMedals);
+        if (prevEarnedMedals == 0) {
+          FirestoreBackend.addQuizPlay(params.id)
+        }
       }
       setQuizFinished(false)
     }

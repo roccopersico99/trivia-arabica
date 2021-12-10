@@ -152,11 +152,12 @@ export const setUserReddit = async (userid, redditurl) => {
   return docSnap
 }
 
-export const updateQuizRatings = async (quizID, likes, dislikes) => {
+export const updateQuizRatings = async (quizID, likes, dislikes, popular) => {
   //const quiz = await (await getQuiz(quizID)).data()
   const docSnap = await updateDoc(doc(db, "quizzes", quizID), {
     quiz_likes: likes,
     quiz_dislikes: dislikes,
+    popular: popular
   });
   return docSnap
 }
@@ -269,7 +270,9 @@ export const createQuiz = async (userId, quizTitle, quizDesc, imgPath, uid) => {
       publish_state: false,
       publish_date: Timestamp.now(), // for sorting unpublished quizzes, it will be overwritten on publish
       search_index: searchIndex,
-      search_title: quizTitle.toLowerCase()
+      search_title: quizTitle.toLowerCase(),
+      popular: false,
+      quiz_plays: 0
     });
   return docSnap;
 };
@@ -393,6 +396,22 @@ export const publishQuiz = async (quizPath) => {
 export const recentQuizzes = (limitResults = 10) => {
   const q = query(quizRef, orderBy("publish_date", "desc"), limit(limitResults));
   return getDocs(q)
+}
+
+export const mostPopularAllTimeQuizzes = (limitResults = 10) => {
+  const q = query(quizRef, 
+    where("publish_state", "==", true), 
+    where("popular", "==", true), 
+    orderBy("quiz_plays", "desc"), 
+    limit(limitResults));
+  return getDocs(q)
+}
+
+export const addQuizPlay = async (quizID) => {
+  const docSnap = db.collection('quizzes').doc(quizID)
+  const retreivedDoc = await getDoc(docSnap)
+  const plays = (retreivedDoc.data().quiz_plays + 1);
+  updateDoc(docSnap, {quiz_plays: plays})
 }
 
 export const searchQuizzes = (search = "", limitResults = 99, orderOn = "publish_date", order = "desc") => {
@@ -555,36 +574,38 @@ export const updateSearchIndex = async () => {
   const thing = getDocs(quizRef)
   thing.then((snapshot) => {
     snapshot.forEach((doc) => {
-      let quizTitle = doc.data().quiz_title
-      let title = quizTitle.toLowerCase()
-      let str = '';
-      let searchIndex = [''];
-      for (let i = 0; i < title.length; i++) {
-        // console.log(str[i]);
-        str = str.concat(title[i]);
-        // console.log(str);
-        searchIndex.push(str);
-        // console.log(searchIndex);
-      }
-      let strings = title.split(" ");
-      // console.log(strings)
-      for (let n = 1; n < strings.length; n++) {
-        let str = '';
-        let string = strings[n];
-        // console.log("hi " + string);
-        for (let i = 0; i < string.length; i++) {
-          // console.log(str[i]);
-          str = str.concat(string[i]);
-          // console.log(str);
-          searchIndex.push(str);
-          // console.log(searchIndex);
-        }
-      }
+      // let quizTitle = doc.data().quiz_title
+      // let title = quizTitle.toLowerCase()
+      // let str = '';
+      // let searchIndex = [''];
+      // for (let i = 0; i < title.length; i++) {
+      //   // console.log(str[i]);
+      //   str = str.concat(title[i]);
+      //   // console.log(str);
+      //   searchIndex.push(str);
+      //   // console.log(searchIndex);
+      // }
+      // let strings = title.split(" ");
+      // // console.log(strings)
+      // for (let n = 1; n < strings.length; n++) {
+      //   let str = '';
+      //   let string = strings[n];
+      //   // console.log("hi " + string);
+      //   for (let i = 0; i < string.length; i++) {
+      //     // console.log(str[i]);
+      //     str = str.concat(string[i]);
+      //     // console.log(str);
+      //     searchIndex.push(str);
+      //     // console.log(searchIndex);
+      //   }
+      // }
       updateDoc(doc.ref, {
         // search_title: title
         // search_index: searchIndex,
         // quiz_dislikes: 0,
         // quiz_likes: 0
+        popular: false,
+        quiz_plays: 0
       })
     })
   })
