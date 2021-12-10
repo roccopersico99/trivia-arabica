@@ -67,6 +67,7 @@ function QuizInitiator() {
 
   return (
     <Background>
+      <br></br>
       <h1> Quiz Creator </h1>
       <Stack style={{alignItems:"center", marginTop:"50px"}}>
       <InputGroup style={{width:"50%"}} className="mb-3">

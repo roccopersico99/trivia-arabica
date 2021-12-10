@@ -3,22 +3,27 @@ import * as FirestoreBackend from '../services/Firestore.js'
 // import QuizCard from './profile-components/QuizCard.js';
 import { useState } from 'react';
 import Quizzes from './profile-components/Quizzes.js'
+import { Container } from 'react-bootstrap';
 
 function RecentQuizzes() {
   const [loading, setLoading] = useState(false)
   const [recent, setRecent] = useState([]);
-  let quizzes = [];
   const getRecent = async () => {
     if (loading) {
       return;
     }
     FirestoreBackend.searchQuizzes("", 12).then(async (query_snapshot) => {
-      for (const quiz of query_snapshot.docs) {
+      let quizzes = [];
+      let counter = 12;
+      setLoading(true);
+      query_snapshot.docs.forEach(async (quiz, index) => {
         const data = await FirestoreBackend.resolveQuizRef(quiz.ref)
-        quizzes.push(data);
-        setLoading(true);
-        setRecent(recent => [...recent, data]);
-      }
+        quizzes[index] = data;
+        counter -= 1;
+        if(counter === 0)
+          setRecent(quizzes);
+      })
+      
     });
   };
   if (!loading) {
@@ -27,7 +32,11 @@ function RecentQuizzes() {
   } else {
     console.log(recent)
     return (
-      <Quizzes quizzes={recent}></Quizzes>
+      <Container>
+        <h2 align="left">Recent Quizzes</h2>
+        <Quizzes quizzes={recent}></Quizzes>
+      </Container>
+      
     )
   }
 }

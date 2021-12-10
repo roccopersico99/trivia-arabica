@@ -8,7 +8,8 @@ function Home() {
 
   return (
     <Background>
-      <p>Home</p>
+      <br></br>
+      <h1>Home</h1>
 
       {/* test buttons for backend functions */}
       {/* <BackendTestButtons></BackendTestButtons>  */}
