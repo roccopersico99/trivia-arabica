@@ -211,8 +211,7 @@ function Profile() {
               alt="Profile"
             ></Image>
             <Stack>
-              <div>{user.display_name}</div>
-              <Button style={{ width: "100px", margin: "auto", position: "relative" }}>Follow</Button>
+              <h4>{user.display_name}</h4>
               {userDetails.id !== params.id && <Button variant="danger" onClick={() => setModalShow(true)} style={{ width: "100px", margin: "auto", position: "relative" }}>Report</Button>}
             </Stack>
           </Col>

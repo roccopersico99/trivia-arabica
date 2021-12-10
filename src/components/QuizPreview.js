@@ -27,27 +27,28 @@ function QuizPreview() {
     let currentTime = new Date();
     try {
       window.Email.send({
-          SecureToken: "36297ca5-2675-43a0-82be-c6640938db00",
-          To: "rocco.persico@stonybrook.edu",
-          From: "roccopersico99@gmail.com",
-          Subject: "Quiz Reported: " + params.id,
-          Body: "A quiz has been reported on Trivia Arabica...<br />" +
-            "Reported Quiz: " +
-            params.id +
-            "<br />" +
-            "Reported by User: " +
-            sentBy +
-            "<br />" +
-            "Time of Report: " +
-            currentTime.toString() +
-            "<br />" +
-            "User Response: " +
-            res,
-        })
+        SecureToken: "36297ca5-2675-43a0-82be-c6640938db00",
+        To: "rocco.persico@stonybrook.edu",
+        From: "roccopersico99@gmail.com",
+        Subject: "Quiz Reported: " + params.id,
+        Body:
+          "A quiz has been reported on Trivia Arabica...<br />" +
+          "Reported Quiz: " +
+          params.id +
+          "<br />" +
+          "Reported by User: " +
+          sentBy +
+          "<br />" +
+          "Time of Report: " +
+          currentTime.toString() +
+          "<br />" +
+          "User Response: " +
+          res,
+      })
         .then((message) =>
-          message === "OK" ?
-          alert("Report Submitted. Thank you!") :
-          alert(message)
+          message === "OK"
+            ? alert("Report Submitted. Thank you!")
+            : alert(message)
         )
         .then(setModalShow(false));
     } catch (e) {
@@ -63,17 +64,23 @@ function QuizPreview() {
   }
 
   function resolveQuizCreatorRef() {
-    FirestoreBackend.resolveUserRef(quiz?.creator).then(async (result) => {
-      setQuizCreator(result);
-    }).catch(err => { console.log(err) });
+    FirestoreBackend.resolveUserRef(quiz?.creator)
+      .then(async (result) => {
+        setQuizCreator(result);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   useEffect(() => {
-    let isMounted = true;   
-    resolveQuizRef().then((quiz)=> {
-      if(isMounted) setQuiz(quiz);
-    })
-    return () => {isMounted = false};
+    let isMounted = true;
+    resolveQuizRef().then((quiz) => {
+      if (isMounted) setQuiz(quiz);
+    });
+    return () => {
+      isMounted = false;
+    };
   }, [params]);
 
   useEffect(() => {
@@ -90,8 +97,7 @@ function QuizPreview() {
   let totalRatings = likes + dislikes;
   if (totalRatings > 0) {
     noRatings = false;
-  }
-  else{
+  } else {
     totalRatings = 1;
   }
   const likePercent = Math.floor((likes / totalRatings) * 100);
@@ -125,26 +131,28 @@ function QuizPreview() {
         <Stack direction="horizontal" gap={3}>
           <Stack gap={3} style={{ width: "48%" }}>
             <br></br>
-              <Stack
-                onClick={() => history.push("/profile/"+quizCreator?.user_id)}
-                style={{cursor:"pointer"}}
-                gap={5}
-                direction="horizontal"
-                className="block-example border border-dark"
-              >
-                <Image
-                  style={{
-                    width: "100px",
-                    height: "100px",
-                    cursor:"pointer"
-                  }}
-                  src={quizCreator?.profile_image}
-                  alt="Profile Image"
-                  className="block-example border border-dark"
-                ></Image>
-                <h1 style={{cursor:"pointer"}}>{quizCreator?.display_name}</h1>
-              </Stack>
-            <h2>Uploaded: {publishDate === "Invalid Date" ? "Date Unknown" : publishDate}</h2>
+            <Stack
+              onClick={() => history.push("/profile/" + quizCreator?.user_id)}
+              style={{ cursor: "pointer" }}
+              gap={5}
+              direction="horizontal"
+              className="block-example border border-dark"
+            >
+              <Image
+                style={{
+                  height: "100px",
+                  width: "100px",
+                  borderRadius: "50%",
+                }}
+                src={quizCreator?.profile_image}
+                alt="Profile Image"
+              ></Image>
+              <h1 style={{ cursor: "pointer" }}>{quizCreator?.display_name}</h1>
+            </Stack>
+            <h2>
+              Uploaded:{" "}
+              {publishDate === "Invalid Date" ? "Date Unknown" : publishDate}
+            </h2>
             <h2>Rating</h2>
             <ProgressBar>
               <ProgressBar
@@ -166,7 +174,7 @@ function QuizPreview() {
               {userDetails.user !== "" && (
                 <Link
                   to={{ pathname: "/play/" + quiz?.id, state: quiz }}
-                  className="btn btn-success w-100 p-3"
+                  className="btn btn-success btn-lg w-100 p-3"
                 >
                   Play!
                 </Link>
@@ -174,7 +182,7 @@ function QuizPreview() {
               {userDetails.user === "" && (
                 <Link
                   to={{ pathname: "/play/" + quiz?.id, state: quiz }}
-                  className="btn btn-success w-50 p-3"
+                  className="btn btn-success btn-lg w-50 p-3"
                 >
                   Play!
                 </Link>
@@ -183,7 +191,7 @@ function QuizPreview() {
                 <Button
                   onClick={() => setModalShow(true)}
                   variant="danger"
-                  className="w-50 p-3"
+                  className="w-50 p-3 btn-lg"
                 >
                   Report
                 </Button>
@@ -200,12 +208,16 @@ function QuizPreview() {
               alt="Quiz Image"
               className="block-example border border-dark w-100 p-3"
             ></Image>
-            <h1 className="block-example border border-dark">{quiz?.title}</h1>
-            <p className="block-example border border-dark">
-              {quiz?.description === ""
-                ? "This is where the quiz description would go, IF IT EXISTED!"
-                : quiz?.description}
-            </p>
+            <Stack className="block-example border border-dark">
+              {" "}
+              <h1>{quiz?.title}</h1>
+              <br></br>
+              <p>
+                {quiz?.description === ""
+                  ? "No description"
+                  : quiz?.description}
+              </p>
+            </Stack>
           </Stack>
         </Stack>
       </Container>
