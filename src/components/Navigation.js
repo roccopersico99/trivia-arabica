@@ -135,14 +135,14 @@ function Navigation() {
                   style={userIconStyle}
                 />
               </Navbar.Brand>
-              <Navbar.Brand style={{cursor:"pointer"}} onClick={() => setModalShow(true)}>
+              {/*<Navbar.Brand style={{cursor:"pointer"}} onClick={() => setModalShow(true)}>
                 <img
                   src={settingsIcon}
                   width="50"
                   height="50"
                   alt="settings icon"
                 ></img>
-              </Navbar.Brand>
+              </Navbar.Brand>*/}
             </Nav>
           </Navbar.Collapse>
         </Container>
