@@ -7,7 +7,6 @@ import {
   Button,
   Image,
   ProgressBar,
-  Spinner,
 } from "react-bootstrap";
 import { Link, useParams, useHistory } from "react-router-dom";
 import * as FirestoreBackend from "../services/Firestore";

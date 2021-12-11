@@ -1,20 +1,6 @@
 import { Modal, Form, Button } from "react-bootstrap"
-import { useState } from "react"
-import Darkmode from 'darkmode-js';
 
 function SettingsPopup(props) {
-
-  const options = {
-    bottom: '64px',
-    right: 'unset',
-    left: '32px',
-    saveInCookies: false,
-    label: '🌓',
-    autoMatchOsTheme: true
-  }
-  
-  const darkmode = new Darkmode(options);
-  darkmode.showWidget();
 
     return (
       <Modal

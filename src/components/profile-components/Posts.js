@@ -1,5 +1,4 @@
 import { Container, ListGroup, Card, Button, Form } from "react-bootstrap";
-import { FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
 import { useRef, useState, useEffect } from 'react'
 import { useParams } from "react-router-dom";
 import * as FirestoreBackend from "../../services/Firestore.js";
@@ -8,7 +7,6 @@ function Posts(props) {
 
   const [editing, setEditing] = useState(false)
   const [posts, setPosts] = useState([]);
-  const [isLiked, setIsLiked] = useState(0);
 
   useEffect(() => {
     getPosts()
@@ -17,14 +15,6 @@ function Posts(props) {
   const params = useParams();
   const titleAreaRef = useRef();
   const textAreaRef = useRef();
-
-  async function handleLike() {
-
-  }
-
-  async function handleDislike() {
-
-  }
 
   function handleDelete(index) {
     console.log(index);
