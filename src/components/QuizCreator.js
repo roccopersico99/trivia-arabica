@@ -280,20 +280,19 @@ function QuizCreator() {
         </div>
         <hr></hr>
         <Stack direction="horizontal">
-          <Stack style={{ width: "40%" }}>
-            <Stack direction="horizontal" gap={4} style={{ marginLeft: "auto", marginRight: "auto" }}>
-              <Button variant="outline-success" onClick={handleAddQuestion}>Add Question</Button>
-              <Button variant="outline-danger" onClick={handleRemoveQuestion}>Remove Question</Button>
-            </Stack>
-            <br></br>
+          <Stack gap={3} style={{ width: "40%" }}>
             <ListGroup as="ol" numbered>
               {quizQuestions.map((question, index) => {
                 return (<ListGroup.Item key={index} className="list-group-item" as="li" active={isActive(index)} action onClick={() => setActive(index)}>{question.question_title}</ListGroup.Item>)
               })}
             </ListGroup>
+            <Stack direction="horizontal" gap={4} style={{ marginLeft: "auto", marginRight: "auto" }}>
+              <Button variant="outline-success" onClick={handleAddQuestion}>Add Question</Button>
+              <Button variant="outline-danger" onClick={handleRemoveQuestion}>Remove Question</Button>
+            </Stack>
           </Stack>
           <Stack style={{ width: "2%" }}></Stack>
-          <Stack gap={3} style={{ width: "70%" }}>
+          <Stack gap={2} style={{ width: "70%" }}>
             {inputgroup}
           </Stack>
         </Stack>

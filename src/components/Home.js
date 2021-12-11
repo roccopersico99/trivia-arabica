@@ -1,8 +1,7 @@
 import '../App.css';
 import React from 'react'
 import Background from './Background.js'
-import RecentQuizzes from './RecentQuizzes';
-import AllTimePopularQuizzes from './AllTimePopularQuizzes';
+import HomePageQuizzes from './HomePageQuizzes';
 
 function Home() {
 
@@ -12,8 +11,8 @@ function Home() {
       <h1>Home</h1>
 
       {/* test buttons for backend functions */}
-      <RecentQuizzes></RecentQuizzes>
-      <AllTimePopularQuizzes></AllTimePopularQuizzes>
+      <HomePageQuizzes title={"Recent Quizzes"}></HomePageQuizzes>
+      <HomePageQuizzes title={"All Time Popular Quizzes"}></HomePageQuizzes>
 
     </Background>
   );

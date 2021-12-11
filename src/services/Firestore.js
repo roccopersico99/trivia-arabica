@@ -1,6 +1,6 @@
 import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
-import { collection, query, where, getDocs, getDoc, limit, updateDoc, orderBy, doc, setDoc, addDoc, startAt } from "firebase/firestore";
+import { collection, query, where, getDocs, getDoc, limit, updateDoc, orderBy, doc, setDoc, addDoc, startAfter } from "firebase/firestore";
 import { Timestamp } from "@firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import "firebase/firestore";
@@ -398,12 +398,13 @@ export const recentQuizzes = (limitResults = 10) => {
   return getDocs(q)
 }
 
-export const mostPopularAllTimeQuizzes = (limitResults = 10) => {
+export const mostPopularAllTimeQuizzes = (limitResults, startAfterElement) => {
   const q = query(quizRef, 
     where("publish_state", "==", true), 
     where("popular", "==", true), 
     orderBy("quiz_plays", "desc"), 
-    limit(limitResults));
+    limit(limitResults),
+    startAfter(startAfterElement));
   return getDocs(q)
 }
 
@@ -414,13 +415,14 @@ export const addQuizPlay = async (quizID) => {
   updateDoc(docSnap, {quiz_plays: plays})
 }
 
-export const searchQuizzes = (search = "", limitResults = 99, orderOn = "publish_date", order = "desc") => {
+export const searchQuizzes = (search = "", limitResults = 99, orderOn = "publish_date", order = "desc", startAfterElement = "") => {
   search = search.toLowerCase();
   const q = query(quizRef,
     where('search_index', 'array-contains', search),
     where('publish_state', '==', true),
     orderBy(orderOn, order),
-    limit(limitResults));
+    limit(limitResults),
+    startAfter(startAfterElement));
   return getDocs(q);
 }
 
