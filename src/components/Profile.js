@@ -31,6 +31,7 @@ function Profile() {
 
   const [about, setAbout] = useState("");
   const [name, setName] = useState("");
+  const [medals, setMedals] = useState(0);
   const [profileImage, setProfileImage] = useState("");
   const [profileId, setProfileID] = useState("")
   const [platforms, setPlatforms] = useState([]);
@@ -130,7 +131,7 @@ function Profile() {
     // quizzes_created: quizzes,
     // quizzes_taken: quizzes,
     platforms: [],
-    medals: [],
+    medals: medals,
     featured_quiz: featuredQuiz,
     featured_post: [{
       post_title: "SAMPLE",
@@ -150,6 +151,7 @@ function Profile() {
       setProfileID(params.id)
       setAbout(query_snapshot.data().user_bio);
       setName(query_snapshot.data().display_name);
+      setMedals(query_snapshot.data().medals);
       setProfileImage(query_snapshot.data().profile_image);
       setYoutube(query_snapshot.data().youtubeURL);
       setFacebook(query_snapshot.data().facebookURL);
@@ -200,21 +202,23 @@ function Profile() {
       </div>
       <Container>
         <Row>
-          <Col lg="3" style={{ position: "relative", top: "-25px" }}>
+          <Stack direction="horizontal">
             <Image
               style={{
-                height: "150px",
-                width: "150px",
-                borderRadius: "50%"
+                height: "125px",
+                width: "125px",
+                borderRadius: "50%",
+                margin: "10px",
               }}
               src={user.profile_picture}
               alt="Profile"
             ></Image>
             <Stack>
-              <h4>{user.display_name}</h4>
-              {userDetails.id !== params.id && <Button variant="danger" onClick={() => setModalShow(true)} style={{ width: "100px", margin: "auto", position: "relative" }}>Report</Button>}
+              <h2 style={{marginTop: "40px", marginRight:"525px"}}>{user.display_name}</h2>
+              <h5 style={{marginRight:"550px"}}>{"🏅 " + user.medals + " medals"}</h5>
             </Stack>
-          </Col>
+            {userDetails.id !== params.id && <Button variant="outline-danger" onClick={() => setModalShow(true)} style={{maxWidth: "50px", width: "50px", height: "50px", marginBottom: "70px"}}>🚩</Button>}
+          </Stack>
         </Row>
 
         <Row>

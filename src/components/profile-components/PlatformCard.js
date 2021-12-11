@@ -1,5 +1,5 @@
-import { Col, Card, Button, Row } from "react-bootstrap";
-import { Link, useHistory } from "react-router-dom";
+import { Col, Card } from "react-bootstrap";
+import { useHistory } from "react-router-dom";
 import React, { useState } from "react";
 import * as FirestoreBackend from "../../services/Firestore";
 

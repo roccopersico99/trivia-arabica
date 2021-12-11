@@ -1,6 +1,5 @@
-import { Button, Container, Col, Row, Card } from "react-bootstrap";
+import { Container, Col, Row, Card } from "react-bootstrap";
 import QuizCard from "./QuizCard.js";
-import { useEffect } from 'react';
 
 function ProfileHome(props) {
   return (

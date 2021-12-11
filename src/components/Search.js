@@ -196,22 +196,6 @@ function Search(props) {
     }
   }
 
-
-
-  function sortQuizzes() {
-    if (quizzes.length > 0) {
-      quizzes.sort(function(a, b) {
-        let x = a.title.toLowerCase();
-        let y = b.title.toLowerCase();
-        if (x < y) { return -1; }
-        if (x > y) { return 1; }
-        return 0;
-      });
-      //console.log(quizzes)
-      setQuizzes(quizzes)
-    }
-  }
-
   // trim out empty spots in quizzes array created from filtering
   const trimQuizzes = quizzes.filter(n => n);
   // chunk quizzes into arrays of 6 elements
