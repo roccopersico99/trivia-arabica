@@ -183,10 +183,10 @@ function QuizCard(props) {
         ></Card.Img>
         <div style={{minHeight:"100px", height:"100px", maxHeight:"100px", overflow:"hidden"}}>
           {!props.quiz?.publish_state && <h5> (Unpublished) </h5>}
-          {!props.quiz?.publish_state && <Card.Text >{props.quiz?.description}</Card.Text>}
-          {props.quiz?.publish_state && <Card.Text style={{marginTop:"20px"}}>{props.quiz?.description}</Card.Text>}
+          {!props.quiz?.publish_state && <Card.Text style={{maxHeight: "70px", overflow:"hidden"}}>{props.quiz?.description}</Card.Text>}
+          {props.quiz?.publish_state && <Card.Text style={{marginTop:"5px", maxHeight: "70px", overflow:"hidden"}}>{props.quiz?.description}</Card.Text>}
         </div>
-        <Row>
+        <Row style={{marginBottom:"10px"}}>
           <Link
             to={{ pathname: "/preview/" + props.quiz?.id, state: props.quiz }}
             className="btn btn-primary mx-auto"
@@ -195,9 +195,12 @@ function QuizCard(props) {
             Preview
           </Link>
         </Row>
-        <br/>
-        {(!props.canRemove && !props.quiz?.allowed && userDetails.user !== "") && <Button onClick={handleLike} variant="light" disabled={isLiked === 1}><FaThumbsUp /></Button>}
-        {(!props.canRemove && !props.quiz?.allowed && userDetails.user !== "") && <Button onClick={handleDislike} variant="light" disabled={isLiked === 2}><FaThumbsDown /></Button>}
+        {(!props.canRemove && !props.quiz?.allowed && userDetails.user !== "") &&
+        <div style={{marginBottom:"5px"}}>
+          <Button onClick={handleLike} variant="light" disabled={isLiked === 1}><FaThumbsUp /></Button>
+          <Button onClick={handleDislike} variant="light" disabled={isLiked === 2}><FaThumbsDown /></Button>
+        </div>
+      }
       </Card.Body>
     </Card>
   );
