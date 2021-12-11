@@ -11,9 +11,6 @@ import { Button, Modal, Form, InputGroup, FormControl } from 'react-bootstrap';
 import { getAuth } from "@firebase/auth";
 
 
-// ------------- MODAL Popup for Creation
-
-
 // ------------- Platforms
 
 function Platforms() {

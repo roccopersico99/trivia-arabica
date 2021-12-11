@@ -12,6 +12,7 @@ import Discover from "./components/Discover";
 import Platforms from "./components/Platforms";
 import Platform from "./components/Platform";
 
+
 export default function App() {
   return (
     <div className="App">

@@ -1,6 +1,6 @@
 import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
-import { collection, query, where, getDocs, getDoc, limit, updateDoc, orderBy, doc, setDoc, addDoc, startAfter } from "firebase/firestore";
+import { collection, query, where, getDocs, getDoc, limit, updateDoc, orderBy, doc, setDoc, addDoc, deleteDoc, startAfter } from "firebase/firestore";
 import { Timestamp } from "@firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import "firebase/firestore";
@@ -357,16 +357,16 @@ export const getQuizQuestions = async (quizPath) => {
   return docSnap;
 }
 
-export const setQuizQuestion = (quizPath, questionNum, imageURL, questionTitle, choices) => {
-  return db.collection('quizzes').doc(quizPath).collection('quiz_questions').doc(questionNum)
-    .set({
-      question_title: questionTitle,
-      question_image: imageURL,
-      question_choices: choices,
-      number: parseInt(questionNum),
-      num_choices: choices.length
-    });
+export const updateQuizQuestion = async (quizid, questionnum, updatedData) => {
+  const docRef = await db.collection('quizzes').doc(quizid).collection('quiz_questions').doc(questionnum + "")
+  return updateDoc(docRef, updatedData);
+}
+
+export const createQuizQuestion = async (quizid, questionnum, updatedData) => {
+  const docRef = await db.collection('quizzes').doc(quizid).collection('quiz_questions').doc(questionnum + "")
+  return setDoc(docRef, updatedData);;
 };
+
 
 export const deleteQuestion = async (quizPath, questionNum) => {
   const res = await db.collection('quizzes').doc(quizPath).collection('quiz_questions').doc(questionNum).delete();
@@ -399,10 +399,10 @@ export const recentQuizzes = (limitResults = 10) => {
 }
 
 export const mostPopularAllTimeQuizzes = (limitResults, startAfterElement) => {
-  const q = query(quizRef, 
-    where("publish_state", "==", true), 
-    where("popular", "==", true), 
-    orderBy("quiz_plays", "desc"), 
+  const q = query(quizRef,
+    where("publish_state", "==", true),
+    where("popular", "==", true),
+    orderBy("quiz_plays", "desc"),
     limit(limitResults),
     startAfter(startAfterElement));
   return getDocs(q)
@@ -412,7 +412,7 @@ export const addQuizPlay = async (quizID) => {
   const docSnap = db.collection('quizzes').doc(quizID)
   const retreivedDoc = await getDoc(docSnap)
   const plays = (retreivedDoc.data().quiz_plays + 1);
-  updateDoc(docSnap, {quiz_plays: plays})
+  updateDoc(docSnap, { quiz_plays: plays })
 }
 
 export const searchQuizzes = (search = "", limitResults = 99, orderOn = "publish_date", order = "desc", startAfterElement = "") => {

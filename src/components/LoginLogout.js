@@ -23,9 +23,9 @@ export default function LoginLogout() {
     // Sign in with credential from the Google user.
     const auth = getAuth();
     await signInWithCredential(auth, credential);
-    console.log(auth.currentUser);
-    
-    console.log("Logged in as: ", res.profileObj);
+    //console.log(auth.currentUser);
+
+    //console.log("Logged in as: ", res.profileObj);
     dispatch({ type: 'LOGIN_SUCCESS', payload: res.profileObj })
 
     refreshTokenSetup(res);
@@ -46,7 +46,7 @@ export default function LoginLogout() {
         }
         //update existing accounts to have a uid field
         const uid = query_snapshot.data().uid;
-        if (uid !== auth.currentUser.uid){
+        if (uid !== auth.currentUser.uid) {
           const data = { uid: auth.currentUser.uid };
           FirestoreBackend.updateData(userRef, data);
         }
