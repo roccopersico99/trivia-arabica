@@ -180,6 +180,11 @@ function QuizCreator() {
   }
 
   async function saveClicked() {
+    if (quizPlatformID === undefined) {
+      await FirestoreBackend.updateData(quizRef, { platform_id: null, platform_name: null });
+    } else {
+      await FirestoreBackend.updateData(quizRef, { platform_id: quizPlatformID, platform_name: quizPlatformName });
+    }
     //re-build question from choices state, answers state, and questionText state
     for (let x = 0; x < quizQuestions.length; x++) {
       let chs = [];
@@ -202,16 +207,11 @@ function QuizCreator() {
 
       FirestoreBackend.setQuizQuestion(params.id, "" + (quizQuestions[x].number), "", quizQuestions[x].question_title, chs)
     }
-    if (quizPlatformID === undefined) {
-      await FirestoreBackend.updateData(quizRef, { platform_id: null, platform_name: null });
-    } else {
-      await FirestoreBackend.updateData(quizRef, { platform_id: quizPlatformID, platform_name: quizPlatformName });
-    }
-
     setupCreator(false)
   }
 
   async function publish() {
+    await saveClicked()
     //todo check there is at least one(maybe more for minimum?) question
     //todo check that all questions have question text and choices filled in
     await FirestoreBackend.publishQuiz(params.id);
