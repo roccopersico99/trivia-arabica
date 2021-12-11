@@ -34,10 +34,9 @@ function QuizCard(props) {
   function checkPopular(ratings) {
     //check if more than 5 votes and at least 80% like/dislike ratio
     const totalRatings = ratings[0] + ratings[1];
-    if(totalRatings >=5 && ratings[0]/totalRatings >= 0.8){
+    if (totalRatings >= 5 && ratings[0] / totalRatings >= 0.8) {
       return true
-    }
-    else{
+    } else {
       return false
     }
   }
@@ -160,7 +159,7 @@ function QuizCard(props) {
   ));
 
   return (
-    <Card as={Col} style={{ margin: "10px", maxWidth:"fit-content" }}>
+    <Card as={Col} style={{ margin: "10px", maxWidth:"calc(100% / 3)" }}>
       {(props.canRemove || props.quiz?.allowed) &&
       <Dropdown style={{position:"absolute", right:"0"}}>
         <Dropdown.Toggle as={CustomToggle} id="dropdown-custom-components">
