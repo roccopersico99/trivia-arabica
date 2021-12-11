@@ -357,6 +357,17 @@ export const getQuizQuestions = async (quizPath) => {
   return docSnap;
 }
 
+export const setQuizQuestion = (quizPath, questionNum, imageURL, questionTitle, choices) => {
+  return db.collection('quizzes').doc(quizPath).collection('quiz_questions').doc(questionNum)
+    .set({
+      question_title: questionTitle,
+      question_image: imageURL,
+      question_choices: choices,
+      number: parseInt(questionNum),
+      num_choices: choices.length
+    });
+};
+
 export const updateQuizQuestion = async (quizid, questionnum, updatedData) => {
   const docRef = await db.collection('quizzes').doc(quizid).collection('quiz_questions').doc(questionnum + "")
   return updateDoc(docRef, updatedData);
