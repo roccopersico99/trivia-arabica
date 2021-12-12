@@ -292,8 +292,8 @@ export const deleteQuiz = async (quizPath) => {
   });
 }
 
-export const createUserPagePost = async (posterId, userpageId, postTitle, postText, uid) => {
-  const docSnap = await db.collection('users').doc(userpageId).collection("user_posts").add({
+export const createPagePost = async (col1, col2, posterId, userpageId, postTitle, postText, uid) => {
+  const docSnap = await db.collection(col1).doc(userpageId).collection(col2).add({
     post_creator: posterId,
     uid: uid,
     post_title: postTitle,
@@ -306,9 +306,23 @@ export const createUserPagePost = async (posterId, userpageId, postTitle, postTe
   return docSnap;
 };
 
-export const getUserPagePosts = (userPageId) => {
-  const docSnap = db.collection('users').doc(userPageId).collection('user_posts').orderBy('publish_date', 'desc').get()
-  return docSnap
+export const getPagePosts = (page, PageId, limitResults, startAfterElement="") => {
+  // const docSnap = db.collection('users').doc(userPageId).collection('user_posts').orderBy('publish_date', 'desc').get()
+  // return docSnap
+  let postref;
+  switch(page) {
+    case "profile":
+      postref = collection(doc(userRef, PageId), 'user_posts')
+      break;
+    case "preview":
+      postref = collection(doc(quizRef, PageId), 'quiz_posts')
+      break;
+  } 
+  const q = query(postref,
+    orderBy('publish_date', 'desc'),
+    limit(limitResults),
+    startAfter(startAfterElement));
+  return getDocs(q)
 }
 
 export const deleteUserPagePost = (userPageId, postId) => {
