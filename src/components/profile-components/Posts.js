@@ -29,7 +29,7 @@ function Posts(props) {
   const handleDelete = async (index) => {
     console.log(index);
     console.log(posts[index].ref);
-    FirestoreBackend.deleteUserPagePost(params.id, posts[index].ref);
+    FirestoreBackend.deletePagePost(page, params.id, posts[index].ref);
     let postlist = [...posts]
     postlist[index].post_deleted = true
     postlist[index].post_title = ""

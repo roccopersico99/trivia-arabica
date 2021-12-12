@@ -325,12 +325,23 @@ export const getPagePosts = (page, PageId, limitResults, startAfterElement="") =
   return getDocs(q)
 }
 
-export const deleteUserPagePost = (userPageId, postId) => {
-  return updateData(db.collection('users').doc(userPageId).collection('user_posts').doc(postId), {
-    post_deleted: true,
-    post_title: "",
-    post_text: ""
-  })
+export const deletePagePost = (page, userPageId, postId) => {
+  switch(page) {
+    case "profile":
+      updateData(db.collection('users').doc(userPageId).collection('user_posts').doc(postId), {
+        post_deleted: true,
+        post_title: "",
+        post_text: ""
+      })
+      break;
+    case "preview":
+      updateData(db.collection('quizzes').doc(userPageId).collection('quiz_posts').doc(postId), {
+        post_deleted: true,
+        post_title: "",
+        post_text: ""
+      })
+      break;
+  }
 }
 
 export const resolveUserRef = async (userRef) => {
