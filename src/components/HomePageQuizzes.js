@@ -24,7 +24,7 @@ function HomePageQuizzes(props) {
   };
 
   function searchRecent(numQuizzes, startAfterQuiz="") {
-    FirestoreBackend.searchQuizzes("", numQuizzes, "publish_date", "desc", startAfterQuiz).then(async (query_snapshot) => processSearch(query_snapshot));
+    FirestoreBackend.recentQuizzes(numQuizzes, startAfterQuiz).then(async (query_snapshot) => processSearch(query_snapshot));
   }
 
   function searchAllTimePopular(numQuizzes, startAfterQuiz="") {
@@ -42,7 +42,6 @@ function HomePageQuizzes(props) {
       const data = await FirestoreBackend.resolveQuizRef(quiz.ref)
       quizzes[index] = data;
       if(index == query_snapshot.docs.length-1) {
-        console.log(quiz)
         setLastQuizSnapshot(quiz)
       }
       counter -= 1;
@@ -66,7 +65,7 @@ function HomePageQuizzes(props) {
     getquizList();
     return (
       <Container>
-        <h2 align="left">quizList Quizzes</h2>
+        <h2 align="left">{props.title}</h2>
         <Spinner style={{ marginTop: "100px" }} animation="border" role="status"></Spinner>
       </Container>
     );

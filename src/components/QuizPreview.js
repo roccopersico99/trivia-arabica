@@ -12,6 +12,7 @@ import { Link, useParams, useHistory } from "react-router-dom";
 import * as FirestoreBackend from "../services/Firestore";
 import { useAuthState } from "../Context/index";
 import QuizReportPopup from "./QuizReportPopup.js";
+import Posts from "./profile-components/Posts";
 
 function QuizPreview() {
   const userDetails = useAuthState();
@@ -219,6 +220,7 @@ function QuizPreview() {
             </Stack>
           </Stack>
         </Stack>
+        <Posts profile={userDetails.id}></Posts>
       </Container>
     </Background>
   );

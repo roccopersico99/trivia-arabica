@@ -49,7 +49,7 @@ function QuizPlay() {
   }
 
   const getQuiz = async () => {
-    if (loading || userDetails.id === undefined || userDetails.id === "") {
+    if (loading) {
       return;
     }
     setLoading(true)
@@ -90,106 +90,107 @@ function QuizPlay() {
     // let ans = [qz.question_choices.choice1.correct, qz.question_choices.choice2.correct, qz.question_choices.choice3.correct, qz.question_choices.choice4.correct]
     setAnswers(ans)
 
-    let prevMedals = await FirestoreBackend.getUserCompletedQuizMedals(userDetails.id, params.id);
-    if (prevMedals.exists) {
-      setPrevEarnedMedals(prevMedals.data().earnedMedals);
-    }
-    let medals = FirestoreBackend.getUserMedalCount(userDetails.id);
-    medals.then((count) => {
-      setUserMedals(count);
-    })
-
-
-    if (img === "") {
-      setLoading(false)
-    }
-
-  }
-
-  const setupPlay = async () => {
-    getQuiz();
-  }
-
-  function isActive(n) {
-    if (selectedChoice === n)
-      return true;
-    return false;
-  }
-
-  function handleSubmitChoice() {
-    //console.log("user submitted choice #", selectedChoice)
-    if (selectedChoice === -1) {
-      //console.log("Please select a choice before submitting!")
-    } else if (answers[selectedChoice]) {
-      //console.log("Correct!")
-      setNumCorrect(numCorrect + 1);
-      setSelectedChoice(-1)
-      nextQuestion()
-    } else {
-      //console.log("Incorrect!")
-      setSelectedChoice(-1)
-      nextQuestion()
-    }
-  }
-
-  async function nextQuestion() {
-    setQuestionImage("")
-    setLoading(true)
-
-    console.log("moving to next question...")
-    setCurrQuestionNum(currQuestionNum + 1)
-    if (currQuestionNum < quizQuestions.length) {
-      //console.log("now on question #", currQuestionNum)
-      let img = await FirestoreBackend.getImageURL(quizQuestions[currQuestionNum].question_image)
-      console.log(img)
-      setQuestionImage(img);
-      let qz = quizQuestions[currQuestionNum];
-      let chs = [];
-      let ans = [];
-      for (let i = 0; i < qz.question_choices.length; i++) {
-        chs[i] = qz.question_choices[i].text;
-        ans[i] = qz.question_choices[i].correct;
+    if (userDetails.id !== "") {
+      let prevMedals = await FirestoreBackend.getUserCompletedQuizMedals(userDetails.id, params.id);
+      if (prevMedals.exists) {
+        setPrevEarnedMedals(prevMedals.data().earnedMedals);
       }
-      setChoices(chs)
-      setAnswers(ans)
+      let medals = FirestoreBackend.getUserMedalCount(userDetails.id);
+      medals.then((count) => {
+        setUserMedals(count);
+      })
+
+
       if (img === "") {
         setLoading(false)
       }
 
-    } else {
-      //console.log("reached last question!")
-      setQuizFinished(true)
     }
 
-  }
+    const setupPlay = async () => {
+      getQuiz();
+    }
 
-  if (quizQuestions.length === 0) {
-    setupPlay()
-    return (
-      <Background>
+    function isActive(n) {
+      if (selectedChoice === n)
+        return true;
+      return false;
+    }
+
+    function handleSubmitChoice() {
+      //console.log("user submitted choice #", selectedChoice)
+      if (selectedChoice === -1) {
+        //console.log("Please select a choice before submitting!")
+      } else if (answers[selectedChoice]) {
+        //console.log("Correct!")
+        setNumCorrect(numCorrect + 1);
+        setSelectedChoice(-1)
+        nextQuestion()
+      } else {
+        //console.log("Incorrect!")
+        setSelectedChoice(-1)
+        nextQuestion()
+      }
+    }
+
+    async function nextQuestion() {
+      setQuestionImage("")
+      setLoading(true)
+
+      console.log("moving to next question...")
+      setCurrQuestionNum(currQuestionNum + 1)
+      if (currQuestionNum < quizQuestions.length) {
+        //console.log("now on question #", currQuestionNum)
+        let img = await FirestoreBackend.getImageURL(quizQuestions[currQuestionNum].question_image)
+        console.log(img)
+        setQuestionImage(img);
+        let qz = quizQuestions[currQuestionNum];
+        let chs = [];
+        let ans = [];
+        for (let i = 0; i < qz.question_choices.length; i++) {
+          chs[i] = qz.question_choices[i].text;
+          ans[i] = qz.question_choices[i].correct;
+        }
+        setChoices(chs)
+        setAnswers(ans)
+        if (img === "") {
+          setLoading(false)
+        }
+
+      } else {
+        //console.log("reached last question!")
+        setQuizFinished(true)
+      }
+
+    }
+
+    if (quizQuestions.length === 0) {
+      setupPlay()
+      return (
+        <Background>
               <Spinner style={{marginTop:"100px"}} animation="border" role="status">
                 <span className="visually-hidden">Loading...</span>
               </Spinner>
             </Background>
-    )
-  } else if (currQuestionNum > quizQuestions.length) {
-    let earnedMedals = (Math.floor((numCorrect / quizQuestions.length) * 100) - prevEarnedMedals);
-    if (earnedMedals < 0 || userDetails.id === quizCreator) {
-      earnedMedals = 0;
-    }
-    if (quizFinished) {
-      if (userDetails.id !== quizCreator) {
-        updateMedals(earnedMedals);
-        updateCompletion(earnedMedals);
-        if (prevEarnedMedals === 0) {
-          FirestoreBackend.addQuizPlay(params.id)
-        }
+      )
+    } else if (currQuestionNum > quizQuestions.length) {
+      let earnedMedals = (Math.floor((numCorrect / quizQuestions.length) * 100) - prevEarnedMedals);
+      if (earnedMedals < 0 || userDetails.id === quizCreator) {
+        earnedMedals = 0;
       }
-      setQuizFinished(false)
-    }
-    //console.log(earnedMedals)
-    return (
-      <Background>
+      if (quizFinished) {
+        if (userDetails.id !== quizCreator) {
+          updateMedals(earnedMedals);
+          updateCompletion(earnedMedals);
+          if (prevEarnedMedals === 0) {
+            FirestoreBackend.addQuizPlay(params.id)
+          }
+        }
+        setQuizFinished(false)
+      }
+      //console.log(earnedMedals)
+      return (
+        <Background>
                 <br></br>
                 <h1>Quiz Completed!</h1>
                 <h2>You scored {numCorrect}/{quizQuestions.length}</h2>
@@ -211,14 +212,14 @@ function QuizPlay() {
                 <br></br>
                 <Link to="/" className="btn btn-outline-danger">Exit Quiz</Link>
             </Background>
-    )
-  }
-  const listchoices = choices.map((thing, index) => (
-    <ListGroup.Item key={index} as="li" active={isActive(index)} action onClick={() => setSelectedChoice(index)}>{thing}</ListGroup.Item>
-  ))
-  //console.log(listchoices);
-  return (
-    <Background>
+      )
+    }
+    const listchoices = choices.map((thing, index) => (
+      <ListGroup.Item key={index} as="li" active={isActive(index)} action onClick={() => setSelectedChoice(index)}>{thing}</ListGroup.Item>
+    ))
+    //console.log(listchoices);
+    return (
+      <Background>
         <Stack>
                 <br></br>
                 <h1>{quizTitle}</h1>
@@ -252,7 +253,7 @@ function QuizPlay() {
                 <Button style={{width:"15%", margin:"auto"}} variant="outline-success" onClick={handleSubmitChoice}>Submit</Button>
         </Stack>
         </Background>
-  );
-}
+    );
+  }
 
-export default QuizPlay;
+  export default QuizPlay;
