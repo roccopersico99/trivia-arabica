@@ -50,7 +50,7 @@ function QuizPlay() {
   }
 
   const getQuiz = async () => {
-    if (loading || userDetails.id === undefined || userDetails.id === "") {
+    if (loading) {
       return;
     }
     setLoading(true)
@@ -90,7 +90,8 @@ function QuizPlay() {
     // let ans = [qz.question_choices.choice1.correct, qz.question_choices.choice2.correct, qz.question_choices.choice3.correct, qz.question_choices.choice4.correct]
     setAnswers(ans)
 
-    let prevMedals = await FirestoreBackend.getUserCompletedQuizMedals(userDetails.id, params.id);
+    if (userDetails.id !== ""){
+      let prevMedals = await FirestoreBackend.getUserCompletedQuizMedals(userDetails.id, params.id);
     if (prevMedals.exists) {
       setPrevEarnedMedals(prevMedals.data().earnedMedals);
     }
@@ -98,9 +99,7 @@ function QuizPlay() {
     medals.then((count) => {
       setUserMedals(count);
     })
-
-
-
+    }
     setLoading(false)
   }
 

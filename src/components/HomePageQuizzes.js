@@ -24,7 +24,7 @@ function HomePageQuizzes(props) {
   };
 
   function searchRecent(numQuizzes, startAfterQuiz="") {
-    FirestoreBackend.searchQuizzes("", numQuizzes, "publish_date", "desc", startAfterQuiz).then(async (query_snapshot) => processSearch(query_snapshot));
+    FirestoreBackend.recentQuizzes(numQuizzes, startAfterQuiz).then(async (query_snapshot) => processSearch(query_snapshot));
   }
 
   function searchAllTimePopular(numQuizzes, startAfterQuiz="") {

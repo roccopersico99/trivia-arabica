@@ -105,7 +105,6 @@ function Posts(props) {
     getPostList();
     return (
       <Container>
-        <h2 align="left">{props.title}</h2>
         <Spinner style={{ marginTop: "100px" }} animation="border" role="status"></Spinner>
       </Container>
     );
@@ -153,7 +152,8 @@ function Posts(props) {
           </Card>
       ))) : 
       <div>
-        {page === "profile" && <div>Make your first post!</div>}
+        {(page === "profile" && params.id === props.profile) && <div>Make your first post!</div>}
+        {(page === "profile" && params.id !== props.profile) && <div>There are no posts on this user's profile.</div>}
         {page === "preview" && <div>Be the first to post on this quiz!</div>}
       </div>}
       

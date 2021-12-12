@@ -429,8 +429,8 @@ export const publishQuiz = async (quizPath) => {
   await batch.commit();
 }
 
-export const recentQuizzes = (limitResults = 10) => {
-  const q = query(quizRef, orderBy("publish_date", "desc"), limit(limitResults));
+export const recentQuizzes = (limitResults, startAfterElement) => {
+  const q = query(quizRef, where("publish_state", "==", true), orderBy("publish_date", "desc"), limit(limitResults), startAfter(startAfterElement));
   return getDocs(q)
 }
 
@@ -451,14 +451,12 @@ export const addQuizPlay = async (quizID) => {
   updateDoc(docSnap, { quiz_plays: plays })
 }
 
-export const searchQuizzes = (search = "", limitResults = 99, orderOn = "publish_date", order = "desc", startAfterElement = "") => {
+export const searchQuizzes = (search = "", orderOn = "publish_date", order = "desc", startAfterElement = "") => {
   search = search.toLowerCase();
   const q = query(quizRef,
     where('search_index', 'array-contains', search),
     where('publish_state', '==', true),
-    orderBy(orderOn, order),
-    limit(limitResults),
-    startAfter(startAfterElement));
+    orderBy(orderOn, order));
   return getDocs(q);
 }
 

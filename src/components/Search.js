@@ -97,10 +97,9 @@ function Search(props) {
     }
   }
 
-  const searchDiscover = async (searchQuery, orderOn, order, startOn = "") => {
-    //TODO: ACTUALLY FILTER COMPLETED/NOT COMPLETED QUIZZES
+  const searchDiscover = async (searchQuery, orderOn, order) => {
     setNoSearch(false);
-    const results = FirestoreBackend.searchQuizzes(searchQuery, 30, orderOn, order, startOn);
+    const results = FirestoreBackend.searchQuizzes(searchQuery, orderOn, order);
     results.then(async (query_snapshot) => {
       if (query_snapshot.empty) {
         //console.log("nothing found!");
