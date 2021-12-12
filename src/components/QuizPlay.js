@@ -106,91 +106,92 @@ function QuizPlay() {
       }
 
     }
+  }
 
-    const setupPlay = async () => {
-      getQuiz();
+  const setupPlay = async () => {
+    getQuiz();
+  }
+
+  function isActive(n) {
+    if (selectedChoice === n)
+      return true;
+    return false;
+  }
+
+  function handleSubmitChoice() {
+    //console.log("user submitted choice #", selectedChoice)
+    if (selectedChoice === -1) {
+      //console.log("Please select a choice before submitting!")
+    } else if (answers[selectedChoice]) {
+      //console.log("Correct!")
+      setNumCorrect(numCorrect + 1);
+      setSelectedChoice(-1)
+      nextQuestion()
+    } else {
+      //console.log("Incorrect!")
+      setSelectedChoice(-1)
+      nextQuestion()
     }
+  }
 
-    function isActive(n) {
-      if (selectedChoice === n)
-        return true;
-      return false;
-    }
+  async function nextQuestion() {
+    setQuestionImage("")
+    setLoading(true)
 
-    function handleSubmitChoice() {
-      //console.log("user submitted choice #", selectedChoice)
-      if (selectedChoice === -1) {
-        //console.log("Please select a choice before submitting!")
-      } else if (answers[selectedChoice]) {
-        //console.log("Correct!")
-        setNumCorrect(numCorrect + 1);
-        setSelectedChoice(-1)
-        nextQuestion()
-      } else {
-        //console.log("Incorrect!")
-        setSelectedChoice(-1)
-        nextQuestion()
+    console.log("moving to next question...")
+    setCurrQuestionNum(currQuestionNum + 1)
+    if (currQuestionNum < quizQuestions.length) {
+      //console.log("now on question #", currQuestionNum)
+      let img = await FirestoreBackend.getImageURL(quizQuestions[currQuestionNum].question_image)
+      console.log(img)
+      setQuestionImage(img);
+      let qz = quizQuestions[currQuestionNum];
+      let chs = [];
+      let ans = [];
+      for (let i = 0; i < qz.question_choices.length; i++) {
+        chs[i] = qz.question_choices[i].text;
+        ans[i] = qz.question_choices[i].correct;
       }
+      setChoices(chs)
+      setAnswers(ans)
+      if (img === "") {
+        setLoading(false)
+      }
+
+    } else {
+      //console.log("reached last question!")
+      setQuizFinished(true)
     }
 
-    async function nextQuestion() {
-      setQuestionImage("")
-      setLoading(true)
+  }
 
-      console.log("moving to next question...")
-      setCurrQuestionNum(currQuestionNum + 1)
-      if (currQuestionNum < quizQuestions.length) {
-        //console.log("now on question #", currQuestionNum)
-        let img = await FirestoreBackend.getImageURL(quizQuestions[currQuestionNum].question_image)
-        console.log(img)
-        setQuestionImage(img);
-        let qz = quizQuestions[currQuestionNum];
-        let chs = [];
-        let ans = [];
-        for (let i = 0; i < qz.question_choices.length; i++) {
-          chs[i] = qz.question_choices[i].text;
-          ans[i] = qz.question_choices[i].correct;
+  if (quizQuestions.length === 0) {
+    setupPlay()
+    return (
+      <Background>
+          <Spinner style={{marginTop:"100px"}} animation="border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
+        </Background>
+    )
+  } else if (currQuestionNum > quizQuestions.length) {
+    let earnedMedals = (Math.floor((numCorrect / quizQuestions.length) * 100) - prevEarnedMedals);
+    if (earnedMedals < 0 || userDetails.id === quizCreator) {
+      earnedMedals = 0;
+    }
+    if (quizFinished) {
+      if (userDetails.id !== quizCreator) {
+        updateMedals(earnedMedals);
+        updateCompletion(earnedMedals);
+        if (prevEarnedMedals === 0) {
+          FirestoreBackend.addQuizPlay(params.id)
         }
-        setChoices(chs)
-        setAnswers(ans)
-        if (img === "") {
-          setLoading(false)
-        }
-
-      } else {
-        //console.log("reached last question!")
-        setQuizFinished(true)
       }
-
+      setQuizFinished(false)
     }
-
-    if (quizQuestions.length === 0) {
-      setupPlay()
-      return (
-        <Background>
-              <Spinner style={{marginTop:"100px"}} animation="border" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </Spinner>
-            </Background>
-      )
-    } else if (currQuestionNum > quizQuestions.length) {
-      let earnedMedals = (Math.floor((numCorrect / quizQuestions.length) * 100) - prevEarnedMedals);
-      if (earnedMedals < 0 || userDetails.id === quizCreator) {
-        earnedMedals = 0;
-      }
-      if (quizFinished) {
-        if (userDetails.id !== quizCreator) {
-          updateMedals(earnedMedals);
-          updateCompletion(earnedMedals);
-          if (prevEarnedMedals === 0) {
-            FirestoreBackend.addQuizPlay(params.id)
-          }
-        }
-        setQuizFinished(false)
-      }
-      //console.log(earnedMedals)
-      return (
-        <Background>
+    //console.log(earnedMedals)
+    return (
+      <Background>
                 <br></br>
                 <h1>Quiz Completed!</h1>
                 <h2>You scored {numCorrect}/{quizQuestions.length}</h2>
@@ -212,14 +213,14 @@ function QuizPlay() {
                 <br></br>
                 <Link to="/" className="btn btn-outline-danger">Exit Quiz</Link>
             </Background>
-      )
-    }
-    const listchoices = choices.map((thing, index) => (
-      <ListGroup.Item key={index} as="li" active={isActive(index)} action onClick={() => setSelectedChoice(index)}>{thing}</ListGroup.Item>
-    ))
-    //console.log(listchoices);
-    return (
-      <Background>
+    )
+  }
+  const listchoices = choices.map((thing, index) => (
+    <ListGroup.Item key={index} as="li" active={isActive(index)} action onClick={() => setSelectedChoice(index)}>{thing}</ListGroup.Item>
+  ))
+  //console.log(listchoices);
+  return (
+    <Background>
         <Stack>
                 <br></br>
                 <h1>{quizTitle}</h1>
@@ -253,7 +254,7 @@ function QuizPlay() {
                 <Button style={{width:"15%", margin:"auto"}} variant="outline-success" onClick={handleSubmitChoice}>Submit</Button>
         </Stack>
         </Background>
-    );
-  }
+  );
+}
 
-  export default QuizPlay;
+export default QuizPlay;
