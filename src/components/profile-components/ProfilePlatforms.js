@@ -1,11 +1,11 @@
-import { Container} from "react-bootstrap";
+import { Container } from "react-bootstrap";
 import PlatformCard from "./PlatformCard.js";
 
-function ProfilePlatforms({ platforms }) {
+function ProfilePlatforms(props) {
   return (
     <Container style={{display: "flex", flexWrap:"wrap"}}>
-      {platforms.map((platform, index) => (
-          <PlatformCard platform={platform} key={index}></PlatformCard>
+      {props.platforms.map((platform, index) => (
+          <PlatformCard setFeaturedPlatformProp={props.setFeaturedPlatformProp}  featuredPlatform={props.featuredPlatform} userDetails={props.userDetails} ownProfile={props.ownProfile} platform={platform} key={index}></PlatformCard>
       ))}
     </Container>
   );

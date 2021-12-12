@@ -1,28 +1,31 @@
 import { Container, Col, Row, Card } from "react-bootstrap";
 import QuizCard from "./QuizCard.js";
+import PlatformCard from "./PlatformCard.js"
 
 function ProfileHome(props) {
   return (
     <Container>
-      <Row>
+      <Row style={{justifyContent:"center"}}>
         <h3> Featured </h3>
+        {props.featuredQuiz !== undefined &&
         <QuizCard
+          heading={"Featured Quiz"}
           as={Col}
           quiz={props.featuredQuiz}
         ></QuizCard>
+        }
 
-        <Card
+        {props.featuredPlatform !== undefined && <PlatformCard
+          heading={"Featured Platform"}
           as={Col}
-          style={{
-            margin: "50px",
-            position: "relative",
-            top: "50%",
-          }}
-        >
-          <Card.Body>
-            <Card.Title>heya</Card.Title>
-          </Card.Body>
-        </Card>
+          platform={props.featuredPlatform}
+          >
+        </PlatformCard>
+        }
+
+        {props.noFeatured &&
+          <h2> User has no featured content. </h2>
+        }
       </Row>
     </Container>
   );

@@ -160,6 +160,7 @@ function QuizCard(props) {
 
   return (
     <Card as={Col} style={{ margin: "10px", maxWidth:"calc(100% / 3)" }}>
+    <h3>{props.heading}</h3>
       {(props.canRemove || props.quiz?.allowed) &&
       <Dropdown style={{position:"absolute", right:"0"}}>
         <Dropdown.Toggle as={CustomToggle} id="dropdown-custom-components">
@@ -189,9 +190,9 @@ function QuizCard(props) {
           <Link
             to={{ pathname: "/preview/" + props.quiz?.id, state: props.quiz }}
             className="btn btn-primary mx-auto"
-            style={{width: '100px'}}
+            style={{width: '125px'}}
           >
-            Preview
+            Preview Quiz
           </Link>
         </Row>
         {(!props.canRemove && !props.quiz?.allowed && userDetails.user !== "") &&

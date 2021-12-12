@@ -557,6 +557,13 @@ export const createPlatform = async (name, owner_id, owner_name, uid) => {
   }
 }
 
+export const setUserFeaturedPlatform = async (userid, platid) => {
+  const docSnap = await updateDoc(doc(db, "users", userid), {
+    featured_platform: platid,
+  });
+  return docSnap
+}
+
 export const addSearchIndexToPlatform = async (ref, name) => {
   //platform does not exist
   let title = name.toLowerCase()
@@ -611,6 +618,11 @@ export const addPlatformToUser = async (userid, platformid, name, ownership) => 
 
 export const getUserPlatforms = async (userid) => {
   const docSnap = await db.collection('users').doc(userid).collection("userplatforms").get();
+  return docSnap;
+}
+
+export const getUserPlatform = async (userid, platid) => {
+  const docSnap = await db.collection('users').doc(userid).collection("userplatforms").doc(platid).get();
   return docSnap;
 }
 

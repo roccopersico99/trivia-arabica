@@ -43,6 +43,8 @@ function Profile() {
   const [reddit, setReddit] = useState("")
 
   const [featuredQuiz, setFeaturedQuiz] = useState();
+  const [featuredPlatform, setFeaturedPlatform] = useState();
+  const [noFeatured, setNoFeatured] = useState(false);
 
   const [modalShow, setModalShow] = useState(false);
 
@@ -91,7 +93,14 @@ function Profile() {
 
   function handleChangeFeatured(q) {
     setFeaturedQuiz(q);
+    setNoFeatured(false)
     handleTabChange('home');
+  }
+
+  const setFeaturedPlatformProp = (platform) => {
+    setFeaturedPlatform(platform)
+    setNoFeatured(false)
+    handleTabChange('home')
   }
 
   function handleReport(res) {
@@ -164,9 +173,16 @@ function Profile() {
         platformArray.push(pform)
       })
       setPlatforms(platformArray)
+
       const resolvedQuiz = await FirestoreBackend.getQuizFromString(query_snapshot.data().featured_quiz);
       setFeaturedQuiz(resolvedQuiz)
 
+      const resolvedPlat = await FirestoreBackend.getUserPlatform(params.id, query_snapshot.data().featured_platform)
+      console.log(resolvedPlat.data())
+      setFeaturedPlatform(resolvedPlat)
+      if (resolvedQuiz === undefined && resolvedPlat === undefined) {
+        setNoFeatured(true)
+      }
     });
   }
 
@@ -226,8 +242,9 @@ function Profile() {
             <Tabs activeKey={currentTab} onSelect={handleTabChange}>
               <Tab eventKey="home" title="Home">
                 <Home
+                  noFeatured={noFeatured}
                   featuredQuiz={featuredQuiz}
-                  featured_post={user.featured_post}
+                  featuredPlatform={featuredPlatform}
                 ></Home>
               </Tab>
               <Tab eventKey="quizzes" title="Quizzes">
@@ -237,7 +254,7 @@ function Profile() {
                 <Posts profile={userDetails.id} uid={auth.currentUser?.uid}></Posts>
               </Tab>
               <Tab eventKey="platforms" title="Platforms">
-                <ProfilePlatforms platforms={platforms}></ProfilePlatforms>
+                <ProfilePlatforms setFeaturedPlatformProp={setFeaturedPlatformProp} featuredPlatform={featuredPlatform} userDetails={userDetails} ownProfile={userDetails.id === params.id} platforms={platforms}></ProfilePlatforms>
               </Tab>
               <Tab eventKey="about" title="About">
                 <About setAboutText={setAboutText}

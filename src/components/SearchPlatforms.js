@@ -152,24 +152,6 @@ function SearchPlatforms(props) {
                 <Button onClick={handleSearch} variant="secondary" id="button-addon1">🔍</Button>
                 <FormControl onKeyDown={handleKeyDown} onChange={searchChanged} aria-label="Example text with button addon" placeholder="Enter search terms..." aria-describedby="basic-addon1" />
             </InputGroup>
-            {profile && <DropdownButton variant="outline-secondary" onSelect={handleFilterChange} title={completedFilter + " "} id="input-group-dropdown-1">
-                <Dropdown.Item eventKey="All Quizzes">All Quizzes</Dropdown.Item>
-                <Dropdown.Item eventKey="Published">Published</Dropdown.Item>
-                <Dropdown.Item eventKey="Not Published">Not Published</Dropdown.Item>
-            </DropdownButton>}
-            {!profile && <DropdownButton variant="outline-secondary" onSelect={handleFilterChange} title={completedFilter + " "} id="input-group-dropdown-1">
-                <Dropdown.Item eventKey="All Quizzes">All Quizzes</Dropdown.Item>
-                <Dropdown.Item eventKey="Completed">Completed</Dropdown.Item>
-                <Dropdown.Item eventKey="Not Completed">Not Completed</Dropdown.Item>
-            </DropdownButton>}
-            <DropdownButton variant="outline-secondary" onSelect={handleSortByChange} title={orderBy + " "} id="input-group-dropdown-3">
-                <Dropdown.Item eventKey="Publish Date">Order by Publish Date</Dropdown.Item>
-                <Dropdown.Item eventKey="Quiz Name">Order by Quiz Name</Dropdown.Item>
-            </DropdownButton>
-            <DropdownButton variant="outline-secondary" onSelect={handleSortChange} title={searchFilter + " "} id="input-group-dropdown-2">
-                <Dropdown.Item eventKey="Ascending">Ascending</Dropdown.Item>
-                <Dropdown.Item eventKey="Descending">Descending</Dropdown.Item>
-            </DropdownButton>
         </Stack>
         <br></br>
         {(platforms.length===0 && emptySearch===false) && <Spinner style={{ marginTop: "100px" }} animation="border" role="status"></Spinner>}
