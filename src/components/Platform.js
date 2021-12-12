@@ -44,6 +44,11 @@ function Platform() {
       setOwner(true)
       populateApplicants()
       populateMembers()
+
+      let req = await FirestoreBackend.getPlatform(params.id)
+      if (req.data().search_index === undefined) {
+        await FirestoreBackend.addSearchIndexToPlatform(req.ref, req.data().name)
+      }
     } else {
       setOwner(false)
       if (userDetails.id !== undefined && userDetails.id !== "") {

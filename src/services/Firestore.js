@@ -21,6 +21,7 @@ const firebaseApp = firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const userRef = collection(db, 'users')
 const quizRef = collection(db, 'quizzes')
+const platRef = collection(db, 'platforms')
 const auth = getAuth();
 
 //FIREBASE FIRESTORE
@@ -320,18 +321,18 @@ export const createPagePost = async (col1, col2, posterId, userpageId, postTitle
   return docSnap;
 };
 
-export const getPagePosts = (page, PageId, limitResults, startAfterElement="") => {
+export const getPagePosts = (page, PageId, limitResults, startAfterElement = "") => {
   // const docSnap = db.collection('users').doc(userPageId).collection('user_posts').orderBy('publish_date', 'desc').get()
   // return docSnap
   let postref;
-  switch(page) {
+  switch (page) {
     case "profile":
       postref = collection(doc(userRef, PageId), 'user_posts')
       break;
     case "preview":
       postref = collection(doc(quizRef, PageId), 'quiz_posts')
       break;
-  } 
+  }
   const q = query(postref,
     orderBy('publish_date', 'desc'),
     limit(limitResults),
@@ -340,7 +341,7 @@ export const getPagePosts = (page, PageId, limitResults, startAfterElement="") =
 }
 
 export const deletePagePost = (page, userPageId, postId) => {
-  switch(page) {
+  switch (page) {
     case "profile":
       updateData(db.collection('users').doc(userPageId).collection('user_posts').doc(postId), {
         post_deleted: true,
@@ -474,6 +475,12 @@ export const searchQuizzes = (search = "", orderOn = "publish_date", order = "de
   return getDocs(q);
 }
 
+export const searchPlatforms = async (search = "") => {
+  search = search.toLowerCase();
+  const q = query(platRef, where('search_index', 'array-contains', search))
+  return await getDocs(q);
+}
+
 export const searchUserQuizzes = (userid, uid, isowner, search = "", limitResults = 99, orderOn = "publish_date", order = "desc") => {
   search = search.toLowerCase();
 
@@ -521,15 +528,76 @@ export const createPlatform = async (name, owner_id, owner_name, uid) => {
     return false
   } else {
     //platform does not exist, create it!
+    let title = name.toLowerCase()
+    let searchIndex = [''];
+    let subs = title.split(" ")
+
+    for (let i = 0; i < subs.length; i++) {
+      let str = '';
+      for (let j = 0; j < subs[i].length; j++) {
+
+        str = str.concat(subs[i][j]);
+
+        if (!searchIndex.includes(str)) {
+          searchIndex.push(str)
+        }
+      }
+    }
     const docRef = await addDoc(collection(db, "platforms"), {
       name: name,
       owner_id: owner_id,
       uid: uid,
       owner_name: owner_name,
       imageURL: "",
-      description: ""
+      description: "",
+      search_index: searchIndex,
+      search_title: name.toLowerCase(),
     });
     return docRef
+  }
+}
+
+export const addSearchIndexToPlatform = async (ref, name) => {
+  //platform does not exist
+  let title = name.toLowerCase()
+  let searchIndex = [''];
+  let subs = title.split(" ")
+
+  for (let i = 0; i < subs.length; i++) {
+    let str = '';
+    for (let j = 0; j < subs[i].length; j++) {
+
+      str = str.concat(subs[i][j]);
+
+      if (!searchIndex.includes(str)) {
+        searchIndex.push(str)
+      }
+    }
+  }
+
+  const docRef = await updateDoc(ref, {
+    search_index: searchIndex,
+    search_title: name.toLowerCase(),
+  });
+  return docRef
+}
+
+export const resolvePlatformRef = async (platRef) => {
+  const snapshot = await getDoc(platRef);
+  if (snapshot.data() === undefined) {
+    return undefined
+  }
+  const imageUrl = await getImageURL(snapshot.data().imageURL);
+
+  return {
+    id: snapshot.id,
+    ref: snapshot.ref,
+    description: snapshot.data().description,
+    imageURL: imageUrl,
+    name: snapshot.data().name,
+    owner_id: snapshot.data().owner_id,
+    owner_name: snapshot.data().owner_name,
+    uid: snapshot.data().uid
   }
 }
 

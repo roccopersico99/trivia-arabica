@@ -7,6 +7,7 @@ import { useAuthState } from "../Context/index";
 import * as FirestoreBackend from "../services/Firestore.js";
 
 import Background from "./Background.js";
+import SearchPlatforms from './SearchPlatforms.js'
 import { Button, Modal, Form, InputGroup, FormControl } from 'react-bootstrap';
 import { getAuth } from "@firebase/auth";
 
@@ -59,7 +60,9 @@ function Platforms() {
       Create Platform
       </Button>
       }
-
+      <br/>
+      <hr/>
+      <SearchPlatforms/>
       <Modal
         show={modalShow}
         onHide={() => setModalShow(false)}

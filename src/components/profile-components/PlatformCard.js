@@ -17,7 +17,7 @@ function PlatformCard(props) {
   }
 
   return (
-    <div onClick={platClicked} style={{cursor:"pointer", width:"fit-content", margin:"5px"}} >
+    <div onClick={platClicked} style={{cursor:"pointer", maxWidth:"calc(95% / 3)", height:"100%", margin:"5px"}} >
     <Card as={Col} style={{ margin: "10px" }}>
       <Card.Body>
         <Card.Title>{props.platform?.data().name}</Card.Title>
