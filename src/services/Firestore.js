@@ -532,6 +532,12 @@ export const createPlatform = async (name, owner_id, owner_name, uid) => {
     let searchIndex = [''];
     let subs = title.split(" ")
 
+    let string = '';
+    for (let i = 0; i < title.length; i++) {
+      string = string.concat(title[i]);
+      searchIndex.push(string);
+    }
+  
     for (let i = 0; i < subs.length; i++) {
       let str = '';
       for (let j = 0; j < subs[i].length; j++) {
@@ -569,6 +575,12 @@ export const addSearchIndexToPlatform = async (ref, name) => {
   let title = name.toLowerCase()
   let searchIndex = [''];
   let subs = title.split(" ")
+
+  let string = '';
+  for (let i = 0; i < title.length; i++) {
+    string = string.concat(title[i]);
+    searchIndex.push(string);
+  }
 
   for (let i = 0; i < subs.length; i++) {
     let str = '';
