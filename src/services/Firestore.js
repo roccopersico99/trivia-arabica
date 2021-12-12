@@ -247,11 +247,25 @@ export const createQuiz = async (userId, quizTitle, quizDesc, imgPath, uid) => {
   let str = '';
   let searchIndex = [''];
   for (let i = 0; i < title.length; i++) {
-
+    // console.log(str[i]);
     str = str.concat(title[i]);
-
+    // console.log(str);
     searchIndex.push(str);
-
+    // console.log(searchIndex);
+  }
+  let strings = title.split(" ");
+  // console.log(strings)
+  for (let n = 1; n < strings.length; n++) {
+    let str = '';
+    let string = strings[n];
+    // console.log("hi " + string);
+    for (let i = 0; i < string.length; i++) {
+      // console.log(str[i]);
+      str = str.concat(string[i]);
+      // console.log(str);
+      searchIndex.push(str);
+      console.log(searchIndex);
+    }
   }
   const docSnap = await db.collection('quizzes')
     .add({
@@ -610,38 +624,39 @@ export const updateSearchIndex = async () => {
   const thing = getDocs(quizRef)
   thing.then((snapshot) => {
     snapshot.forEach((doc) => {
-      // let quizTitle = doc.data().quiz_title
-      // let title = quizTitle.toLowerCase()
-      // let str = '';
-      // let searchIndex = [''];
-      // for (let i = 0; i < title.length; i++) {
-      //   // console.log(str[i]);
-      //   str = str.concat(title[i]);
-      //   // console.log(str);
-      //   searchIndex.push(str);
-      //   // console.log(searchIndex);
-      // }
-      // let strings = title.split(" ");
-      // // console.log(strings)
-      // for (let n = 1; n < strings.length; n++) {
-      //   let str = '';
-      //   let string = strings[n];
-      //   // console.log("hi " + string);
-      //   for (let i = 0; i < string.length; i++) {
-      //     // console.log(str[i]);
-      //     str = str.concat(string[i]);
-      //     // console.log(str);
-      //     searchIndex.push(str);
-      //     // console.log(searchIndex);
-      //   }
-      // }
+      console.log(doc.data())
+      let quizTitle = doc.data().quiz_title
+      let title = quizTitle.toLowerCase()
+      let str = '';
+      let searchIndex = [''];
+      for (let i = 0; i < title.length; i++) {
+        // console.log(str[i]);
+        str = str.concat(title[i]);
+        // console.log(str);
+        searchIndex.push(str);
+        // console.log(searchIndex);
+      }
+      let strings = title.split(" ");
+      // console.log(strings)
+      for (let n = 1; n < strings.length; n++) {
+        let str = '';
+        let string = strings[n];
+        // console.log("hi " + string);
+        for (let i = 0; i < string.length; i++) {
+          // console.log(str[i]);
+          str = str.concat(string[i]);
+          // console.log(str);
+          searchIndex.push(str);
+          console.log(searchIndex);
+        }
+      }
       updateDoc(doc.ref, {
         // search_title: title
-        // search_index: searchIndex,
+        search_index: searchIndex,
         // quiz_dislikes: 0,
         // quiz_likes: 0
-        popular: false,
-        quiz_plays: 0
+        // popular: false,
+        // quiz_plays: 0
       })
     })
   })
