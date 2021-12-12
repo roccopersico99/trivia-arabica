@@ -326,7 +326,7 @@ export const getPagePosts = (page, PageId, limitResults, startAfterElement="") =
 }
 
 export const deleteUserPagePost = (userPageId, postId) => {
-  updateData(db.collection('users').doc(userPageId).collection('user_posts').doc(postId), {
+  return updateData(db.collection('users').doc(userPageId).collection('user_posts').doc(postId), {
     post_deleted: true,
     post_title: "",
     post_text: ""

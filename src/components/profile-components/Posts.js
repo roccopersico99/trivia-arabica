@@ -1,4 +1,4 @@
-import { Container, ListGroup, Card, Button, Form } from "react-bootstrap";
+import { Container, ListGroup, Card, Button, Form, Spinner } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useRef, useState, useEffect } from 'react'
 import { useParams } from "react-router-dom";
@@ -6,26 +6,35 @@ import * as FirestoreBackend from "../../services/Firestore.js";
 import { getAuth } from "firebase/auth";
 
 function Posts(props) {
+  let saveFlag = false
   const auth = getAuth()
+  const [loading, setLoading] = useState(false)
   const [editing, setEditing] = useState(false)
   const [posts, setPosts] = useState([]);
   const [lastPostSnapshot, setLastPostSnapshot] = useState("")
   const [noMorePosts, setNoMorePosts] = useState(false)
   const page = window.location.pathname.split("/")[1];
 
-  useEffect(() => {
+  const getPostList = async () => {
+    if (loading) {
+      return;
+    }
     getPosts()
-  }, [])
+  };
 
   const params = useParams();
   const titleAreaRef = useRef();
   const textAreaRef = useRef();
 
-  function handleDelete(index) {
+  const handleDelete = async (index) => {
     console.log(index);
     console.log(posts[index].ref);
     FirestoreBackend.deleteUserPagePost(params.id, posts[index].ref);
-    getPosts();
+    let postlist = [...posts]
+    postlist[index].post_deleted = true
+    postlist[index].post_title = ""
+    postlist[index].post_text = ""
+    setPosts(postlist);
   }
 
   const getPosts = async () => {
@@ -38,6 +47,7 @@ function Posts(props) {
     if(counter < 6){
       setNoMorePosts(true);
     }
+    setLoading(true)
     doc_snapshot.docs.forEach(async (doc, index) => {
       const poster_name = await FirestoreBackend.getUser(doc.data().post_creator);
       const postdata = doc.data();
@@ -49,7 +59,13 @@ function Posts(props) {
       }
       counter -= 1;
       if(counter === 0){
-        setPosts(posts.concat(postlist))
+        if(saveFlag){
+          setPosts(postlist)
+          saveFlag = false;
+        }
+        else {
+          setPosts(posts.concat(postlist))
+        }
       }
     })
   }
@@ -67,7 +83,7 @@ function Posts(props) {
   const savePressed = () => {
     //console.log(textAreaRef.current.value)
     console.log(props.profile)
-    switch(page) {
+    switch (page) {
       case "profile":
         FirestoreBackend.createPagePost("users", "user_posts", props.profile, params.id, titleAreaRef.current.value, textAreaRef.current.value, auth.currentUser.uid)
         break;
@@ -78,10 +94,23 @@ function Posts(props) {
     setEditing(false)
     titleAreaRef.current.value = ""
     textAreaRef.current.value = ""
+    saveFlag = true;
+    setPosts([])
+    setLastPostSnapshot("")
     getPosts()
   }
 
-  return (
+
+  if (!loading) {
+    getPostList();
+    return (
+      <Container>
+        <h2 align="left">{props.title}</h2>
+        <Spinner style={{ marginTop: "100px" }} animation="border" role="status"></Spinner>
+      </Container>
+    );
+  }
+  else return (
     <Container>
       <div>
         <br>
