@@ -2,7 +2,6 @@ import '../App.css';
 import React, { useState } from 'react'
 import Background from './Background.js'
 import { useParams, Link } from "react-router-dom";
-import { default as defQuestionImage } from "../shark_nose.jpg";
 import { Stack, Image, Button, ListGroup, Spinner } from 'react-bootstrap';
 import * as FirestoreBackend from '../services/Firestore.js'
 import { useAuthState } from '../Context';
@@ -28,7 +27,7 @@ function QuizPlay() {
 
   const [loading, setLoading] = useState(false) //janky: while loading elements, setting state will retrigger loading of the elements again... so we use this state to stop that
 
-  const [questionImage, setQuestionImage] = useState(defQuestionImage)
+  const [questionImage, setQuestionImage] = useState(undefined)
   const [choices, setChoices] = useState([]);
   const [answers, setAnswers] = useState([]); //boolean values for if a choice is correct or not
 
@@ -74,10 +73,11 @@ function QuizPlay() {
     setQuizQuestions(quizQuests);
     setupQuestionNames(quizQuests);
 
-    console.log('quizQuets');
-    console.log(quizQuests);
+    //console.log('quizQuets');
+    //console.log(quizQuests);
+    let img = await FirestoreBackend.getImageURL(quizQuests[0].question_image)
+    setQuestionImage(img);
 
-    quizQuests[0].question_image = "" ? setQuestionImage(defQuestionImage) : setQuestionImage(quizQuests[0].question_image);
     let qz = quizQuests[0]
     let chs = [];
     let ans = [];
@@ -100,8 +100,10 @@ function QuizPlay() {
     })
 
 
+    if (img === "") {
+      setLoading(false)
+    }
 
-    setLoading(false)
   }
 
   const setupPlay = async () => {
@@ -115,28 +117,32 @@ function QuizPlay() {
   }
 
   function handleSubmitChoice() {
-    console.log("user submitted choice #", selectedChoice)
+    //console.log("user submitted choice #", selectedChoice)
     if (selectedChoice === -1) {
-      console.log("Please select a choice before submitting!")
+      //console.log("Please select a choice before submitting!")
     } else if (answers[selectedChoice]) {
-      console.log("Correct!")
+      //console.log("Correct!")
       setNumCorrect(numCorrect + 1);
       setSelectedChoice(-1)
       nextQuestion()
     } else {
-      console.log("Incorrect!")
+      //console.log("Incorrect!")
       setSelectedChoice(-1)
       nextQuestion()
     }
   }
 
-  function nextQuestion() {
+  async function nextQuestion() {
+    setQuestionImage("")
     setLoading(true)
+
     console.log("moving to next question...")
     setCurrQuestionNum(currQuestionNum + 1)
     if (currQuestionNum < quizQuestions.length) {
-      console.log("now on question #", currQuestionNum)
-      setQuestionImage(quizQuestions[currQuestionNum].questionImage);
+      //console.log("now on question #", currQuestionNum)
+      let img = await FirestoreBackend.getImageURL(quizQuestions[currQuestionNum].question_image)
+      console.log(img)
+      setQuestionImage(img);
       let qz = quizQuestions[currQuestionNum];
       let chs = [];
       let ans = [];
@@ -146,9 +152,12 @@ function QuizPlay() {
       }
       setChoices(chs)
       setAnswers(ans)
-      setLoading(false)
+      if (img === "") {
+        setLoading(false)
+      }
+
     } else {
-      console.log("reached last question!")
+      //console.log("reached last question!")
       setQuizFinished(true)
     }
 
@@ -178,7 +187,7 @@ function QuizPlay() {
       }
       setQuizFinished(false)
     }
-    console.log(earnedMedals)
+    //console.log(earnedMedals)
     return (
       <Background>
                 <br></br>
@@ -207,7 +216,7 @@ function QuizPlay() {
   const listchoices = choices.map((thing, index) => (
     <ListGroup.Item key={index} as="li" active={isActive(index)} action onClick={() => setSelectedChoice(index)}>{thing}</ListGroup.Item>
   ))
-  console.log(listchoices);
+  //console.log(listchoices);
   return (
     <Background>
         <Stack>
@@ -216,6 +225,7 @@ function QuizPlay() {
                 <h4>Time remaining - 00:00</h4>
                 <h2>Question {currQuestionNum}/{quizQuestions.length}</h2>
                 <br></br>
+                { (questionImage !== undefined && questionImage !== "") &&
                 <Image
                     style={{
                         display: "block",
@@ -224,8 +234,11 @@ function QuizPlay() {
                         height: "300px",
                     }}
                     src={questionImage}
-                    alt="Question Image">
+                    alt="Question Image"
+                    onLoad={() => setLoading(false)}
+                    >
                 </Image>
+                }
                 <br></br>
                 <h2>{questionNames[currQuestionNum-1]}</h2>
                 <br></br>

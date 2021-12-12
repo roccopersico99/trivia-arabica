@@ -36,7 +36,7 @@ function QuizEditor() {
 
   //000 question states
   const [questions, setQuestions] = useState([])
-
+  const [questionImage, setQuestionImage] = useState("")
   //000 user states
   const [platforms, setPlatforms] = useState([])
 
@@ -66,6 +66,8 @@ function QuizEditor() {
     setActiveQuestion(questionArray[activeQuestionNum])
     setCurrentQuestionTitle(questionArray[activeQuestionNum].question_title)
     setCurrentQuestionChoices(questionArray[activeQuestionNum].question_choices)
+    setQuestionImage(await FirestoreBackend.getImageURL(questionArray[activeQuestionNum].question_image))
+
 
     const quizReq = await FirestoreBackend.getQuiz(params.id);
     setQuizRef(quizReq.ref)
@@ -102,6 +104,18 @@ function QuizEditor() {
     }
     FirestoreBackend.updateData(quizRef, { quiz_image: imgPath });
     setQuizImage(URL.createObjectURL(event.target.files[0]))
+  }
+
+  const onImgQuestionSelected = async (event) => {
+    let imgPath = ""
+    if (event.target.files[0] !== null && event.target.files[0] !== undefined) {
+      const imgSnap = await FirestoreBackend.uploadFile(userDetails.id, params.id + "/" + activeQuestion.number, event.target.files[0])
+      imgPath = imgSnap.ref.fullPath
+    }
+    await FirestoreBackend.updateQuizQuestion(params.id, activeQuestion.number, {
+      question_image: imgPath
+    })
+    setQuestionImage(URL.createObjectURL(event.target.files[0]))
   }
 
   const platformClicked = async (id, name) => {
@@ -247,6 +261,7 @@ function QuizEditor() {
     setQuestions(newQuestions)
     setChangesMade(true)
     setActiveQuestion(blank)
+    setQuestionImage("")
     setActiveQuestionNum(newQuestions.length - 1)
     setCurrentQuestionTitle(blank.question_title)
     setCurrentQuestionChoices(blank.question_choices)
@@ -263,6 +278,7 @@ function QuizEditor() {
     setActiveQuestionNum(whereToGo)
     setCurrentQuestionTitle(questions[whereToGo].question_title)
     setCurrentQuestionChoices(questions[whereToGo].question_choices)
+    setQuestionImage(await FirestoreBackend.getImageURL(questions[whereToGo].question_image))
     setChangesMade(false)
     setChoicesInvalid([])
     setQuestionTitleInvalid(false)
@@ -277,6 +293,7 @@ function QuizEditor() {
     setActiveQuestion(questions[index])
     setActiveQuestionNum(index)
     setCurrentQuestionTitle(questions[index].question_title)
+    setQuestionImage(await FirestoreBackend.getImageURL(questions[index].question_image))
     setCurrentQuestionChoices(questions[index].question_choices)
   }
 
@@ -394,7 +411,7 @@ function QuizEditor() {
             <span className="visually-hidden">Loading Quiz Image</span>
           </Spinner>
         }
-        <Form.Group controlId="formFile" className="mb-3" style={{ margin: "auto", width: "25%" }}>
+        <Form.Group controlId="formFile" className="mb-3" style={{ margin: "auto", width: "fit-content" }}>
           Quiz Image
           <Form.Control onChange={onImgSelected} accept=".jpg, .jpeg, .png" type="file" />
         </Form.Group>
@@ -431,6 +448,21 @@ function QuizEditor() {
               <FormControl aria-label="Default" isInvalid={questionTitleInvalid} onChange={onChangeQuestionTitle} value={currentQuestionTitle} placeholder="Question Text" />
               <Form.Control.Feedback style={{position:"absolute", bottom:"-20px", left:"0px"}} type="invalid">{questionTitleInvalidText}</Form.Control.Feedback>
             </InputGroup>
+            { (questionImage !== undefined && questionImage !== "") &&
+              <Image
+              style={{ margin:"auto", width: "200px", backgroundSize: "cover" }}
+              src={questionImage}
+              alt="Question Image"
+            ></Image>
+            }
+            {
+              (questionImage === "" || questionImage === undefined) &&
+              <h5> No Image Selected for Question </h5>
+            }
+            <Form.Group controlId="formFile" className="mb-3" style={{ margin: "auto", width: "fit-content" }}>
+              Question Image
+              <Form.Control onChange={onImgQuestionSelected} accept=".jpg, .jpeg, .png" type="file" />
+            </Form.Group>
             {currentQuestionChoices.map((choice, index) => {
               return (
               <InputGroup style={{position:"relative"}} hasValidation className="mb-3">
