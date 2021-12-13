@@ -216,7 +216,16 @@ function QuizPlay() {
     )
   }
   const listchoices = choices.map((thing, index) => (
-    <ListGroup.Item key={index} as="li" active={isActive(index)} action onClick={() => setSelectedChoice(index)}>{thing}</ListGroup.Item>
+    <ListGroup.Item
+      style={{whiteSpace: "normal", float: "left", width: "100%", height:"auto", wordWrap: "break-word"}}
+      key={index}
+      as="li"
+      active={isActive(index)}
+      action
+      onClick={() => setSelectedChoice(index)}
+      >
+        {thing}
+    </ListGroup.Item>
   ))
   //console.log(listchoices);
   return (
@@ -224,7 +233,6 @@ function QuizPlay() {
         <Stack>
                 <br></br>
                 <h1>{quizTitle}</h1>
-                <h4>Time remaining - 00:00</h4>
                 <h2>Question {currQuestionNum}/{quizQuestions.length}</h2>
                 <br></br>
                 { (questionImage !== undefined && questionImage !== "") &&
