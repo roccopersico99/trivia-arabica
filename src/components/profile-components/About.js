@@ -13,9 +13,11 @@ function About(props) {
 
 
   const textAreaRef = useRef();
+  const aboutParaRef = useRef();
 
   const savePressed = () => {
     //console.log(textAreaRef.current.value)
+    props.about.description = textAreaRef.current.value
     props.setAboutText(textAreaRef.current.value)
     setEditing(false)
   }
@@ -98,7 +100,7 @@ function About(props) {
   return (
     <div>
       <h4>{props.about.content}</h4>
-      <p>{props.about.description}</p>
+      <p ref={aboutParaRef}>{props.about.description}</p>
       <Form style={{display: editing ? 'block' : 'none'}}>
         <Form.Control as ="textarea" ref={textAreaRef} id="aboutText" rows={3}></Form.Control>
       </Form>

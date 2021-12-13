@@ -74,7 +74,6 @@ function Profile() {
       //const medalCount = user.data().medals;
       const data = { user_bio: val };
       FirestoreBackend.updateData(userRef, data);
-      setRefreshKey(refreshKey + 1);
     });
   };
 
