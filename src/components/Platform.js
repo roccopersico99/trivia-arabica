@@ -225,7 +225,7 @@ function Platform() {
         <Button style={{marginLeft:"5px"}} onClick={cancelDescription} variant="secondary">Cancel</Button>
         </>
       }
-      {(!owner && !member) && <Button onClick={attemptApply} disabled={applied}> {!applied ? "Apply to join platform" : "Applied!"} </Button>}
+      {(!owner && !member && userDetails.id !== "") && <Button onClick={attemptApply} disabled={applied}> {!applied ? "Apply to join platform" : "Applied!"} </Button>}
       <br/>
       <br/>
       <Tabs>
