@@ -39,7 +39,7 @@ function PlatformCard(props) {
 
 
   return (
-    <div style={{maxWidth:"calc(95% / 3)", height:"100%", margin:"5px"}} >
+    <div style={{maxWidth:"calc(95% / 3)", display:"inline-flex"}} >
 
       <Card as={Col} style={{ margin: "10px" }}>
         <h3>{props.heading}</h3>
@@ -60,7 +60,7 @@ function PlatformCard(props) {
             variant="top"
             src={platImg}
           ></Card.Img>
-          <Card.Text>{props.platform?.data().owner ? "Owner" : "Contributor"}</Card.Text>
+          {props.platform?.data().owner!==undefined && <Card.Text>{props.platform?.data().owner ? "Owner" : "Contributor"}</Card.Text>}
         </Card.Body>
       </Card>
     </div>
