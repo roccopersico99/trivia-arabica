@@ -1,6 +1,6 @@
 import '../App.css';
 //000 React
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useParams, useHistory } from "react-router-dom";
 //000 Context
 import { useAuthState } from "../Context/index";
@@ -45,6 +45,8 @@ function QuizEditor() {
   const userDetails = useAuthState()
   const history = useHistory()
 
+  //000000000 refs
+  const questionImageRef = useRef("")
 
   //000000000 hooks
   useEffect(async () => {
@@ -107,6 +109,7 @@ function QuizEditor() {
   }
 
   const onImgQuestionSelected = async (event) => {
+    console.log(event)
     let imgPath = ""
     if (event.target.files[0] !== null && event.target.files[0] !== undefined) {
       const imgSnap = await FirestoreBackend.uploadFile(userDetails.id, params.id + "/" + activeQuestion.number, event.target.files[0])
@@ -262,6 +265,7 @@ function QuizEditor() {
     setChangesMade(true)
     setActiveQuestion(blank)
     setQuestionImage("")
+    questionImageRef.current.value = ""
     setActiveQuestionNum(newQuestions.length - 1)
     setCurrentQuestionTitle(blank.question_title)
     setCurrentQuestionChoices(blank.question_choices)
@@ -279,6 +283,7 @@ function QuizEditor() {
     setCurrentQuestionTitle(questions[whereToGo].question_title)
     setCurrentQuestionChoices(questions[whereToGo].question_choices)
     setQuestionImage(await FirestoreBackend.getImageURL(questions[whereToGo].question_image))
+    questionImageRef.current.value = ""
     setChangesMade(false)
     setChoicesInvalid([])
     setQuestionTitleInvalid(false)
@@ -294,6 +299,7 @@ function QuizEditor() {
     setActiveQuestionNum(index)
     setCurrentQuestionTitle(questions[index].question_title)
     setQuestionImage(await FirestoreBackend.getImageURL(questions[index].question_image))
+    questionImageRef.current.value = ""
     setCurrentQuestionChoices(questions[index].question_choices)
   }
 
@@ -461,7 +467,7 @@ function QuizEditor() {
             }
             <Form.Group controlId="formFile" className="mb-3" style={{ margin: "auto", width: "fit-content" }}>
               Question Image
-              <Form.Control onChange={onImgQuestionSelected} accept=".jpg, .jpeg, .png" type="file" />
+              <Form.Control ref={questionImageRef} onChange={onImgQuestionSelected} accept=".jpg, .jpeg, .png" type="file" />
             </Form.Group>
             {currentQuestionChoices.map((choice, index) => {
               return (
