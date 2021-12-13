@@ -122,7 +122,7 @@ function SearchPlatforms(props) {
     rows = [];
   const platRows = rows.map((row, index) => platChunk.slice(index * 3, index * 3 + 3))
   const content = platRows.map((row, index) => (
-    <Row className="row" key={index}>
+    <Row style={{justifyContent:"space-between"}} className="row" key={index}>
       {row.map((platform, idx) => (
         <PlatformCard platform={platform} key={idx}></PlatformCard>
       ))}
