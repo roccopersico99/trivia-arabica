@@ -2,6 +2,7 @@ import { Col, Card, Dropdown } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
 import React, { useState } from "react";
 import * as FirestoreBackend from "../../services/Firestore";
+import { default as logo } from "../../logo.svg";
 
 function PlatformCard(props) {
   const history = useHistory();
@@ -58,7 +59,7 @@ function PlatformCard(props) {
           <Card.Img
             style={{maxHeight: "100%", height: "150px", maxWidth: "100%", width: "200px", backgroundSize: "contain" }}
             variant="top"
-            src={platImg}
+            src={platImg === "" ? logo : platImg}
           ></Card.Img>
           {props.platform?.data().owner!==undefined && <Card.Text>{props.platform?.data().owner ? "Owner" : "Contributor"}</Card.Text>}
         </Card.Body>
