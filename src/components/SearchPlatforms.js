@@ -11,9 +11,7 @@ function SearchPlatforms(props) {
   const userDetails = useAuthState();
   const auth = getAuth();
 
-  const [completedFilter, setCompletedFilter] = useState("All Quizzes");
-  const [orderBy, setOrderBy] = useState("Publish Date")
-  const [searchFilter, setSearchFilter] = useState("Descending");
+  const [searchFilter, setSearchFilter] = useState("Ascending");
   const [searchTarget, setSearchTarget] = useState("")
   const [platforms, setPlatforms] = useState([]);
   const [emptySearch, setEmptySearch] = useState(false);
@@ -28,23 +26,15 @@ function SearchPlatforms(props) {
   useEffect(() => {
     //console.log(props.userDetails)
     handleSearch()
-  }, [props.refreshKey, completedFilter, searchFilter, orderBy])
+  }, [props.refreshKey, searchFilter])
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter')
       handleSearch();
   }
 
-  const handleFilterChange = (e) => {
-    setCompletedFilter(e)
-  }
-
   const handleSortChange = (e) => {
     setSearchFilter(e)
-  }
-
-  const handleSortByChange = (e) => {
-    setOrderBy(e)
   }
 
   const searchChanged = (e) => {
@@ -82,15 +72,12 @@ function SearchPlatforms(props) {
     let order = 'desc';
     if (searchFilter === "Ascending")
       order = 'asc';
-    let orderOn = 'publish_date'
-    if (orderBy === "Quiz Name")
-      orderOn = 'search_title'
-    searchPlatforms(searchQuery, orderOn, order);
+    searchPlatforms(searchQuery, order);
   }
 
-  const searchPlatforms = async (searchQuery, orderOn, order) => {
-    console.log(searchQuery)
-    const results = await FirestoreBackend.searchPlatforms(searchQuery);
+  const searchPlatforms = async (searchQuery, order) => {
+    console.log(order)
+    const results = await FirestoreBackend.searchPlatforms(searchQuery, order);
     if (results.empty) {
       //console.log("nothing found!");
       setEmptySearch(true);
@@ -122,7 +109,7 @@ function SearchPlatforms(props) {
     rows = [];
   const platRows = rows.map((row, index) => platChunk.slice(index * 3, index * 3 + 3))
   const content = platRows.map((row, index) => (
-    <Row style={{justifyContent:"space-between"}} className="row" key={index}>
+    <Row style={{justifyContent:""}} className="row" key={index}>
       {row.map((platform, idx) => (
         <PlatformCard platform={platform} key={idx}></PlatformCard>
       ))}
@@ -152,13 +139,20 @@ function SearchPlatforms(props) {
                 <Button onClick={handleSearch} variant="secondary" id="button-addon1">🔍</Button>
                 <FormControl onKeyDown={handleKeyDown} onChange={searchChanged} aria-label="Example text with button addon" placeholder="Enter search terms..." aria-describedby="basic-addon1" />
             </InputGroup>
+            <DropdownButton variant="outline-secondary" onSelect={handleSortChange} title={searchFilter + " "} id="input-group-dropdown-2">
+                <Dropdown.Item eventKey="Ascending">Ascending</Dropdown.Item>
+                <Dropdown.Item eventKey="Descending">Descending</Dropdown.Item>
+            </DropdownButton>
         </Stack>
         <br></br>
         {(platforms.length===0 && emptySearch===false) && <Spinner style={{ marginTop: "100px" }} animation="border" role="status"></Spinner>}
         {(platforms.length===0 && emptySearch===true && noSearch===false) && <div>No platforms found</div>}
         {platforms.length>0 &&
           <Container>
-            {content}
+            <div style={{width:"fit-content", margin:"auto", marginLeft:"50px"}}>
+              {content}
+            </div>
+
             <Pagination>
               {paginationItems}
             </Pagination>

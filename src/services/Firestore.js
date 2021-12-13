@@ -475,9 +475,9 @@ export const searchQuizzes = (search = "", orderOn = "publish_date", order = "de
   return getDocs(q);
 }
 
-export const searchPlatforms = async (search = "") => {
+export const searchPlatforms = async (search = "", order) => {
   search = search.toLowerCase();
-  const q = query(platRef, where('search_index', 'array-contains', search))
+  const q = query(platRef, where('search_index', 'array-contains', search), orderBy("name", order))
   return await getDocs(q);
 }
 
@@ -537,7 +537,7 @@ export const createPlatform = async (name, owner_id, owner_name, uid) => {
       string = string.concat(title[i]);
       searchIndex.push(string);
     }
-  
+
     for (let i = 0; i < subs.length; i++) {
       let str = '';
       for (let j = 0; j < subs[i].length; j++) {
