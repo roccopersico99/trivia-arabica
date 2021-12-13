@@ -175,9 +175,8 @@ function Profile() {
       setPlatforms(platformArray)
 
       const resolvedQuiz = await FirestoreBackend.getQuizFromString(query_snapshot.data().featured_quiz);
-      setFeaturedQuiz(resolvedQuiz)
-
       const resolvedPlat = await FirestoreBackend.getUserPlatform(params.id, query_snapshot.data().featured_platform)
+      setFeaturedQuiz(resolvedQuiz)
       setFeaturedPlatform(resolvedPlat)
 
       if (resolvedQuiz === undefined && resolvedPlat.data() === undefined) {
