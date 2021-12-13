@@ -7,7 +7,9 @@ function PlatformCard(props) {
   const history = useHistory();
   const [platImg, setPlatImg] = useState("https://media.istockphoto.com/vectors/photo-coming-soon-image-icon-vector-illustration-isolated-on-white-vector-id1193046540?k=20&m=1193046540&s=612x612&w=0&h=HQfBJLo1S0CJEsD4uk7m3EkR99gkICDdf0I52uAlk-8=")
 
-  console.log(props.platform?.data())
+  if (props.platform?.data() === undefined) {
+    return (<></>)
+  }
   const req = FirestoreBackend.getPlatform(props.platform?.id)
   req.then(async res => {
     setPlatImg(await FirestoreBackend.getImageURL(res.data().imageURL))
@@ -33,36 +35,37 @@ function PlatformCard(props) {
     >
       {children}
       <span className="threedots" />
-    </p>
-  ));
+    </p>));
+
 
   return (
     <div style={{maxWidth:"calc(95% / 3)", height:"100%", margin:"5px"}} >
 
-    <Card as={Col} style={{ margin: "10px" }}>
-      <h3>{props.heading}</h3>
-      {props.ownProfile &&
-      <Dropdown style={{position:"absolute", right:"0"}}>
-        <Dropdown.Toggle as={CustomToggle} id="dropdown-custom-components">
-        </Dropdown.Toggle>
+      <Card as={Col} style={{ margin: "10px" }}>
+        <h3>{props.heading}</h3>
+        {props.ownProfile &&
+        <Dropdown style={{position:"absolute", right:"0"}}>
+          <Dropdown.Toggle as={CustomToggle} id="dropdown-custom-components">
+          </Dropdown.Toggle>
 
-        <Dropdown.Menu>
-          <Dropdown.Item disabled={props.featuredPlatform?.id === props.platform?.id} onClick={handleFeatured}>Set Featured</Dropdown.Item>
-        </Dropdown.Menu>
-      </Dropdown>
-    }
-      <Card.Body style={{cursor:"pointer"}} onClick={platClicked}>
-        <Card.Title>{props.platform?.data().name}</Card.Title>
-        <Card.Img
-          style={{maxHeight: "100%", height: "150px", maxWidth: "100%", width: "200px", backgroundSize: "contain" }}
-          variant="top"
-          src={platImg}
-        ></Card.Img>
-        <Card.Text>{props.platform?.data().owner ? "Owner" : "Contributor"}</Card.Text>
-      </Card.Body>
-    </Card>
-  </div>
+          <Dropdown.Menu>
+            <Dropdown.Item disabled={props.featuredPlatform?.id === props.platform?.id} onClick={handleFeatured}>Set Featured</Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+      }
+        <Card.Body style={{cursor:"pointer"}} onClick={platClicked}>
+          <Card.Title>{props.platform?.data().name}</Card.Title>
+          <Card.Img
+            style={{maxHeight: "100%", height: "150px", maxWidth: "100%", width: "200px", backgroundSize: "contain" }}
+            variant="top"
+            src={platImg}
+          ></Card.Img>
+          <Card.Text>{props.platform?.data().owner ? "Owner" : "Contributor"}</Card.Text>
+        </Card.Body>
+      </Card>
+    </div>
   );
+
 }
 
 export default PlatformCard;

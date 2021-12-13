@@ -178,9 +178,10 @@ function Profile() {
       setFeaturedQuiz(resolvedQuiz)
 
       const resolvedPlat = await FirestoreBackend.getUserPlatform(params.id, query_snapshot.data().featured_platform)
-      console.log(resolvedPlat.data())
       setFeaturedPlatform(resolvedPlat)
-      if (resolvedQuiz === undefined && resolvedPlat === undefined) {
+
+      if (resolvedQuiz === undefined && resolvedPlat.data() === undefined) {
+        console.log("true")
         setNoFeatured(true)
       }
     });
