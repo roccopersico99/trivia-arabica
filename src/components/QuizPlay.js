@@ -1,7 +1,7 @@
 import '../App.css';
 import React, { useState } from 'react'
 import Background from './Background.js'
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useHistory } from "react-router-dom";
 import { Stack, Image, Button, ListGroup, Spinner } from 'react-bootstrap';
 import * as FirestoreBackend from '../services/Firestore.js'
 import { useAuthState } from '../Context';
@@ -10,6 +10,7 @@ import { TwitterShareButton, TwitterIcon, FacebookIcon, FacebookShareButton, Red
 function QuizPlay() {
   const userDetails = useAuthState();
   const params = useParams();
+  const history = useHistory();
 
   const [userMedals, setUserMedals] = useState(0);
   const [prevEarnedMedals, setPrevEarnedMedals] = useState(0);
@@ -212,6 +213,7 @@ function QuizPlay() {
                 </Stack>
                 <br></br>
                 <Link to="/" className="btn btn-outline-danger">Exit Quiz</Link>
+                <Button style={{marginLeft:"5px"}} variant="outline-primary" onClick={() => history.push("/preview/"+params.id)}>Back to Preview</Button>
             </Background>
     )
   }
