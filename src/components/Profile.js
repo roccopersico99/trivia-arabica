@@ -254,7 +254,7 @@ function Profile() {
               <Tab eventKey="posts" title="Posts">
                 <Posts profile={userDetails.id} uid={auth.currentUser?.uid}></Posts>
               </Tab>
-              <Tab eventKey="platforms" title="Platforms">
+              <Tab style={{marginLeft:"50px"}} eventKey="platforms" title="Platforms">
                 <ProfilePlatforms setFeaturedPlatformProp={setFeaturedPlatformProp} featuredPlatform={featuredPlatform} userDetails={userDetails} ownProfile={userDetails.id === params.id} platforms={platforms}></ProfilePlatforms>
               </Tab>
               <Tab eventKey="about" title="About">
