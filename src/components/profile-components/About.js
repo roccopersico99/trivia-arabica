@@ -10,7 +10,8 @@ function About(props) {
   const [twitterInvalid, setTwitterInvalid] = useState(false)
   const [redditInvalid, setRedditInvalid] = useState(false)
 
-
+  const [prevDesc, setPrevDesc] = useState("")
+  const [descInvalid, setDescInvalid] = useState(false)
 
   const textAreaRef = useRef();
   const aboutParaRef = useRef();
@@ -22,7 +23,18 @@ function About(props) {
     setEditing(false)
   }
 
+  const descChanged = (e) => {
+    if (e.target.value.length > 600) {
+      setDescInvalid(true)
+      textAreaRef.current.value = prevDesc
+    } else {
+      setDescInvalid(false)
+      setPrevDesc(textAreaRef.current.value)
+    }
+  }
+
   const editingClicked = () => {
+    setPrevDesc(props.about.description)
     setEditing(true)
     textAreaRef.current.value = props.about.description
   }
@@ -101,8 +113,13 @@ function About(props) {
     <div>
       <h4>{props.about.content}</h4>
       <p ref={aboutParaRef}>{props.about.description}</p>
-      <Form style={{display: editing ? 'block' : 'none'}}>
-        <Form.Control as ="textarea" ref={textAreaRef} id="aboutText" rows={3}></Form.Control>
+      <Form hasValidation style={{display: editing ? 'block' : 'none'}}>
+        <Form.Control isInvalid={descInvalid} as ="textarea" onChange={descChanged} ref={textAreaRef} id="aboutText" rows={3}></Form.Control>
+        <Form.Control.Feedback
+          style={{marginLeft:"10px", marginRight:"10px"}}
+          type="invalid"> Character count cannot exceed 600.
+        </Form.Control.Feedback>
+
       </Form>
       {(!editing && props.about.allowed) && <Button variant="info" onClick={editingClicked}>Edit</Button>}
       {editing && <Button variant="success" onClick={savePressed}>Save</Button>}

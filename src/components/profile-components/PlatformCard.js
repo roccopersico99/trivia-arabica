@@ -40,7 +40,7 @@ function PlatformCard(props) {
 
 
   return (
-    <div style={{maxWidth:"calc(95% / 3)", display:"inline-flex"}} >
+    <div style={{maxWidth:"calc(95% / 3)", minWidth:"calc(90%/3)", display:"inline-flex"}} >
 
       <Card as={Col} style={{ margin: "10px" }}>
         <h3>{props.heading}</h3>

@@ -149,7 +149,7 @@ function SearchPlatforms(props) {
         {(platforms.length===0 && emptySearch===true && noSearch===false) && <div>No platforms found</div>}
         {platforms.length>0 &&
           <Container>
-            <div style={{width:"fit-content", margin:"auto", marginLeft:"50px"}}>
+            <div style={{margin:"auto", marginLeft:"50px"}}>
               {content}
             </div>
 

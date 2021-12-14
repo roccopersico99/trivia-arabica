@@ -22,6 +22,7 @@ function Platforms() {
   const [createPlatformName, setCreatePlatformName] = useState("")
   const [modalShow, setModalShow] = useState(false);
   const [platformInvalid, setPlatformInvalid] = useState(false);
+  const [platformInvalidText, setPlatformInvalidText] = useState("")
 
   const history = useHistory();
 
@@ -30,6 +31,7 @@ function Platforms() {
     q.then(res => {
       if (!res) {
         setPlatformInvalid(true)
+        setPlatformInvalidText("Requested platform name is taken.")
       } else {
         //go to platform page to edit details/add people
         setModalShow(false)
@@ -40,8 +42,15 @@ function Platforms() {
   }
 
   const nameChanged = (e) => {
-    setCreatePlatformName(e.target.value)
-    setPlatformInvalid(false)
+    if (e.target.value.length > 60) {
+      setPlatformInvalid(true)
+      setPlatformInvalidText("Character count cannot exceed 60.")
+    } else {
+      setCreatePlatformName(e.target.value)
+      setPlatformInvalid(false)
+      setPlatformInvalidText("")
+    }
+
   }
 
   return (
@@ -82,7 +91,7 @@ function Platforms() {
               value={createPlatformName} aria-label="Default" placeholder="Platform Name"/>
             <Form.Control.Feedback
               style={{marginLeft:"10px", marginRight:"10px"}}
-              type="invalid"> Requested platform name is taken. </Form.Control.Feedback>
+              type="invalid"> {platformInvalidText} </Form.Control.Feedback>
           </InputGroup>
       </Form>
       <Modal.Footer>

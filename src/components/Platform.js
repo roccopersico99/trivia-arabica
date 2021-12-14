@@ -27,6 +27,7 @@ function Platform() {
   const [isAContributor, setIsAContributor] = useState(false)
   const [platformImage, setPlatformImage] = useState()
   const [platformDescription, setPlatformDescription] = useState("")
+  const [platformDescriptionInvalid, setPlatformDescriptionInvalid] = useState(false)
 
   const [tempDescription, setTempDescription] = useState("")
   const [editingDesc, setEditingDesc] = useState(false)
@@ -120,7 +121,13 @@ function Platform() {
   }
 
   const tempDescChanged = (e) => {
-    setTempDescription(e.target.value)
+    if (e.target.value.length > 600) {
+      console.log("Hey")
+      setPlatformDescriptionInvalid(true)
+    } else {
+      setPlatformDescriptionInvalid(false)
+      setTempDescription(e.target.value)
+    }
   }
 
   const saveDescription = () => {
@@ -218,8 +225,9 @@ function Platform() {
       }
       {(owner && editingDesc) &&
         <>
-        <Form style={{width:"60%", margin:"auto", marginBottom:"20px"}}>
-          <Form.Control as ="textarea" id="aboutText" onChange={tempDescChanged} value={tempDescription} rows={3}></Form.Control>
+        <Form hasValidation style={{width:"60%", margin:"auto", marginBottom:"20px"}}>
+          <Form.Control isInvalid={platformDescriptionInvalid} as="textarea" id="aboutText" onChange={tempDescChanged} value={tempDescription} rows={3}></Form.Control>
+          <Form.Control.Feedback type="invalid">Max Character Limit of 600</Form.Control.Feedback>
         </Form>
         <Button style={{marginRight:"5px"}} onClick={saveDescription}>Save</Button>
         <Button style={{marginLeft:"5px"}} onClick={cancelDescription} variant="secondary">Cancel</Button>

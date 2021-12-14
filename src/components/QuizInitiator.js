@@ -57,7 +57,7 @@ function QuizInitiator() {
   }
 
   const onNameChange = (event) => {
-    if (event.target.value.length > 200) {
+    if (event.target.value.length > 100) {
       setTitleInvalid(true)
     } else {
       console.log("hey")
@@ -88,7 +88,7 @@ function QuizInitiator() {
       <Stack style={{alignItems:"center", marginTop:"50px"}}>
       <InputGroup hasValidation style={{width:"50%"}} className="mb-3">
         <FormControl isInvalid={titleInvalid} aria-label="Default" onChange={onNameChange} value={name} placeholder="Quiz Name" />
-        <Form.Control.Feedback type="invalid">Max Character Limit of 200</Form.Control.Feedback>
+        <Form.Control.Feedback type="invalid">Max Character Limit of 100</Form.Control.Feedback>
       </InputGroup>
       <InputGroup hasValidation style={{width:"70%"}} className="mb-3">
         <FormControl isInvalid={descriptionInvalid} as="textarea" onChange={onDescChange} value={desc} placeholder="Quiz Description" />
