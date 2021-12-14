@@ -3,18 +3,30 @@ import { useHistory } from "react-router-dom";
 import React, { useState } from "react";
 import * as FirestoreBackend from "../../services/Firestore";
 import { default as logo } from "../../logo.svg";
+import { default as loadingGif } from "../../loading.gif";
 
 function PlatformCard(props) {
   const history = useHistory();
   const [platImg, setPlatImg] = useState("https://media.istockphoto.com/vectors/photo-coming-soon-image-icon-vector-illustration-isolated-on-white-vector-id1193046540?k=20&m=1193046540&s=612x612&w=0&h=HQfBJLo1S0CJEsD4uk7m3EkR99gkICDdf0I52uAlk-8=")
+  const [prevName, setPrevName] = useState("")
 
   if (props.platform?.data() === undefined) {
     return (<></>)
   }
-  const req = FirestoreBackend.getPlatform(props.platform?.id)
-  req.then(async res => {
-    setPlatImg(await FirestoreBackend.getImageURL(res.data().imageURL))
-  })
+
+  const setupPlatformCard = async () => {
+    setPlatImg(loadingGif)
+    const req = FirestoreBackend.getPlatform(props.platform?.id)
+    req.then(async res => {
+      console.log("hey")
+      setPlatImg(await FirestoreBackend.getImageURL(res.data().imageURL))
+    })
+  }
+
+  if (prevName !== props.platform?.data().name) {
+    setPrevName(props.platform?.data().name)
+    setupPlatformCard()
+  }
 
   const platClicked = () => {
     history.push("/platform/" + props.platform?.id);
