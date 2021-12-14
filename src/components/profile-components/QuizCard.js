@@ -1,4 +1,4 @@
-import { Col, Card, Button, Row, Dropdown } from "react-bootstrap";
+import { Col, Card, Button, Row, Dropdown, Modal } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import React, { useState } from "react";
 import * as FirestoreBackend from "../../services/Firestore";
@@ -9,6 +9,8 @@ import { default as logo } from "../../logo.svg";
 function QuizCard(props) {
 
   const userDetails = useAuthState();
+
+  const [modalShow, setModalShow] = useState(false)
 
   const [isLiked, setIsLiked] = useState(async () => {
     const userquizzes = await FirestoreBackend.getUserRatedQuizzes(userDetails.id)
@@ -169,7 +171,7 @@ function QuizCard(props) {
         <Dropdown.Menu>
           {props.canRemove && userDetails.user !== "" && <Dropdown.Item onClick={() => props.removePlatformQuiz(props.quiz?.id)}>Remove from platform</Dropdown.Item>}
           {!props.quiz?.publish_state && props.quiz?.allowed && userDetails.user !== "" && <Dropdown.Item href={"/creator/" + props.quiz?.id}>Edit</Dropdown.Item>}
-          {props.quiz?.allowed && userDetails.user !== "" && <Dropdown.Item onClick={handleDelete}>Delete</Dropdown.Item>}
+          {props.quiz?.allowed && userDetails.user !== "" && <Dropdown.Item onClick={() => setModalShow(true)}>Delete</Dropdown.Item>}
           {props.quiz?.allowed && userDetails.user !== "" && props.quiz?.publish_state && <Dropdown.Item disabled={props.featuredQuiz?.id === props.quiz?.id} onClick={handleFeatured} >Set Featured</Dropdown.Item>}
         </Dropdown.Menu>
       </Dropdown>
@@ -202,6 +204,24 @@ function QuizCard(props) {
         </div>
       }
       </Card.Body>
+
+      <Modal
+        show={modalShow}
+        onHide={() => setModalShow(false)}
+        centered
+        >
+        <Modal.Header closeButton>
+          <Modal.Title>Delete Quiz</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Are you sure you want to delete this quiz? It will be gone forever.</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={() => handleDelete()} variant="danger">Delete</Button>
+          <Button onClick={() => setModalShow(false)} variant="secondary"> Cancel </Button>
+        </Modal.Footer>
+      </Modal>
+
     </Card>
   );
 }

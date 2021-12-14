@@ -76,6 +76,7 @@ function SearchPlatforms(props) {
   }
 
   const searchPlatforms = async (searchQuery, order) => {
+    setNoSearch(false)
     console.log(order)
     const results = await FirestoreBackend.searchPlatforms(searchQuery, order);
     if (results.empty) {
