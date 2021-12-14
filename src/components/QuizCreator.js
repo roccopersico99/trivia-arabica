@@ -23,6 +23,7 @@ function QuizEditor() {
   const [currentQuestionTitle, setCurrentQuestionTitle] = useState("")
   const [currentQuestionChoices, setCurrentQuestionChoices] = useState([])
   const [choicesInvalid, setChoicesInvalid] = useState([])
+  const [choicesInvalidText, setChoicesInvalidText] = useState([])
   const [questionTitleInvalid, setQuestionTitleInvalid] = useState(false)
   const [questionTitleInvalidText, setQuestionTitleInvalidText] = useState("")
   const [publishErrorText, setPublishErrorText] = useState("")
@@ -133,9 +134,15 @@ function QuizEditor() {
   }
 
   const onChangeQuestionTitle = (event) => {
-    setCurrentQuestionTitle(event.target.value)
-    setQuestionTitleInvalid(false)
-    setChangesMade(true)
+    if (event.target.value.length > 100) {
+      setQuestionTitleInvalid(true)
+      setQuestionTitleInvalidText("Character limit of 100 exceeded!")
+    } else {
+      setCurrentQuestionTitle(event.target.value)
+      setQuestionTitleInvalid(false)
+      setChangesMade(true)
+    }
+
   }
 
   const saveChangesClicked = async () => {
@@ -218,11 +225,21 @@ function QuizEditor() {
   }
 
   const choiceChanged = (event, index) => {
-    let newChoices = [...currentQuestionChoices]
-    newChoices[index].text = event.target.value
-    setCurrentQuestionChoices(newChoices)
-    setChoicesInvalid([])
-    setChangesMade(true)
+    if (event.target.value.length > 100) {
+      let newInvalids = [...choicesInvalid]
+      let newInvalidTexts = [...choicesInvalidText]
+      newInvalids[index] = true
+      newInvalidTexts[index] = "Character limit of 100 exceeded!"
+      setChoicesInvalid(newInvalids)
+      setChoicesInvalidText(newInvalidTexts)
+    } else {
+      let newChoices = [...currentQuestionChoices]
+      newChoices[index].text = event.target.value
+      setCurrentQuestionChoices(newChoices)
+      setChoicesInvalid([])
+      setChoicesInvalidText([])
+      setChangesMade(true)
+    }
   }
 
   const addChoice = () => {
@@ -230,6 +247,7 @@ function QuizEditor() {
     newChoices.push({ text: "", correct: false })
     setCurrentQuestionChoices(newChoices)
     setChoicesInvalid([])
+    setChoicesInvalidText([])
     setChangesMade(true)
   }
 
@@ -238,6 +256,7 @@ function QuizEditor() {
     newChoices.pop()
     setCurrentQuestionChoices(newChoices)
     setChoicesInvalid([])
+    setChoicesInvalidText([])
     setChangesMade(true)
   }
 
@@ -286,6 +305,7 @@ function QuizEditor() {
     questionImageRef.current.value = ""
     setChangesMade(false)
     setChoicesInvalid([])
+    setChoicesInvalidText([])
     setQuestionTitleInvalid(false)
   }
 
@@ -353,18 +373,26 @@ function QuizEditor() {
     let ans = false;
     let ret = false;
     let validAr = []
+    let validTextAr = []
     for (let i = 0; i < currentQuestionChoices.length; i++) {
       if (currentQuestionChoices[i].correct) {
         ans = true;
       }
       if (currentQuestionChoices[i].text === "") {
         validAr.push(true)
+        validTextAr.push("Your choice can not be left blank!")
+        ret = true
+      } else if (currentQuestionChoices[i].text.length > 100) {
+        validAr.push(true)
+        validTextAr.push("Character limit of 100 exceeded!")
         ret = true
       } else {
         validAr.push(false)
+        validTextAr.push("")
       }
     }
     setChoicesInvalid(validAr)
+    setChoicesInvalidText(validTextAr)
     if (!ans) {
       setQuestionTitleInvalid(true)
       setQuestionTitleInvalidText("Your question must have an answer!")
@@ -476,7 +504,7 @@ function QuizEditor() {
                 <FormControl isInvalid={choicesInvalid[index]} id={index+1} aria-label="Default" value={choice.text} onChange={(event) => choiceChanged(event, index)} placeholder={"Choice " + (index+1)} />
                 <InputGroup.Text id="inputGroup-sizing-default"> Answer </InputGroup.Text>
                 <InputGroup.Radio id={index+1} name="answer" onChange={() => answerChanged(index)} checked={choice.correct} aria-label="Text input with radio button" />
-                <Form.Control.Feedback style={{position:"absolute", bottom:"-20px", left:"0px"}} type="invalid">Choice must not be left blank!</Form.Control.Feedback>
+                <Form.Control.Feedback style={{position:"absolute", bottom:"-20px", left:"0px"}} type="invalid">{choicesInvalidText[index]}</Form.Control.Feedback>
               </InputGroup>
               )
             })}
