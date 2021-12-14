@@ -15,6 +15,9 @@ function QuizInitiator() {
   const [desc, setDesc] = useState("")
   const [imgFile, setImgFile] = useState(null)
 
+  const [titleInvalid, setTitleInvalid] = useState(false)
+  const [descriptionInvalid, setDescriptionInvalid] = useState(false)
+
   const history = useHistory();
 
   const createClicked = async () => {
@@ -54,11 +57,24 @@ function QuizInitiator() {
   }
 
   const onNameChange = (event) => {
-    setName(event.target.value)
+    if (event.target.value.length > 200) {
+      setTitleInvalid(true)
+    } else {
+      console.log("hey")
+      setTitleInvalid(false)
+      setName(event.target.value)
+    }
+
   }
 
   const onDescChange = (event) => {
-    setDesc(event.target.value)
+    if (event.target.value.length > 600) {
+      setDescriptionInvalid(true)
+    } else {
+      setDescriptionInvalid(false)
+      setDesc(event.target.value)
+    }
+
   }
 
   const onImgUpld = async (event) => {
@@ -70,11 +86,13 @@ function QuizInitiator() {
       <br></br>
       <h1> Quiz Creator </h1>
       <Stack style={{alignItems:"center", marginTop:"50px"}}>
-      <InputGroup style={{width:"50%"}} className="mb-3">
-        <FormControl  aria-label="Default" onChange={onNameChange} placeholder="Quiz Name" />
+      <InputGroup hasValidation style={{width:"50%"}} className="mb-3">
+        <FormControl isInvalid={titleInvalid} aria-label="Default" onChange={onNameChange} value={name} placeholder="Quiz Name" />
+        <Form.Control.Feedback type="invalid">Max Character Limit of 200</Form.Control.Feedback>
       </InputGroup>
-      <InputGroup style={{width:"70%"}} className="mb-3">
-        <FormControl as="textarea" onChange={onDescChange} placeholder="Quiz Description" />
+      <InputGroup hasValidation style={{width:"70%"}} className="mb-3">
+        <FormControl isInvalid={descriptionInvalid} as="textarea" onChange={onDescChange} value={desc} placeholder="Quiz Description" />
+        <Form.Control.Feedback type="invalid">Max Character Limit of 200</Form.Control.Feedback>
       </InputGroup>
       <Form.Group controlId="formFile" className="mb-3">
         Quiz Image
