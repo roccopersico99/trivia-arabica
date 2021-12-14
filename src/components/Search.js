@@ -169,8 +169,11 @@ function Search(props) {
     }
     counter -= 1;
     //console.log("counter : " + counter);
-    if (counter === 0)
+    if (counter === 0){
+      if (newResults.length === 0)
+        setEmptySearch(true)
       setQuizzes(newResults);
+    }
   }
 
   const filterPublished = async (resolvedQuiz, index, newResults) => {
