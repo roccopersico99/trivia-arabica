@@ -15,6 +15,8 @@ function Posts(props) {
   const [noMorePosts, setNoMorePosts] = useState(false)
   const page = window.location.pathname.split("/")[1];
 
+
+
   const getPostList = async () => {
     if (loading) {
       return;
@@ -25,6 +27,10 @@ function Posts(props) {
   const params = useParams();
   const titleAreaRef = useRef();
   const textAreaRef = useRef();
+
+  useEffect(() => {
+    getPosts()
+  }, [params.id])
 
   const handleDelete = async (index) => {
     console.log(index);
@@ -42,9 +48,10 @@ function Posts(props) {
   }
 
   function processPosts(doc_snapshot) {
+    setPosts([])
     let postlist = [];
     let counter = doc_snapshot.docs.length;
-    if(counter < 6){
+    if (counter < 6) {
       setNoMorePosts(true);
     }
     setLoading(true)
@@ -54,16 +61,15 @@ function Posts(props) {
       postdata.name = poster_name.data().display_name;
       postdata.ref = doc.ref.id;
       postlist[index] = postdata;
-      if(index == doc_snapshot.docs.length-1) {
+      if (index == doc_snapshot.docs.length - 1) {
         setLastPostSnapshot(doc)
       }
       counter -= 1;
-      if(counter === 0){
-        if(saveFlag){
+      if (counter === 0) {
+        if (saveFlag) {
           setPosts(postlist)
           saveFlag = false;
-        }
-        else {
+        } else {
           setPosts(posts.concat(postlist))
         }
       }
@@ -90,7 +96,7 @@ function Posts(props) {
       case "preview":
         FirestoreBackend.createPagePost("quizzes", "quiz_posts", props.profile, params.id, titleAreaRef.current.value, textAreaRef.current.value, auth.currentUser.uid)
         break;
-    } 
+    }
     setEditing(false)
     titleAreaRef.current.value = ""
     textAreaRef.current.value = ""
@@ -108,8 +114,7 @@ function Posts(props) {
         <Spinner style={{ marginTop: "100px" }} animation="border" role="status"></Spinner>
       </Container>
     );
-  }
-  else return (
+  } else return (
     <Container>
       <div>
         <br>
@@ -136,7 +141,7 @@ function Posts(props) {
               {((!post.post_deleted) && (params.id === props.profile || post.post_creator === props.profile)) && <Button onClick={()=>{handleDelete(index)}} className="float-right" variant="danger">Delete</Button>}
               {(post.post_deleted !== true) && <Card.Title>{post.post_title}</Card.Title>}
                 <Card.Subtitle className="post mb-2 text-muted">
-                  {"posted by: "} 
+                  {"posted by: "}
                   <Link className="post mb-2 text-muted"
                   to={{ pathname: "/profile/" + post.post_creator }}
                   style={{ textDecoration: 'none' }}>
@@ -150,15 +155,15 @@ function Posts(props) {
               {props.profile !== "" && <Button onClick={handleDislike} variant="light" disabled={isLiked === 2}><FaThumbsDown /></Button>} */}
             </Card.Body>
           </Card>
-      ))) : 
+      ))) :
       <div>
         {(page === "profile" && params.id === props.profile) && <div>Make your first post!</div>}
         {(page === "profile" && params.id !== props.profile) && <div>There are no posts on this user's profile.</div>}
         {page === "preview" && <div>Be the first to post on this quiz!</div>}
       </div>}
-      
+
       </ListGroup>
-      {posts.length > 0 && 
+      {posts.length > 0 &&
         <div>
           <br></br>
           <Button onClick={loadMore} disabled={noMorePosts}>Load More</Button>
