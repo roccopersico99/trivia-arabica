@@ -228,9 +228,10 @@ export const getRandomQuiz = async () => {
   let key = db.collection('quizzes').doc().id;
   console.log(key);
   let random = await getDocs(query(quizRef, where('publish_state', '==', true), where('__name__', '>=', key), orderBy('__name__'), limit(1)));
-  while (!random.docs[0])
+  while (!random.docs[0]){
     key = db.collection('quizzes').doc().id;
-  random = await getDocs(query(quizRef, where('publish_state', '==', true), where('__name__', '>=', key), orderBy('__name__'), limit(1)));
+    random = await getDocs(query(quizRef, where('publish_state', '==', true), where('__name__', '>=', key), orderBy('__name__'), limit(1)))
+  };
   return (random.docs[0].id);
 }
 
