@@ -52,6 +52,7 @@ function Platform() {
       }
     } else {
       setOwner(false)
+
       if (userDetails.id !== undefined && userDetails.id !== "") {
         const appReq = FirestoreBackend.isUserAppliedPlatform(userDetails.id, params.id)
         appReq.then(res => {
@@ -61,6 +62,8 @@ function Platform() {
         memReq.then(res => {
           setMember(res.exists)
         })
+        populateMembers()
+      } else {
         populateMembers()
       }
     }
@@ -76,6 +79,7 @@ function Platform() {
   //000000000 functions
   const populateMembers = async () => {
     const memreq = await FirestoreBackend.getMembers(params.id)
+    console.log(ownerName, ownerID)
     let memArray = [{ name: (ownerName + " (Owner)"), id: ownerID }]
     memreq.forEach(member => {
       let user = {
@@ -149,7 +153,9 @@ function Platform() {
   }
 
   const acceptPressed = async (id, name) => {
-    if (!owner) { return }
+    if (!owner) {
+      return
+    }
     const app = await FirestoreBackend.acceptUserApplication(id, params.id, name)
     FirestoreBackend.addPlatformToUser(id, params.id, platformName, false)
 
